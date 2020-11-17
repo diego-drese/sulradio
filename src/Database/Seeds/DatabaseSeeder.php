@@ -1,6 +1,6 @@
 <?php
 
-namespace MachadoTi\SulRadio\Database\Seeds;
+namespace Oka6\SulRadio\Database\Seeds;
 
 use Illuminate\Database\Seeder;
 

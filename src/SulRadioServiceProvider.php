@@ -1,6 +1,6 @@
 <?php
 
-namespace MachadoTi\SulRadio;
+namespace Oka6\SulRadio;
 
 use Illuminate\Support\ServiceProvider;
 

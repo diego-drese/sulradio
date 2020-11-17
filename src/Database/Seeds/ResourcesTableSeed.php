@@ -1,6 +1,6 @@
 <?php
 
-namespace MachadoTi\SulRadio\Database\Seeds;
+namespace Oka6\SulRadio\Database\Seeds;
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -14,6 +14,6 @@ class ResourcesTableSeed extends Seeder
 {
     public function run()
     {
-        
+    
     }
 }

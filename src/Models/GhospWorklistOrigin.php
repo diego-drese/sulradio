@@ -1,6 +1,6 @@
 <?php
 
-namespace MachadoTi\SulRadio\Models;
+namespace Oka6\SulRadio\Models;
 
 
 use Illuminate\Database\Eloquent\Model;

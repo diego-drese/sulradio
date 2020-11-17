@@ -1,6 +1,6 @@
 <?php
 
-namespace MachadoTi\SulRadio\Database\Seeds;
+namespace Oka6\SulRadio\Database\Seeds;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
@@ -21,7 +21,7 @@ class DatabaseStart extends Seeder {
             Artisan::call('config:cache');
 
             $this->command->line('Run SulRadio:DataBaseStart');
-            $this->call(\MachadoTi\SulRadio\Database\Seeds\DatabaseSeeder::class);
+            $this->call(\Oka6\SulRadio\Database\Seeds\DatabaseSeeder::class);
 
             $this->command->line('Run Oka6:AdminRoutes');
             Artisan::call('Oka6:AdminRoutes');
@@ -37,7 +37,7 @@ class DatabaseStart extends Seeder {
         $this->call(\Oka6\Admin\Database\Seeds\DatabaseSeeder::class);
 
         $this->command->line('Run SulRadio:DataBaseStart');
-        $this->call(\MachadoTi\SulRadio\Database\Seeds\DatabaseSeeder::class);
+        $this->call(\Oka6\SulRadio\Database\Seeds\DatabaseSeeder::class);
 
         $this->command->line('Run Oka6:AdminRoutes');
         Artisan::call('Oka6:AdminRoutes');

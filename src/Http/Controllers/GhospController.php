@@ -1,11 +1,11 @@
 <?php
-namespace MachadoTi\SulRadio\Http\Controllers;
+namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Config;
-use MachadoTi\SulRadio\Models\GhospWorklist;
+use Oka6\SulRadio\Models\GhospWorklist;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\Admin\Library\MongoUtils;
 use Yajra\DataTables\DataTables;
