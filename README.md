@@ -1,29 +1,11 @@
-# README #
+# Qualita #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Pacote da clinica Qualita.
 
-### What is this repository for? ###
+composer dumpautoload
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+php artisan migrate --database=oka6_admin
 
-### How do I get set up? ###
+php artisan db:seed --class=MachadoTi\\\Qualita\\\Database\\\Seeds\\\DatabaseStart
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
