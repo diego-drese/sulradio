@@ -43,7 +43,7 @@ class SulRadioServiceProvider extends ServiceProvider {
 	 */
 	protected function mergeConfigFrom($path, $key) {
 		$config = $this->app['config']->get($key, []);
-		if ($key == 'database.connections' && isset($config['SulRadio']) == false) {
+		if ($key == 'database.connections' && isset($config['sulradio']) == false) {
 			$this->app['config']->set($key, array_merge($config, require $path));
 		} elseif ($key == 'admin.profile_type') {
 			$this->app['config']->set($key, array_merge($config, require $path));
