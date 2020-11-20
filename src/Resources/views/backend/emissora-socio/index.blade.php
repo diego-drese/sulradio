@@ -1,5 +1,5 @@
 @extends('Admin::layouts.backend.main')
-@section('title', 'Atos junta comercial')
+@section('title', 'Endereços')
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -25,7 +25,7 @@
                                     <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
                                 </a>
                                 @if($hasAdd)
-                                    <a href="{{route('emissora.atos.comercial.create',$emissora->emissoraID)}}"
+                                    <a href="{{route('emissora.socio.create',$emissora->emissoraID)}}"
                                        class="btn btn-primary">
                                         <span class="fa fa-plus"></span> <b>Adicionar</b>
                                     </a>
@@ -35,18 +35,18 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="tableProcessos" class="table table-striped table-bordered">
+                        <table id="tableSocio" class="table table-striped table-bordered">
                             <thead>
                             <tr>
                                 <th role="row" style="width: 60px">Id</th>
-                                <th>Tipo</th>
-                                <th>Data</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
                                 <th style="width: 80px">Ações</th>
                             </tr>
                             <tr>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Id"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Tipo"></th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Bucar por ano"></th>
+                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Id"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Nome"></th>
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" placeholder="Bucar Categoria"></th>
                                 <th>
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
@@ -75,7 +75,7 @@
         var hasEdit = '{{$hasEdit}}';
         $(document).ready(function () {
 
-            var tableProcessos = $('#tableProcessos').DataTable({
+            var tableSocio = $('#tableSocio').DataTable({
                 language: {
                     "sEmptyTable": "Nenhum registro encontrado",
                     "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -110,14 +110,14 @@
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#tableProcessos thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                $('#tableSocio thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
                     }, 50);
                 },
                 ajax: {
-                    url: '{{ route('emissora.atos.comercial.index', $emissoraID) }}',
+                    url: '{{ route('emissora.socio.index', $emissoraID) }}',
                     type: 'GET',
                     data: function (d) {
                         d._token = $("input[name='_token']").val();
@@ -125,9 +125,9 @@
                     }
                 },
                 columns: [
-                    {data: "ato_jcID", 'name': 'ato_jcID'},
-                    {data: "desc_tipo_ato_juridico", 'name': 'emissora_tipo_ato_juridico.desc_tipo_ato_juridico'},
-                    {data: "data_arquivo_junta", 'name': 'data_arquivo_junta'},
+                    {data: "socioID", 'name': 'socioID'},
+                    {data: "nome", 'name': 'nome'},
+                    {data: "desc_categoria", 'name': 'emissora_socio_categoria.desc_categoria'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             if (!hasEdit) return '---';
@@ -139,16 +139,16 @@
                 ]
             });
 
-            $('#tableProcessos thead tr:eq(1) th').each(function (i) {
+            $('#tableSocio thead tr:eq(1) th').each(function (i) {
                 $('.fieldSearch', this).on('keyup change', function () {
-                    if (tableProcessos.column(i).search() !== this.value) {
-                        tableProcessos.column(i).search(this.value).draw();
+                    if (tableSocio.column(i).search() !== this.value) {
+                        tableSocio.column(i).search(this.value).draw();
                     }
                 });
             });
 
             $('#clearFilter').click(function () {
-                tableProcessos.state.clear();
+                tableSocio.state.clear();
                 window.location.reload();
             })
 

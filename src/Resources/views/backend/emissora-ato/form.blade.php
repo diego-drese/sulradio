@@ -1,16 +1,38 @@
-<h4 class="card-title">
-    {{$emissora->razao_social}}<br/>
-    @if($emissora->desc_status_sead=="ATIVO")
-        <span class="font-10 badge badge-success">ATIVO</span>
-    @elseif($emissora->desc_status_sead=="INATIVO")
-        <span class="font-10 badge badge-danger">INATIVO</span>
-    @elseif($emissora->desc_status_sead=="CONCORRENCIA")
-        <span class="font-10 badge badge-info">CONCORRENCIA</span>
-    @else
-        ---
-    @endif <br/>
-    <span class="font-10">{{$emissora->desc_municipio}} ({{$emissora->desc_uf}})</span>
-</h4>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex  align-items-center m-b-10">
+                    <h4 class="card-title">
+                        {{$emissora->razao_social}}<br/>
+                        @if($emissora->desc_status_sead=="ATIVO")
+                            <span class="font-10 badge badge-success">ATIVO</span>
+                        @elseif($emissora->desc_status_sead=="INATIVO")
+                            <span class="font-10 badge badge-danger">INATIVO</span>
+                        @elseif($emissora->desc_status_sead=="CONCORRENCIA")
+                            <span class="font-10 badge badge-info">CONCORRENCIA</span>
+                        @else
+                            ---
+                        @endif <br/>
+                        <span class="font-10">{{$emissora->desc_municipio}} ({{$emissora->desc_uf}})</span>
+                    </h4>
+                    <div class="ml-auto">
+                        <div class="btn-group">
+                            <a href="{{route('emissora.atos.oficiais.index', [$emissoraID])}}" class="btn btn-primary m-r-5">
+                                <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
+                            </a>
+                            @if($hasStore || $hasUpdate)
+                                <button style="float: right;" type="submit" class="btn btn-success">Salvar</button>
+                            @endif
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-6 form-group {{$errors->has('tipo_atoID') ? 'has-error' : ''}} ">
         <label for="tipo_atoID">Tipo *</label>
@@ -23,7 +45,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('numero_ato') ? 'has-error' : ''}} ">
         <label for="numero_ato">Número do ato</label>
-        <input type="text" class="form-control" value="{{old('numero_ato',$data->exists() ? $data->numero_ato : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('numero_ato',$data->exists() ? $data->numero_ato : '')}}"
                name="numero_ato"
                id="numero_ato">
         @if($errors->has('numero_ato'))
@@ -32,7 +54,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('data_ato') ? 'has-error' : ''}} ">
         <label for="data_ato">Data do ato</label>
-        <input type="text" class="form-control" value="{{old('data_ato',$data->exists() ? $data->data_ato : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('data_ato',$data->exists() ? $data->data_ato : '')}}"
                name="data_ato"
                id="data_ato">
         @if($errors->has('data_ato'))
@@ -41,7 +63,7 @@
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_dou') ? 'has-error' : ''}} ">
         <label for="data_dou">Data DOU *</label>
-        <input type="text" class="form-control" value="{{old('data_dou',$data->exists() ? $data->data_dou : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('data_dou',$data->exists() ? $data->data_dou : '')}}"
                name="data_dou"
                id="data_dou">
         @if($errors->has('data_dou'))
@@ -50,7 +72,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('secao') ? 'has-error' : ''}} ">
         <label for="secao">Seção</label>
-        <input type="text" class="form-control" value="{{old('secao',$data->exists() ? $data->secao : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('secao',$data->exists() ? $data->secao : '')}}"
                name="secao"
                id="secao">
         @if($errors->has('secao'))
@@ -69,7 +91,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('processo') ? 'has-error' : ''}} ">
         <label for="processo">Processo</label>
-        <input type="text" class="form-control" value="{{old('processo',$data->exists() ? $data->processo : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('processo',$data->exists() ? $data->processo : '')}}"
                name="processo"
                id="processo">
         @if($errors->has('processo'))
@@ -134,7 +156,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('canal_freq') ? 'has-error' : ''}} ">
         <label for="data_dou">Canal/Freq.</label>
-        <input type="text" class="form-control" value="{{old('canal_freq',$data->exists() ? $data->canal_freq : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('canal_freq',$data->exists() ? $data->canal_freq : '')}}"
                name="canal_freq"
                id="canal_freq">
         @if($errors->has('canal_freq'))
@@ -143,7 +165,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('classe') ? 'has-error' : ''}} ">
         <label for="classe">Classe</label>
-        <input type="text" class="form-control" value="{{old('classe',$data->exists() ? $data->classe : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('classe',$data->exists() ? $data->classe : '')}}"
                name="classe"
                id="classe">
         @if($errors->has('classe'))
@@ -161,7 +183,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('ato_ref') ? 'has-error' : ''}} ">
         <label for="ato_ref">Nº. ato ref.</label>
-        <input type="text" class="form-control" value="{{old('ato_ref',$data->exists() ? $data->ato_ref : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('ato_ref',$data->exists() ? $data->ato_ref : '')}}"
                name="ato_ref"
                id="ato_ref">
         @if($errors->has('ato_ref'))
@@ -180,7 +202,7 @@
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_renovacao') ? 'has-error' : ''}} ">
         <label for="ato_ref">Data renovação</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_renovacao',$data->exists() ? $data->data_renovacao : '')}}"
                name="data_renovacao"
                id="data_renovacao">
@@ -191,7 +213,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('ato_outorgaID') ? 'has-error' : ''}} ">
         <label for="ato_ref">Nº. ato out.</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('ato_outorgaID',$data->exists() ? $data->ato_outorgaID : '')}}"
                name="ato_outorgaID"
                id="ato_outorgaID">
@@ -210,7 +232,7 @@
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_ato_outorga') ? 'has-error' : ''}} ">
         <label for="data_ato_outorga">Data ato out.</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_ato_outorga',$data->exists() ? $data->data_ato_outorga : '')}}"
                name="data_ato_outorga"
                id="data_ato_outorga">
@@ -220,7 +242,7 @@
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_dou_outorga') ? 'has-error' : ''}} ">
         <label for="data_dou_outorga">Data DOU out.</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_dou_outorga',$data->exists() ? $data->data_dou_outorga : '')}}"
                name="data_dou_outorga"
                id="data_dou_outorga">
@@ -230,7 +252,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('ato_renovacao') ? 'has-error' : ''}} ">
         <label for="ato_renovacao">Nº. ato ren.</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('ato_renovacao',$data->exists() ? $data->ato_renovacao : '')}}"
                name="ato_renovacao"
                id="ato_renovacao">
@@ -249,7 +271,7 @@
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_ato_renovacao') ? 'has-error' : ''}} ">
         <label for="data_ato_renovacao">Data ato ren.</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_ato_renovacao',$data->exists() ? $data->data_ato_renovacao : '')}}"
                name="data_ato_renovacao"
                id="data_ato_renovacao">
@@ -259,7 +281,7 @@
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_dou_renovacao') ? 'has-error' : ''}} ">
         <label for="data_dou_renovacao">Data DOU ren.</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_dou_renovacao',$data->exists() ? $data->data_dou_renovacao : '')}}"
                name="data_dou_renovacao"
                id="data_dou_renovacao">
@@ -269,7 +291,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('processo_renovacao') ? 'has-error' : ''}} ">
         <label for="processo_renovacao">Nº. processo ren.</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('processo_renovacao',$data->exists() ? $data->processo_renovacao : '')}}"
                name="processo_renovacao"
                id="processo_renovacao">
@@ -307,7 +329,7 @@
     </div>
     <div class="col-md-4 form-group date {{$errors->has('data_inicio_renovacao') ? 'has-error' : ''}} ">
         <label for="ato_ref">Renova conc/perm. a partir de</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_inicio_renovacao',$data->exists() ? $data->data_inicio_renovacao : '')}}"
                name="data_inicio_renovacao"
                id="data_inicio_renovacao">

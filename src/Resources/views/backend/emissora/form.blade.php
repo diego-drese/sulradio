@@ -20,7 +20,7 @@
     </div>
     <div class="col-md-8 form-group {{$errors->has('razao_social') ? 'has-error' : ''}} ">
         <label for="razao_social">Razão social *</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('razao_social',$data->exists() ? $data->razao_social : '')}}"
                name="razao_social"
                id="razao_social"
@@ -51,7 +51,7 @@
 
     <div class="col-md-6 form-group {{$errors->has('nome_fantasia') ? 'has-error' : ''}} ">
         <label for="nome_fantasia">Nome Fantasia</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('nome_fantasia',$data->exists() ? $data->nome_fantasia : '')}}"
                name="nome_fantasia"
                id="nome_fantasia">
@@ -61,7 +61,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('indicativo_chamada') ? 'has-error' : ''}} ">
         <label for="nome_fantasia">Indicativo Chamada</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('indicativo_chamada',$data->exists() ? $data->indicativo_chamada : '')}}"
                name="indicativo_chamada"
                id="indicativo_chamada">
@@ -71,7 +71,7 @@
     </div>
     <div class="col-md-2 form-group {{$errors->has('horario') ? 'has-error' : ''}} ">
         <label for="horario">Horário</label>
-        <input type="text" class="form-control" value="{{old('horario',$data->exists() ? $data->horario : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('horario',$data->exists() ? $data->horario : '')}}"
                name="horario"
                id="horario">
         @if($errors->has('horario'))
@@ -114,7 +114,7 @@
     </div>
     <div class="col-md-1 form-group {{$errors->has('canal') ? 'has-error' : ''}} ">
         <label for="canal">Canal</label>
-        <input type="text" class="form-control" value="{{old('canal',$data->exists() ? $data->canal : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('canal',$data->exists() ? $data->canal : '')}}"
                name="canal"
                id="canal">
         @if($errors->has('canal'))
@@ -124,7 +124,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('frequencia') ? 'has-error' : ''}} ">
         <label for="frequencia">Freq.</label>
-        <input type="text" class="form-control" value="{{old('frequencia',$data->exists() ? $data->frequencia : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('frequencia',$data->exists() ? $data->frequencia : '')}}"
                name="frequencia"
                id="frequencia">
         @if($errors->has('frequencia'))
@@ -134,7 +134,7 @@
 
     <div class="col-md-1 form-group {{$errors->has('classe') ? 'has-error' : ''}} ">
         <label for="classe">Classe</label>
-        <input type="text" class="form-control" value="{{old('classe',$data->exists() ? $data->classe : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('classe',$data->exists() ? $data->classe : '')}}"
                name="classe"
                id="classe">
         @if($errors->has('classe'))
@@ -144,7 +144,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('potencia') ? 'has-error' : ''}} ">
         <label for="potencia">Potência Dia(KW)</label>
-        <input type="text" class="form-control" value="{{old('potencia',$data->exists() ? $data->classe : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('potencia',$data->exists() ? $data->classe : '')}}"
                name="potencia"
                id="potencia">
         @if($errors->has('potencia'))
@@ -154,7 +154,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('potencia_noturna') ? 'has-error' : ''}} ">
         <label for="classe">Potência Noite(KW)</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('potencia_noturna',$data->exists() ? $data->potencia_noturna : '')}}"
                name="potencia_noturna"
                id="potencia_noturna">
@@ -165,7 +165,7 @@
 
     <div class="col-md-4 form-group {{$errors->has('cnpj') ? 'has-error' : ''}} ">
         <label for="classe">CNPJ</label>
-        <input type="text" class="form-control" value="{{old('cnpj',$data->exists() ? $data->cnpj : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('cnpj',$data->exists() ? $data->cnpj : '')}}"
                name="cnpj"
                id="cnpj">
         @if($errors->has('cnpj'))
@@ -175,7 +175,7 @@
 
     <div class="col-md-3 form-group {{$errors->has('inscricao_estadual') ? 'has-error' : ''}} ">
         <label for="inscricao_estadual">Inscrição estadual</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('inscricao_estadual',$data->exists() ? $data->inscricao_estadual : '')}}"
                name="inscricao_estadual"
                id="inscricao_estadual">
@@ -186,7 +186,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('nire') ? 'has-error' : ''}} ">
         <label for="nire">Nire</label>
-        <input type="text" class="form-control" value="{{old('nire',$data->exists() ? $data->nire : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('nire',$data->exists() ? $data->nire : '')}}"
                name="nire"
                id="nire">
         @if($errors->has('nire'))
@@ -205,7 +205,7 @@
 
     <div class="col-md-4 form-group {{$errors->has('endereco_sede') ? 'has-error' : ''}} ">
         <label for="endereco_sede">Endereço - Sede Administrativa</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('endereco_sede',$data->exists() ? $data->endereco_sede : '')}}"
                name="endereco_sede"
                id="endereco_sede">
@@ -216,7 +216,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('bairro_sede') ? 'has-error' : ''}} ">
         <label for="bairro_sede">Bairro</label>
-        <input type="text" class="form-control" value="{{old('bairro_sede',$data->exists() ? $data->bairro_sede : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('bairro_sede',$data->exists() ? $data->bairro_sede : '')}}"
                name="bairro_sede"
                id="bairro_sede">
         @if($errors->has('bairro_sede'))
@@ -226,7 +226,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('cep_sede') ? 'has-error' : ''}} ">
         <label for="cep_sede">Cep</label>
-        <input type="text" class="form-control" value="{{old('cep_sede',$data->exists() ? $data->cep_sede : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('cep_sede',$data->exists() ? $data->cep_sede : '')}}"
                name="cep_sede"
                id="cep_sede">
         @if($errors->has('cep_sede'))

@@ -12,83 +12,78 @@
     <span class="font-10">{{$emissora->desc_municipio}} ({{$emissora->desc_uf}})</span>
 </h4>
 <div class="row">
-    <div class="col-md-7 form-group {{$errors->has('tipo_enderecoID') ? 'has-error' : ''}} ">
-        <label for="tipo_enderecoID">Tipo de endereço *</label>
-        <select class="form-control select2" id="tipo_enderecoID" name="tipo_enderecoID" required>
+    <div class="col-md-4 form-group {{$errors->has('sicap') ? 'has-error' : ''}} ">
+        <label for="numero_ato">Processo *</label>
+        <input type="sicap" class="form-control" value="{{old('sicap',$data->exists() ? $data->sicap : '')}}"
+               name="sicap"
+               id="sicap">
+        @if($errors->has('sicap'))
+            <span class="help-block">{{$errors->first('sicap')}}</span>
+        @endif
+    </div>
+    <div class="col-md-2 form-group {{$errors->has('data_protocolo') ? 'has-error' : ''}} ">
+        <label for="data_protocolo">Data do protocolo </label>
+        <input type="text" autocomplete="off" class="form-control"
+               value="{{old('data_protocolo',$data->exists() ? $data->data_protocolo : '')}}"
+               name="data_protocolo"
+               id="data_protocolo">
+        @if($errors->has('data_protocolo'))
+            <span class="help-block">{{$errors->first('data_protocolo')}}</span>
+        @endif
+    </div>
+    <div class="col-md-2 form-group {{$errors->has('processo_faseID') ? 'has-error' : ''}} ">
+        <label for="processo_faseID">Situação *</label>
+        <select class="form-control select2" id="processo_faseID" name="processo_faseID" required>
             <option value="">Selecione</option>
-            @foreach($tipoEndereco as $key=>$value)
-                <option {{isset($data->exists) && $value->tipo_enderecoID==$data->tipo_enderecoID ? 'selected="selected"' : '' }} value="{{$value->tipo_enderecoID}}">{{$value->desc_tipo_endereco}}</option>
+            @foreach($processoFase as $key=>$value)
+                <option {{isset($data->exists) && $value->processo_faseID==$data->processo_faseID ? 'selected="selected"' : '' }} value="{{$value->processo_faseID}}">{{$value->desc_processo_fase}}</option>
             @endforeach
         </select>
     </div>
-
-    <div class="col-md-6 form-group {{$errors->has('logradouro') ? 'has-error' : ''}} ">
-        <label for="numero_ato">Logradouro *</label>
-        <input type="logradouro" class="form-control" value="{{old('logradouro',$data->exists() ? $data->logradouro : '')}}"
-               name="logradouro"
-               id="logradouro"
-                required>
-        @if($errors->has('logradouro'))
-            <span class="help-block">{{$errors->first('logradouro')}}</span>
-        @endif
-    </div>
-    <div class="col-md-2 form-group {{$errors->has('numero') ? 'has-error' : ''}} ">
-        <label for="numero">Número</label>
-        <input type="text" class="form-control"
-               value="{{old('numero',$data->exists() ? $data->numero : '')}}"
-               name="numero"
-               id="numero">
-        @if($errors->has('numero'))
-            <span class="help-block">{{$errors->first('numero')}}</span>
+    <div class="col-md-4 form-group {{$errors->has('processo_vinculo') ? 'has-error' : ''}} ">
+        <label for="processo_vinculo">Anexado ao processo</label>
+        <input type="text" autocomplete="off" class="form-control"
+               value="{{old('processo_vinculo',$data->exists() ? $data->processo_vinculo : '')}}"
+               name="processo_vinculo"
+               id="processo_vinculo">
+        @if($errors->has('processo_vinculo'))
+            <span class="help-block">{{$errors->first('processo_vinculo')}}</span>
         @endif
     </div>
 
-    <div class="col-md-4 form-group {{$errors->has('complemento') ? 'has-error' : ''}} ">
-        <label for="complemento">Complemento</label>
-        <input type="text" class="form-control"
-               value="{{old('complemento',$data->exists() ? $data->complemento : '')}}"
-               name="complemento"
-               id="complemento">
-        @if($errors->has('complemento'))
-            <span class="help-block">{{$errors->first('complemento')}}</span>
+    <div class="col-md-8 form-group {{$errors->has('assunto') ? 'has-error' : ''}} ">
+        <label for="assunto">Assunto</label>
+        <input type="text" autocomplete="off" class="form-control" value="{{old('assunto',$data->exists() ? $data->assunto : '')}}"
+               name="assunto"
+               id="assunto">
+        @if($errors->has('assunto'))
+            <span class="help-block">{{$errors->first('assunto')}}</span>
+        @endif
+    </div>
+    <div class="col-md-4 form-group {{$errors->has('data_ult_mov') ? 'has-error' : ''}} ">
+        <label for="data_ult_mov">Data última movimentação</label>
+        <input type="text" autocomplete="off" class="form-control"
+               value="{{old('data_ult_mov',$data->exists() ? $data->data_ult_mov : '')}}"
+               name="data_ult_mov"
+               id="data_ult_mov">
+        @if($errors->has('data_ult_mov'))
+            <span class="help-block">{{$errors->first('data_ult_mov')}}</span>
         @endif
     </div>
 
-    <div class="col-md-3 form-group {{$errors->has('cep') ? 'has-error' : ''}} ">
-        <label for="cep">CEP</label>
-        <input type="text" class="form-control" value="{{old('cep',$data->exists() ? $data->cep : '')}}"
-               name="cep"
-               id="cep">
-        @if($errors->has('cep'))
-            <span class="help-block">{{$errors->first('cep')}}</span>
-        @endif
+    <div class="col-md-12 form-group {{$errors->has('ultima_mov') ? 'has-error' : ''}} ">
+        <label for="ultima_mov">Última movimentação</label>
+        <textarea rows="7" name="ultima_mov" class="form-control"
+                  id="ultima_mov">{{$data->exists() && $data->ultima_mov  ? $data->ultima_mov : ''}}</textarea>
     </div>
-    <div class="col-md-3 form-group {{$errors->has('bairro') ? 'has-error' : ''}} ">
-        <label for="bairro">Bairro</label>
-        <input type="text" class="form-control" value="{{old('bairro',$data->exists() ? $data->bairro : '')}}"
-               name="bairro"
-               id="bairro">
-        @if($errors->has('bairro'))
-            <span class="help-block">{{$errors->first('bairro')}}</span>
-        @endif
-    </div>
-    <div class="col-md-2 form-group {{$errors->has('ufID') ? 'has-error' : ''}} ">
-        <label for="ufID" class="d-block">Uf *</label>
-        <select class="form-control select2" id="ufID" name="ufID" required
-                data-municipioID="{{$data->municipioID}}">
-            <option value="">Selecione</option>
-            @foreach($uf as $key=>$value)
-                <option data-municipioID="{{json_encode($value->municipios)}}"
-                        {{isset($data->exists) && (string)$value->ufID===(string)$data->ufID ? 'selected="selected"' : '' }} value="{{$value->ufID}}">{{$value->desc_uf}}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-md-4 form-group ">
-        <label for="municipioID" class="d-block">Município *</label>
-        <select class="form-control select2" id="municipioID" name="municipioID" required>
 
-        </select>
+
+    <div class="col-md-12 form-group {{$errors->has('observacao') ? 'has-error' : ''}} ">
+        <label for="observacao">Observações</label>
+        <textarea rows="7" name="observacao" class="form-control"
+                  id="observacao">{{$data->exists() && $data->observacao  ? $data->observacao : ''}}</textarea>
     </div>
+
 </div>
 
 <div class="col-md-12 form-group">

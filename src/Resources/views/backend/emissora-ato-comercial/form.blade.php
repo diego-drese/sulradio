@@ -23,7 +23,7 @@
     </div>
     <div class="col-md-4 form-group {{$errors->has('data_protocolo') ? 'has-error' : ''}} ">
         <label for="data_assinatura">Data de assinatura</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_assinatura',$data->exists() ? $data->data_assinatura : '')}}"
                name="data_assinatura"
                id="data_assinatura">
@@ -45,7 +45,7 @@
 
     <div class="col-md-2 form-group {{$errors->has('nire') ? 'has-error' : ''}} ">
         <label for="nire">Nire</label>
-        <input type="text" class="form-control" value="{{old('nire',$data->exists() ? $data->nire : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('nire',$data->exists() ? $data->nire : '')}}"
                name="nire"
                id="nire">
         @if($errors->has('nire'))
@@ -55,7 +55,7 @@
 
     <div class="col-md-3 form-group {{$errors->has('data_arquivo_junta') ? 'has-error' : ''}} ">
         <label for="data_arquivo_junta">Data de arq. junta comercial</label>
-        <input type="text" class="form-control"
+        <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_arquivo_junta',$data->exists() ? $data->data_arquivo_junta : '')}}"
                name="data_arquivo_junta"
                id="data_arquivo_junta">
@@ -65,7 +65,7 @@
     </div>
     <div class="col-md-3 form-group {{$errors->has('livro') ? 'has-error' : ''}} ">
         <label for="livro">Registro civil pessoa jurídica</label>
-        <input type="text" class="form-control" value="{{old('livro',$data->exists() ? $data->livro : '')}}"
+        <input type="text" autocomplete="off" class="form-control" value="{{old('livro',$data->exists() ? $data->livro : '')}}"
                name="livro"
                id="livro">
         @if($errors->has('livro'))

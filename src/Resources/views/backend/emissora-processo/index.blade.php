@@ -46,15 +46,15 @@
                                 <th style="width: 80px">Ações</th>
                             </tr>
                             <tr>
-                                <th role="row"><input type="text" class="fieldSearch form-control text-primary"
+                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                                       placeholder="Bucar Id"></th>
-                                <th><input type="text" class="fieldSearch form-control text-primary" placeholder="Bucar Processo">
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Processo">
                                 </th>
-                                <th><input type="text" maxlength="4" class="fieldSearch form-control text-primary"
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary"
                                            id="data_protocolo" placeholder="Bucar por ano"></th>
-                                <th><input type="text" class="fieldSearch form-control text-primary" placeholder="Bucar Situação">
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Situação">
                                 </th>
-                                <th><input type="text" class="fieldSearch form-control text-primary" placeholder="Bucar Anexo"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Anexo"></th>
                                 <th>
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>

@@ -46,6 +46,10 @@ class EmissoraController extends SulradioController {
 					return route('emissora.processo.index', [$row->emissoraID]);
 				})->addColumn('endereco', function ($row) {
 					return route('emissora.endereco.index', [$row->emissoraID]);
+				})->addColumn('contatos', function ($row) {
+					return route('emissora.contato.index', [$row->emissoraID]);
+				})->addColumn('socios', function ($row) {
+					return route('emissora.socio.index', [$row->emissoraID]);
 				})->setRowClass(function () {
 					return 'center';
 				})
@@ -115,6 +119,13 @@ class EmissoraController extends SulradioController {
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('emissora.edit', [1]),
 			'hasStore' => ResourceAdmin::hasResourceByRouteName('emissora.store'),
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('emissora.update', [1]),
+			'hasAtosOficiais' => ResourceAdmin::hasResourceByRouteName('emissora.atos.oficiais.index', [1]),
+			'hasAtosJunta' => ResourceAdmin::hasResourceByRouteName('emissora.atos.comercial.index', [1]),
+			'hasProcessos' => ResourceAdmin::hasResourceByRouteName('emissora.processo.index', [1]),
+			'hasSocios' => ResourceAdmin::hasResourceByRouteName('emissora.socio.index', [1]),
+			'hasContato' => ResourceAdmin::hasResourceByRouteName('emissora.contato.index', [1]),
+			'hasEndereco' => ResourceAdmin::hasResourceByRouteName('emissora.endereco.index', [1]),
+			
 			'statusSead' => StatusSead::getWithCache(),
 			'servico' => Servico::getWithCache(),
 			'tipoEmissora' => TipoEmissora::getWithCache(),

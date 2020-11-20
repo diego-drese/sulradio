@@ -1,5 +1,5 @@
 @extends('Admin::layouts.backend.main')
-@section('title', 'Criar processo')
+@section('title', 'Criar endereço')
 @section('content')
     <div class="row">
         <div class="col-md-12">
@@ -9,7 +9,7 @@
                           action="{{route('emissora.endereco.store', [$emissora->emissoraID])}}"
                           enctype="multipart/form-data">
                         {{ csrf_field() }}
-                        @include('SulRadio::backend.emissora-processo.form')
+                        @include('SulRadio::backend.emissora-endereco.form')
                     </form>
                 </div>
             </div>

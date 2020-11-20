@@ -30,14 +30,14 @@
                                 <th style="width: 120px">Ações</th>
                             </tr>
                             <tr>
-                                <th role="row"><input type="text" class="fieldSearch form-control text-primary"
+                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                                       placeholder="Bucar Id"></th>
-                                <th><input type="text" class="fieldSearch form-control text-primary"
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                            placeholder="Bucar Razão social"></th>
-                                <th><input type="text" maxlength="4" class="fieldSearch form-control text-primary"
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary"
                                            id="data_protocolo" placeholder="Bucar serviço"></th>
-                                <th><input type="text" class="fieldSearch form-control text-primary" placeholder="Localidade"></th>
-                                <th><input type="text" class="fieldSearch form-control text-primary" placeholder="Bucar Anexo"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Localidade"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Anexo"></th>
                                 <th style="width: 60px">
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
@@ -143,13 +143,28 @@
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             var edit_button = "";
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
-                            edit_button += '<a href="' + data.atos_oficiais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos Oficiais</b></a>';
-                            edit_button += '<a href="' + data.processos + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Processos</b></a>';
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Societários</b></a>';
-                            edit_button += '<a href="' + data.atos_comerciais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos junta comercial</b></a>';
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Contatos</b></a>';
-                            edit_button += '<a href="' + data.endereco + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Endereços</b></a>';
+
+                            @if($hasEdit)
+                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            @endif
+                            @if($hasAtosOficiais)
+                                edit_button += '<a href="' + data.atos_oficiais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos Oficiais</b></a>';
+                            @endif
+                            @if($hasProcessos)
+                                edit_button += '<a href="' + data.processos + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Processos</b></a>';
+                            @endif
+                            @if($hasSocios)
+                                edit_button += '<a href="' + data.socios + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Societários</b></a>';
+                            @endif
+                            @if($hasAtosJunta)
+                                edit_button += '<a href="' + data.atos_comerciais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos junta comercial</b></a>';
+                            @endif
+                            @if($hasContato)
+                                edit_button += '<a href="' + data.contatos + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Contatos</b></a>';
+                            @endif
+                            @if($hasEndereco)
+                                edit_button += '<a href="' + data.endereco + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Endereços</b></a>';
+                            @endif
                             return edit_button
                         }
                     }
