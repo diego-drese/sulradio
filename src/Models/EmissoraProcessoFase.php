@@ -6,24 +6,22 @@ namespace Oka6\SulRadio\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
-class Servico extends Model {
-	const TABLE = 'servico';
+class EmissoraProcessoFase extends Model {
+	const TABLE = 'emissora_processo_fase';
 	public $timestamps = false;
 	protected $fillable = [
-		'servicoID',
-		'desc_servico',
-		'classificacaoID',
-		'validade_outorga',
+		'processo_faseID',
+		'desc_processo_fase',
 	];
 	protected $connection = 'sulradio';
-	protected $table = 'servico';
+	protected $table = 'emissora_processo_fase';
 	
 	public static function getById($id) {
-		return self::where('servicoID', $id)->first();
+		return self::where('processo_faseID', $id)->first();
 	}
 	
 	public static function getWithCache() {
-		return Cache::tags(['sulradio'])->remember('servico', 10, function () {
+		return Cache::tags(['sulradio'])->remember('emissora_processo_fase', 10, function () {
 			return self::get();
 		});
 	}

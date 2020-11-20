@@ -6,19 +6,18 @@ namespace Oka6\SulRadio\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
-class TipoPenalidade extends Model {
-	const TABLE = 'tipo_penalidade';
+class EmissoraTipoEndereco extends Model {
+	const TABLE = 'emissora_tipo_endereco';
 	public $timestamps = false;
 	protected $fillable = [
-		'tipo_penalidadeID',
-		'desc_tipo_penalidade',
-	
+		'tipo_enderecoID',
+		'desc_tipo_endereco'
 	];
 	protected $connection = 'sulradio';
-	protected $table = 'tipo_penalidade';
+	protected $table = 'emissora_tipo_endereco';
 	
 	public static function getWithCache() {
-		return Cache::tags(['sulradio'])->remember('ipo_penalidade', 120, function () {
+		return Cache::tags(['sulradio'])->remember('emissora_tipo_endereco', 120, function () {
 			return self::get();
 		});
 	}

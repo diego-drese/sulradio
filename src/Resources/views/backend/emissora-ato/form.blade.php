@@ -25,7 +25,7 @@
         <label for="numero_ato">Número do ato</label>
         <input type="text" class="form-control" value="{{old('numero_ato',$data->exists() ? $data->numero_ato : '')}}"
                name="numero_ato"
-               id="numero_ato" >
+               id="numero_ato">
         @if($errors->has('numero_ato'))
             <span class="help-block">{{$errors->first('numero_ato')}}</span>
         @endif
@@ -34,7 +34,7 @@
         <label for="data_ato">Data do ato</label>
         <input type="text" class="form-control" value="{{old('data_ato',$data->exists() ? $data->data_ato : '')}}"
                name="data_ato"
-               id="data_ato" >
+               id="data_ato">
         @if($errors->has('data_ato'))
             <span class="help-block">{{$errors->first('data_ato')}}</span>
         @endif
@@ -43,7 +43,7 @@
         <label for="data_dou">Data DOU *</label>
         <input type="text" class="form-control" value="{{old('data_dou',$data->exists() ? $data->data_dou : '')}}"
                name="data_dou"
-               id="data_dou" >
+               id="data_dou">
         @if($errors->has('data_dou'))
             <span class="help-block">{{$errors->first('data_dou')}}</span>
         @endif
@@ -52,7 +52,7 @@
         <label for="secao">Seção</label>
         <input type="text" class="form-control" value="{{old('secao',$data->exists() ? $data->secao : '')}}"
                name="secao"
-               id="secao" >
+               id="secao">
         @if($errors->has('secao'))
             <span class="help-block">{{$errors->first('secao')}}</span>
         @endif
@@ -61,7 +61,7 @@
         <label for="pagina">Página</label>
         <input type="number" class="form-control" value="{{old('pagina',$data->exists() ? $data->pagina : '')}}"
                name="pagina"
-               id="pagina" >
+               id="pagina">
         @if($errors->has('pagina'))
             <span class="help-block">{{$errors->first('pagina')}}</span>
         @endif
@@ -71,7 +71,7 @@
         <label for="processo">Processo</label>
         <input type="text" class="form-control" value="{{old('processo',$data->exists() ? $data->processo : '')}}"
                name="processo"
-               id="processo" >
+               id="processo">
         @if($errors->has('processo'))
             <span class="help-block">{{$errors->first('processo')}}</span>
         @endif
@@ -83,7 +83,8 @@
                 <select class="form-control select2" id="ufID" name="ufID" data-municipioID="{{$data->municipioID}}">
                     <option value="">Selecione</option>
                     @foreach($uf as $key=>$value)
-                        <option data-municipioID="{{json_encode($value->municipios)}}" {{isset($data->exists) && (string)$value->ufID===(string)$data->ufID ? 'selected="selected"' : '' }} value="{{$value->ufID}}">{{$value->desc_uf}}</option>
+                        <option data-municipioID="{{json_encode($value->municipios)}}"
+                                {{isset($data->exists) && (string)$value->ufID===(string)$data->ufID ? 'selected="selected"' : '' }} value="{{$value->ufID}}">{{$value->desc_uf}}</option>
                     @endforeach
                 </select>
             </div>
@@ -135,7 +136,7 @@
         <label for="data_dou">Canal/Freq.</label>
         <input type="text" class="form-control" value="{{old('canal_freq',$data->exists() ? $data->canal_freq : '')}}"
                name="canal_freq"
-               id="canal_freq" >
+               id="canal_freq">
         @if($errors->has('canal_freq'))
             <span class="help-block">{{$errors->first('canal_freq')}}</span>
         @endif
@@ -144,14 +145,14 @@
         <label for="classe">Classe</label>
         <input type="text" class="form-control" value="{{old('classe',$data->exists() ? $data->classe : '')}}"
                name="classe"
-               id="classe" >
+               id="classe">
         @if($errors->has('classe'))
             <span class="help-block">{{$errors->first('classe')}}</span>
         @endif
     </div>
     <div class="col-md-3 form-group {{$errors->has('tipo_ato_ref') ? 'has-error' : ''}} ">
         <label for="tipo_ato_ref">Tipo ato ref.</label>
-        <select class="form-control select2" id="tipo_ato_ref" name="tipo_ato_ref" >
+        <select class="form-control select2" id="tipo_ato_ref" name="tipo_ato_ref">
             <option value="">Selecione</option>
             @foreach($tipoAto as $key=>$value)
                 <option {{isset($data->exists) && $value->tipo_atoID==$data->tipo_ato_ref ? 'selected="selected"' : '' }} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
@@ -162,25 +163,27 @@
         <label for="ato_ref">Nº. ato ref.</label>
         <input type="text" class="form-control" value="{{old('ato_ref',$data->exists() ? $data->ato_ref : '')}}"
                name="ato_ref"
-               id="ato_ref" >
+               id="ato_ref">
         @if($errors->has('ato_ref'))
             <span class="help-block">{{$errors->first('ato_ref')}}</span>
         @endif
     </div>
     <div class="col-md-2 form-group {{$errors->has('concorrenciaID') ? 'has-error' : ''}} ">
         <label for="ato_ref">Nº. conc.</label>
-        <input type="number" class="form-control" value="{{old('concorrenciaID',$data->exists() ? $data->concorrenciaID : '')}}"
+        <input type="number" class="form-control"
+               value="{{old('concorrenciaID',$data->exists() ? $data->concorrenciaID : '')}}"
                name="concorrenciaID"
-               id="concorrenciaID" >
+               id="concorrenciaID">
         @if($errors->has('concorrenciaID'))
             <span class="help-block">{{$errors->first('concorrenciaID')}}</span>
         @endif
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_renovacao') ? 'has-error' : ''}} ">
         <label for="ato_ref">Data renovação</label>
-        <input type="text" class="form-control" value="{{old('data_renovacao',$data->exists() ? $data->data_renovacao : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('data_renovacao',$data->exists() ? $data->data_renovacao : '')}}"
                name="data_renovacao"
-               id="data_renovacao" >
+               id="data_renovacao">
         @if($errors->has('data_renovacao'))
             <span class="help-block">{{$errors->first('data_renovacao')}}</span>
         @endif
@@ -188,16 +191,17 @@
 
     <div class="col-md-2 form-group {{$errors->has('ato_outorgaID') ? 'has-error' : ''}} ">
         <label for="ato_ref">Nº. ato out.</label>
-        <input type="text" class="form-control" value="{{old('ato_outorgaID',$data->exists() ? $data->ato_outorgaID : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('ato_outorgaID',$data->exists() ? $data->ato_outorgaID : '')}}"
                name="ato_outorgaID"
-               id="ato_outorgaID" >
+               id="ato_outorgaID">
         @if($errors->has('ato_outorgaID'))
             <span class="help-block">{{$errors->first('ato_outorgaID')}}</span>
         @endif
     </div>
     <div class="col-md-2 form-group {{$errors->has('tipo_ato_outorga') ? 'has-error' : ''}} ">
         <label for="tipo_ato_outorga">Tipo ato out.</label>
-        <select class="form-control select2" id="tipo_ato_outorga" name="tipo_ato_outorga" >
+        <select class="form-control select2" id="tipo_ato_outorga" name="tipo_ato_outorga">
             <option value="">Selecione</option>
             @foreach($tipoAto as $key=>$value)
                 <option {{isset($data->exists) && $value->tipo_atoID==$data->tipo_ato_outorga ? 'selected="selected"' : '' }} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
@@ -206,34 +210,37 @@
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_ato_outorga') ? 'has-error' : ''}} ">
         <label for="data_ato_outorga">Data ato out.</label>
-        <input type="text" class="form-control" value="{{old('data_ato_outorga',$data->exists() ? $data->data_ato_outorga : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('data_ato_outorga',$data->exists() ? $data->data_ato_outorga : '')}}"
                name="data_ato_outorga"
-               id="data_ato_outorga" >
+               id="data_ato_outorga">
         @if($errors->has('data_ato_outorga'))
             <span class="help-block">{{$errors->first('data_ato_outorga')}}</span>
         @endif
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_dou_outorga') ? 'has-error' : ''}} ">
         <label for="data_dou_outorga">Data DOU out.</label>
-        <input type="text" class="form-control" value="{{old('data_dou_outorga',$data->exists() ? $data->data_dou_outorga : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('data_dou_outorga',$data->exists() ? $data->data_dou_outorga : '')}}"
                name="data_dou_outorga"
-               id="data_dou_outorga" >
+               id="data_dou_outorga">
         @if($errors->has('data_dou_outorga'))
             <span class="help-block">{{$errors->first('data_dou_outorga')}}</span>
         @endif
     </div>
     <div class="col-md-2 form-group {{$errors->has('ato_renovacao') ? 'has-error' : ''}} ">
         <label for="ato_renovacao">Nº. ato ren.</label>
-        <input type="text" class="form-control" value="{{old('ato_renovacao',$data->exists() ? $data->ato_renovacao : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('ato_renovacao',$data->exists() ? $data->ato_renovacao : '')}}"
                name="ato_renovacao"
-               id="ato_renovacao" >
+               id="ato_renovacao">
         @if($errors->has('ato_renovacao'))
             <span class="help-block">{{$errors->first('ato_renovacao')}}</span>
         @endif
     </div>
     <div class="col-md-4 form-group {{$errors->has('tipo_ato_renovacao') ? 'has-error' : ''}} ">
         <label for="tipo_ato_renovacao">Tipo ato ren.</label>
-        <select class="form-control select2" id="tipo_ato_renovacao" name="tipo_ato_renovacao" >
+        <select class="form-control select2" id="tipo_ato_renovacao" name="tipo_ato_renovacao">
             <option value="">Selecione</option>
             @foreach($tipoAto as $key=>$value)
                 <option {{isset($data->exists) && $value->tipo_atoID==$data->tipo_ato_renovacao ? 'selected="selected"' : '' }} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
@@ -242,34 +249,37 @@
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_ato_renovacao') ? 'has-error' : ''}} ">
         <label for="data_ato_renovacao">Data ato ren.</label>
-        <input type="text" class="form-control" value="{{old('data_ato_renovacao',$data->exists() ? $data->data_ato_renovacao : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('data_ato_renovacao',$data->exists() ? $data->data_ato_renovacao : '')}}"
                name="data_ato_renovacao"
-               id="data_ato_renovacao" >
+               id="data_ato_renovacao">
         @if($errors->has('data_ato_renovacao'))
             <span class="help-block">{{$errors->first('data_ato_renovacao')}}</span>
         @endif
     </div>
     <div class="col-md-2 form-group date {{$errors->has('data_dou_renovacao') ? 'has-error' : ''}} ">
         <label for="data_dou_renovacao">Data DOU ren.</label>
-        <input type="text" class="form-control" value="{{old('data_dou_renovacao',$data->exists() ? $data->data_dou_renovacao : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('data_dou_renovacao',$data->exists() ? $data->data_dou_renovacao : '')}}"
                name="data_dou_renovacao"
-               id="data_dou_renovacao" >
+               id="data_dou_renovacao">
         @if($errors->has('data_dou_renovacao'))
             <span class="help-block">{{$errors->first('data_dou_renovacao')}}</span>
         @endif
     </div>
     <div class="col-md-2 form-group {{$errors->has('processo_renovacao') ? 'has-error' : ''}} ">
         <label for="processo_renovacao">Nº. processo ren.</label>
-        <input type="text" class="form-control" value="{{old('processo_renovacao',$data->exists() ? $data->processo_renovacao : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('processo_renovacao',$data->exists() ? $data->processo_renovacao : '')}}"
                name="processo_renovacao"
-               id="processo_renovacao" >
+               id="processo_renovacao">
         @if($errors->has('processo_renovacao'))
             <span class="help-block">{{$errors->first('processo_renovacao')}}</span>
         @endif
     </div>
     <div class="col-md-4 form-group {{$errors->has('tipo_penalidadeID') ? 'has-error' : ''}} ">
         <label for="tipo_penalidadeID">Tipo de penalidade.</label>
-        <select class="form-control select2" id="tipo_penalidadeID" name="tipo_penalidadeID" >
+        <select class="form-control select2" id="tipo_penalidadeID" name="tipo_penalidadeID">
             <option value="">Selecione</option>
             @foreach($tipoPenalidade as $key=>$value)
                 <option {{isset($data->exists) && $value->tipo_penalidadeID==$data->tipo_penalidadeID ? 'selected="selected"' : '' }} value="{{$value->tipo_penalidadeID}}">{{$value->desc_tipo_penalidade}}</option>
@@ -278,7 +288,7 @@
     </div>
     <div class="col-md-3 form-group {{$errors->has('referencia_penalidadeID') ? 'has-error' : ''}} ">
         <label for="referencia_penalidadeID">Referencial</label>
-        <select class="form-control select2" id="referencia_penalidadeID" name="referencia_penalidadeID" >
+        <select class="form-control select2" id="referencia_penalidadeID" name="referencia_penalidadeID">
             <option value="">Selecione</option>
             @foreach($referenciaPenalidade as $key=>$value)
                 <option {{isset($data->exists) && $value->referencia_penalidadeID==$data->referencia_penalidadeID ? 'selected="selected"' : '' }} value="{{$value->referencia_penalidadeID}}">{{$value->desc_ref_penalidadeID}}</option>
@@ -287,25 +297,28 @@
     </div>
     <div class="col-md-3 form-group {{$errors->has('valor_penalidade') ? 'has-error' : ''}} ">
         <label for="ato_ref">Valor</label>
-        <input type="number" class="form-control" value="{{old('valor_penalidade',$data->exists() ? $data->valor_penalidade : '')}}"
+        <input type="number" class="form-control"
+               value="{{old('valor_penalidade',$data->exists() ? $data->valor_penalidade : '')}}"
                name="valor_penalidade"
-               id="valor_penalidade" >
+               id="valor_penalidade">
         @if($errors->has('processo_renovacao'))
             <span class="help-block">{{$errors->first('processo_renovacao')}}</span>
         @endif
     </div>
     <div class="col-md-4 form-group date {{$errors->has('data_inicio_renovacao') ? 'has-error' : ''}} ">
         <label for="ato_ref">Renova conc/perm. a partir de</label>
-        <input type="text" class="form-control" value="{{old('data_inicio_renovacao',$data->exists() ? $data->data_inicio_renovacao : '')}}"
+        <input type="text" class="form-control"
+               value="{{old('data_inicio_renovacao',$data->exists() ? $data->data_inicio_renovacao : '')}}"
                name="data_inicio_renovacao"
-               id="data_inicio_renovacao" >
+               id="data_inicio_renovacao">
         @if($errors->has('data_inicio_renovacao'))
             <span class="help-block">{{$errors->first('data_inicio_renovacao')}}</span>
         @endif
     </div>
     <div class="col-md-12 form-group {{$errors->has('observacao') ? 'has-error' : ''}} ">
         <label for="observacao">Observações</label>
-        <textarea rows="7" name="observacao" class="form-control" id="observacao">{{$data->exists() && $data->observacao  ? $data->observacao : ''}}</textarea>
+        <textarea rows="7" name="observacao" class="form-control"
+                  id="observacao">{{$data->exists() && $data->observacao  ? $data->observacao : ''}}</textarea>
     </div>
 
 </div>
@@ -314,7 +327,8 @@
     @if($hasStore || $hasUpdate)
         <button style="float: right;" type="submit" class="btn btn-success">Salvar</button>
     @endif
-    <a style="float: right;" href="{{route('emissora.atos.oficiais.index', [$emissoraID])}}" class="btn btn-primary m-r-5">
+    <a style="float: right;" href="{{route('emissora.atos.oficiais.index', [$emissoraID])}}"
+       class="btn btn-primary m-r-5">
         <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
     </a>
 </div>
@@ -326,9 +340,11 @@
         .select2-container--default .select2-selection--single {
             border: 1px solid #e9ecef;
         }
+
         .select2-dropdown {
             border: 1px solid #e9ecef;
         }
+
         .select2-container .select2-selection--single {
             height: 32px;
         }
@@ -341,7 +357,7 @@
     <script>
         $('#data_ato, #data_dou,#data_renovacao, #data_ato_outorga,#data_dou_outorga,#data_ato_renovacao,#data_dou_renovacao,#data_inicio_renovacao').daterangepicker({
             singleDatePicker: true,
-            autoUpdateInput : false,
+            autoUpdateInput: false,
             locale: {
                 dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
                 dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
@@ -359,9 +375,9 @@
 
         }).on('hide.daterangepicker', function (ev, picker) {
 
-        }).on('apply.daterangepicker', function(ev, picker) {
+        }).on('apply.daterangepicker', function (ev, picker) {
             $(this).val(picker.startDate.format('DD/MM/YYYY'));
-        }).on('cancel.daterangepicker', function(ev, picker) {
+        }).on('cancel.daterangepicker', function (ev, picker) {
             $(this).val('');
         });
         $(".select2").select2({
@@ -369,13 +385,13 @@
             placeholder: 'Selecione',
             allowClear: true
         });
-        $('#ufID').change(function (){
-            if(!this.value) return false;
+        $('#ufID').change(function () {
+            if (!this.value) return false;
             var municipioID = $(this).attr('data-municipioID');
-            var cities      = JSON.parse($(this).find(':selected').attr('data-municipioID'));
+            var cities = JSON.parse($(this).find(':selected').attr('data-municipioID'));
             $('#municipioID').html('<option value="">Selecione</option>');
-            for (var i=0; i<cities.length; i++){
-                $('#municipioID').append('<option '+(cities[i]['municipioID']==municipioID ? 'selected': '')+' value="'+cities[i]['municipioID']+'">'+cities[i]['desc_municipio']+'</option>')
+            for (var i = 0; i < cities.length; i++) {
+                $('#municipioID').append('<option ' + (cities[i]['municipioID'] == municipioID ? 'selected' : '') + ' value="' + cities[i]['municipioID'] + '">' + cities[i]['desc_municipio'] + '</option>')
             }
 
         });

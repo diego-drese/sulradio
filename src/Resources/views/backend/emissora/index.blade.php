@@ -18,18 +18,35 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="table_profiles" class="table table-striped table-bordered" role="grid"
+                        <table id="table_emissoras" class="table table-striped table-bordered" role="grid"
                                aria-describedby="file_export_info">
-                            <thead class="">
+                            <thead>
                             <tr>
                                 <th role="row">#</th>
                                 <th>Razão Social</th>
                                 <th>Serviço</th>
                                 <th>Localidade</th>
                                 <th>Status SEAD</th>
-                                <th style="width: 200px">Ações</th>
+                                <th style="width: 120px">Ações</th>
+                            </tr>
+                            <tr>
+                                <th role="row"><input type="text" class="fieldSearch form-control text-primary"
+                                                      placeholder="Bucar Id"></th>
+                                <th><input type="text" class="fieldSearch form-control text-primary"
+                                           placeholder="Bucar Razão social"></th>
+                                <th><input type="text" maxlength="4" class="fieldSearch form-control text-primary"
+                                           id="data_protocolo" placeholder="Bucar serviço"></th>
+                                <th><input type="text" class="fieldSearch form-control text-primary" placeholder="Localidade"></th>
+                                <th><input type="text" class="fieldSearch form-control text-primary" placeholder="Bucar Anexo"></th>
+                                <th style="width: 60px">
+                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
+                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
+                                    </spa>
+                                </th>
                             </tr>
                             </thead>
+                            <tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -46,7 +63,7 @@
     <script>
         var hasEdit = '{{$hasEdit}}';
         $(document).ready(function () {
-            $('#table_profiles').DataTable({
+            var table_emissoras = $('#table_emissoras').DataTable({
                 language: {
                     "sEmptyTable": "Nenhum registro encontrado",
                     "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -73,42 +90,84 @@
                 serverSide: true,
                 processing: true,
                 autoWidth: false,
-                ajax: '{{ route('emissora.index') }}',
+                orderCellsTop: true,
+                stateSave: true,
+                stateLoaded: function (settings, data) {
+                    setTimeout(function () {
+                        var dataExtra = settings.ajax.data({});
+                        var searchCols = settings.aoPreSearchCols;
+                        if (searchCols && searchCols.length) {
+                            for (var i = 0; i < searchCols.length; i++) {
+                                $('#table_emissoras thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                            }
+                        }
+                        console.log(settings.aoPreSearchCols, data);
+                    }, 50);
+                },
+                ajax: {
+                    url: '{{ route('emissora.index') }}',
+                    type: 'GET',
+                    data: function (d) {
+                        d._token = $("input[name='_token']").val();
+                        return d;
+                    }
+                },
                 columns: [
-                    {data: "emissoraID", 'name': 'emissoraID', searchable: false},
+                    {data: "emissoraID", 'name': 'emissoraID'},
                     {data: "razao_social", 'name': 'emissora.razao_social'},
                     {data: "desc_servico", 'name': 'servico.desc_servico'},
-                    {data: "desc_municipio", 'name': 'municipio.desc_municipio', render:function (data, display, row){
-                        if(!row.desc_municipio){
-                            return '---'
+                    {
+                        data: "desc_municipio",
+                        'name': 'municipio.desc_municipio',
+                        render: function (data, display, row) {
+                            if (!row.desc_municipio) {
+                                return '---'
+                            }
+                            return row.desc_municipio + ' (' + row.desc_uf + ')';
                         }
-                        return row.desc_municipio+' ('+row.ufID+')';
-                        }},
-                    {data: "desc_status_sead", 'name': 'status_sead.desc_status_sead', render:function (data, display, row){
-                        if(data=="ATIVO"){
-                            return '<span class="badge badge-success mr-1 ">ATIVO</span>';
-                        }else if(data=='INATIVO'){
-                            return '<span class="badge badge-danger mr-1 ">INATIVO</span>';
-                        }else if(data=='CONCORRENCIA'){
-                            return '<span class="badge badge-info mr-1 ">CONCORRENCIA</span>';
+                    },
+                    {
+                        data: "desc_status_sead",
+                        'name': 'status_sead.desc_status_sead',
+                        render: function (data, display, row) {
+                            if (data == "ATIVO") {
+                                return '<span class="badge badge-success mr-1 ">ATIVO</span>';
+                            } else if (data == 'INATIVO') {
+                                return '<span class="badge badge-danger mr-1 ">INATIVO</span>';
+                            } else if (data == 'CONCORRENCIA') {
+                                return '<span class="badge badge-info mr-1 ">CONCORRENCIA</span>';
+                            }
+                            return '---';
                         }
-                        return '---';
-                    }},
+                    },
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             var edit_button = "";
                             edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
                             edit_button += '<a href="' + data.atos_oficiais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos Oficiais</b></a>';
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Processos</b></a>';
+                            edit_button += '<a href="' + data.processos + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Processos</b></a>';
                             edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Societários</b></a>';
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos junta comercial</b></a>';
+                            edit_button += '<a href="' + data.atos_comerciais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos junta comercial</b></a>';
                             edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Contatos</b></a>';
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Endereços</b></a>';
+                            edit_button += '<a href="' + data.endereco + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Endereços</b></a>';
                             return edit_button
                         }
                     }
                 ]
             });
+
+            $('#table_emissoras thead tr:eq(1) th').each(function (i) {
+                $('.fieldSearch', this).on('keyup change', function () {
+                    if (table_emissoras.column(i).search() !== this.value) {
+                        table_emissoras.column(i).search(this.value).draw();
+                    }
+                });
+            });
+
+            $('#clearFilter').click(function () {
+                table_emissoras.state.clear();
+                window.location.reload();
+            })
         });
     </script>
 

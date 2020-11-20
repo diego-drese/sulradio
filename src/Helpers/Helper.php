@@ -15,29 +15,30 @@ class Helper {
 		return number_format($text, 2, ",", ".");
 	}
 	
-	public static function convertDateBrToMongo($date=null, $defaultNow = false)	{
-		if(!$date && !$defaultNow){
+	public static function convertDateBrToMongo($date = null, $defaultNow = false) {
+		if (!$date && !$defaultNow) {
 			return null;
 		}
 		
-		if(!$date && $defaultNow==true){
+		if (!$date && $defaultNow == true) {
 			return MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
 		}
 		$format = 'd/m/Y';
-		if($date && strpos($date , ':')){
-			if (strpos($date , 'H')){
-				$format.=' H';
-				if (strpos($date , 'i')){
-					$format.=':i';
+		if ($date && strpos($date, ':')) {
+			if (strpos($date, 'H')) {
+				$format .= ' H';
+				if (strpos($date, 'i')) {
+					$format .= ':i';
 				}
-				if (strpos($date , 's')){
-					$format.=':s';
+				if (strpos($date, 's')) {
+					$format .= ':s';
 				}
 			}
 		}
 		$dateBr = \DateTime::createFromFormat($format, $date);
 		return MongoUtils::convertDatePhpToMongo($dateBr->format('Y-m-d H:i:s'));
 	}
+	
 	public static function slugify($text, $capitalize = false) {
 		// replace non letter or digits by -
 		$text = preg_replace('~[^\pL\d]+~u', '-', $text);
@@ -50,12 +51,11 @@ class Helper {
 		// remove duplicate -
 		$text = preg_replace('~-+~', '-', $text);
 		// lowercase
-		if($capitalize){
+		if ($capitalize) {
 			$text = strtoupper($text);
-		}else{
+		} else {
 			$text = strtolower($text);
 		}
-		
 		
 		
 		if (empty($text)) {
@@ -64,23 +64,24 @@ class Helper {
 		
 		return $text;
 	}
-	public static function convertDateBrToMysql($date=null, $defaultNow = false)	{
-		if(!$date && !$defaultNow){
+	
+	public static function convertDateBrToMysql($date = null, $defaultNow = false) {
+		if (!$date && !$defaultNow) {
 			return null;
 		}
 		
-		if(!$date && $defaultNow==true){
+		if (!$date && $defaultNow == true) {
 			return date('Y-m-d H:i:s');
 		}
 		$format = 'd/m/Y';
-		if($date && strpos($date , ':')){
-			if (strpos($date , 'H')){
-				$format.=' H';
-				if (strpos($date , 'i')){
-					$format.=':i';
+		if ($date && strpos($date, ':')) {
+			if (strpos($date, 'H')) {
+				$format .= ' H';
+				if (strpos($date, 'i')) {
+					$format .= ':i';
 				}
-				if (strpos($date , 's')){
-					$format.=':s';
+				if (strpos($date, 's')) {
+					$format .= ':s';
 				}
 			}
 		}
