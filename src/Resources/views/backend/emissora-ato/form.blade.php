@@ -39,7 +39,7 @@
         <select class="form-control select2" id="tipo_atoID" name="tipo_atoID" required>
             <option value="">Selecione</option>
             @foreach($tipoAto as $key=>$value)
-                <option {{isset($data->exists) && $value->tipo_atoID==$data->tipo_atoID ? 'selected="selected"' : '' }} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
+                <option {{old('tipo_atoID', $data->exists() ? $data->tipo_atoID : '') == $value->tipo_atoID ? 'selected="selected"' : ''}} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
             @endforeach
         </select>
     </div>
@@ -65,7 +65,8 @@
         <label for="data_dou">Data DOU *</label>
         <input type="text" autocomplete="off" class="form-control" value="{{old('data_dou',$data->exists() ? $data->data_dou : '')}}"
                name="data_dou"
-               id="data_dou">
+               id="data_dou"
+               required>
         @if($errors->has('data_dou'))
             <span class="help-block">{{$errors->first('data_dou')}}</span>
         @endif
@@ -130,7 +131,7 @@
         <select class="form-control select2" id="categoriaID" name="categoriaID" required>
             <option value="">Selecione</option>
             @foreach($categoria as $key=>$value)
-                <option {{isset($data->exists) && $value->categoriaID==$data->categoriaID ? 'selected="selected"' : '' }} value="{{$value->categoriaID}}">{{$value->desc_categoria}}</option>
+                <option  {{old('categoriaID', $data->exists() ? $data->categoriaID : '') == $value->categoriaID ? 'selected="selected"' : ''}}  value="{{$value->categoriaID}}">{{$value->desc_categoria}}</option>
             @endforeach
         </select>
     </div>
@@ -140,7 +141,7 @@
         <select class="form-control select2" id="servicoID" name="servicoID" required>
             <option value="">Selecione</option>
             @foreach($servico as $key=>$value)
-                <option {{isset($data->exists) && $value->servicoID!=null && $value->servicoID==$data->servicoID ? 'selected="selected"' : '' }} value="{{$value->servicoID}}">{{$value->desc_servico}}</option>
+                <option {{old('servicoID', $data->exists() ? $data->servicoID : '') == $value->servicoID ? 'selected="selected"' : ''}}  value="{{$value->servicoID}}">{{$value->desc_servico}}</option>
             @endforeach
         </select>
     </div>
@@ -150,7 +151,7 @@
         <select class="form-control select2" id="finalidadeID" name="finalidadeID" required>
             <option value="">Selecione</option>
             @foreach($finalidade as $key=>$value)
-                <option {{isset($data->exists) && $value->finalidadeID!=null && $value->finalidadeID==$data->finalidadeID ? 'selected="selected"' : '' }} value="{{$value->finalidadeID}}">{{$value->desc_finalidadeID}}</option>
+                <option {{old('finalidadeID', $data->exists() ? $data->finalidadeID : '') == $value->finalidadeID ? 'selected="selected"' : ''}}  value="{{$value->finalidadeID}}">{{$value->desc_finalidadeID}}</option>
             @endforeach
         </select>
     </div>
@@ -177,7 +178,7 @@
         <select class="form-control select2" id="tipo_ato_ref" name="tipo_ato_ref">
             <option value="">Selecione</option>
             @foreach($tipoAto as $key=>$value)
-                <option {{isset($data->exists) && $value->tipo_atoID==$data->tipo_ato_ref ? 'selected="selected"' : '' }} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
+                <option {{old('tipo_ato_ref', $data->exists() ? $data->tipo_ato_ref : '') == $value->tipo_ato_ref ? 'selected="selected"' : ''}}  value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
             @endforeach
         </select>
     </div>
@@ -226,7 +227,7 @@
         <select class="form-control select2" id="tipo_ato_outorga" name="tipo_ato_outorga">
             <option value="">Selecione</option>
             @foreach($tipoAto as $key=>$value)
-                <option {{isset($data->exists) && $value->tipo_atoID==$data->tipo_ato_outorga ? 'selected="selected"' : '' }} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
+                <option {{old('tipo_atoID', $data->exists() ? $data->tipo_atoID : '') == $value->tipo_atoID ? 'selected="selected"' : ''}} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
             @endforeach
         </select>
     </div>
@@ -245,7 +246,8 @@
         <input type="text" autocomplete="off" class="form-control"
                value="{{old('data_dou_outorga',$data->exists() ? $data->data_dou_outorga : '')}}"
                name="data_dou_outorga"
-               id="data_dou_outorga">
+               id="data_dou_outorga"
+                >
         @if($errors->has('data_dou_outorga'))
             <span class="help-block">{{$errors->first('data_dou_outorga')}}</span>
         @endif
@@ -265,7 +267,7 @@
         <select class="form-control select2" id="tipo_ato_renovacao" name="tipo_ato_renovacao">
             <option value="">Selecione</option>
             @foreach($tipoAto as $key=>$value)
-                <option {{isset($data->exists) && $value->tipo_atoID==$data->tipo_ato_renovacao ? 'selected="selected"' : '' }} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
+                <option {{old('tipo_ato_renovacao', $data->exists() ? $data->tipo_ato_renovacao : '') == $value->tipo_atoID ? 'selected="selected"' : ''}}  value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
             @endforeach
         </select>
     </div>
@@ -304,7 +306,7 @@
         <select class="form-control select2" id="tipo_penalidadeID" name="tipo_penalidadeID">
             <option value="">Selecione</option>
             @foreach($tipoPenalidade as $key=>$value)
-                <option {{isset($data->exists) && $value->tipo_penalidadeID==$data->tipo_penalidadeID ? 'selected="selected"' : '' }} value="{{$value->tipo_penalidadeID}}">{{$value->desc_tipo_penalidade}}</option>
+                <option {{old('tipo_penalidadeID', $data->exists() ? $data->tipo_penalidadeID : '') == $value->tipo_penalidadeID ? 'selected="selected"' : ''}} value="{{$value->tipo_penalidadeID}}">{{$value->desc_tipo_penalidade}}</option>
             @endforeach
         </select>
     </div>
@@ -313,13 +315,13 @@
         <select class="form-control select2" id="referencia_penalidadeID" name="referencia_penalidadeID">
             <option value="">Selecione</option>
             @foreach($referenciaPenalidade as $key=>$value)
-                <option {{isset($data->exists) && $value->referencia_penalidadeID==$data->referencia_penalidadeID ? 'selected="selected"' : '' }} value="{{$value->referencia_penalidadeID}}">{{$value->desc_ref_penalidadeID}}</option>
+                <option {{old('referencia_penalidadeID', $data->exists() ? $data->referencia_penalidadeID : '') == $value->referencia_penalidadeID ? 'selected="selected"' : ''}} value="{{$value->referencia_penalidadeID}}">{{$value->desc_ref_penalidadeID}}</option>
             @endforeach
         </select>
     </div>
     <div class="col-md-3 form-group {{$errors->has('valor_penalidade') ? 'has-error' : ''}} ">
         <label for="ato_ref">Valor</label>
-        <input type="number" class="form-control"
+        <input type="text" class="form-control money"
                value="{{old('valor_penalidade',$data->exists() ? $data->valor_penalidade : '')}}"
                name="valor_penalidade"
                id="valor_penalidade">
@@ -373,10 +375,12 @@
     </style>
 @endsection
 @section('script_footer_end')
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/forms.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/daterangepicker.js')}}></script>
     <script>
+        $('.money').mask('#.00', {reverse: true});
         $('#data_ato, #data_dou,#data_renovacao, #data_ato_outorga,#data_dou_outorga,#data_ato_renovacao,#data_dou_renovacao,#data_inicio_renovacao').daterangepicker({
             singleDatePicker: true,
             autoUpdateInput: false,

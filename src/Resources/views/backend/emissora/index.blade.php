@@ -174,7 +174,7 @@
             $('#table_emissoras thead tr:eq(1) th').each(function (i) {
                 $('.fieldSearch', this).on('keyup change', function () {
                     if (table_emissoras.column(i).search() !== this.value) {
-                        table_emissoras.column(i).search(this.value).draw();
+                        table_emissoras.column(i).search(this.value, true).draw();
                     }
                 });
             });
