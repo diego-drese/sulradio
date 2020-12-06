@@ -25,4 +25,20 @@ return [
 			PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
 		]) : [],
 	],
+	'sulradio_mongo' => [
+		'driver' => 'mongodb',
+		'host' => env('SULRADIO_MONGO_DB_HOST', '127.0.0.1'),
+		'port' => env('SULRADIO_MONGO_DB_PORT', 27017),
+		'database' => env('SULRADIO_MONGO_DB_NAME', 'sulradio'),
+		'username' => env('SULRADIO_MONGO_DB_USERNAME', ''),
+		'password' => env('SULRADIO_MONGO_DB_PASSWORD', ''),
+		'charset' => 'utf8',
+		'collation' => 'utf8_unicode_ci',
+		'prefix' => '',
+		'strict' => false,
+		'engine' => null,
+		'options' => [
+			'db' => 'admin' // sets the authentication database required by mongo 3
+		]
+	]
 ];
