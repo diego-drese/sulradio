@@ -12,6 +12,13 @@
 			Schema::connection($this->connection)
 				->table('estacao_rd', function(Blueprint $collection) {
 					$collection->background(["id"]);
+					$collection->background(["checksum_stacao_rd"]);
+					$collection->background(["checksum_stacao_rd_date"]);
+					$collection->background(["checksum_plano_basico_am"]);
+					$collection->background(["checksum_plano_basico_am_date"]);
+					$collection->background(["checksum_plano_basico_tv_fm"]);
+					$collection->background(["checksum_plano_basico_tv_fm_date"]);
+					$collection->background(["checksum"]);
 					$collection->background(["fistel"]); // pay or receive
 				});
 		}

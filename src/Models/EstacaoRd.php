@@ -8,6 +8,7 @@ class EstacaoRd extends Model {
 	
 	const TABLE = 'estacao_rd';
 	protected $fillable = [
+		'checksum',
 		'item',
 		'siglaservico',
 		'state',

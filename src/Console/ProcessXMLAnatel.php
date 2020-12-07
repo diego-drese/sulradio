@@ -4,6 +4,7 @@ namespace Oka6\SulRadio\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use Oka6\Admin\Library\MongoUtils;
 use Oka6\SulRadio\Models\EstacaoRd;
 
 class ProcessXMLAnatel extends Command {
@@ -30,14 +31,22 @@ class ProcessXMLAnatel extends Command {
 		parent::__construct();
 	}
 	
+	function stripAccents($stripAccents){
+		return strtr($stripAccents,'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ','aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+	}
 	/**
 	 * Execute the console command.
 	 *
 	 * @return mixed
 	 */
 	public function xml2array($array, $out = array()) {
+		if(isset($array['@attributes'])){
+			$newArray = $array['@attributes'];
+			unset($array['@attributes']);
+			$array = array_merge($newArray, $array);
+		}
 		foreach ($array as $index => $node){
-			$index= str_replace('@','',$index);
+			$index= str_replace('@','', iconv('UTF-8','ASCII//TRANSLIT', $index));
 			$out[strtolower($index)] = (is_array($node)) ? $this->xml2array($node) : $node;
 		}
 		return $out;
@@ -87,11 +96,15 @@ class ProcessXMLAnatel extends Command {
 			if ($nodeName == 'row') {
 				$element            = new \SimpleXMLElement($reader->readOuterXML());
 				$objJsonDocument    = json_encode($element);
+				$checksum           = md5($objJsonDocument);
 				$arrOutput          = $this->xml2array(json_decode($objJsonDocument, TRUE));
-				$arrayAttr          = $arrOutput['attributes'];
-				unset($arrOutput['attributes']);
-				$arraySave= array_merge($arrayAttr, $arrOutput);
-				EstacaoRd::where('fistel', $arraySave['fistel'])->update($arraySave, ['upsert' => true]);
+				$arrOutput['checksum_stacao_rd']        = $checksum;
+				$arrOutput['checksum_stacao_rd_date']   = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+				$estacaoRd = EstacaoRd::where('fistel', $arrOutput['fistel'])->first();
+				if(!$estacaoRd || $estacaoRd->checksum_stacao_rd!=$checksum){
+					EstacaoRd::where('fistel',  $arrOutput['fistel'])
+						->update($arrOutput, ['upsert' => true]);
+				}
 			}
 		}
 		$this->info("Process finished file[{$file}]");
@@ -115,11 +128,22 @@ class ProcessXMLAnatel extends Command {
 				$nodeName = $reader->name;
 			}
 			if ($nodeName == 'row') {
-				$element            = new \SimpleXMLElement($reader->readOuterXML());
-				$objJsonDocument    = json_encode($element);
-				$arrOutput          = $this->xml2array(json_decode($objJsonDocument, TRUE));
-				if(isset($arrOutput['attributes'])){
-					EstacaoRd::where('fistel', $arrOutput['attributes']['fistel'])->update($arrOutput['attributes'], ['upsert' => true]);
+				$element                = new \SimpleXMLElement($reader->readOuterXML());
+				$objJsonDocument        = json_encode($element);
+				$checksum               = md5($objJsonDocument);
+				$arrOutput              = $this->xml2array(json_decode($objJsonDocument, TRUE));
+				if(isset($arrOutput['fistel'])){
+					if(isset($arrOutput['entidade'])){
+						unset($arrOutput['entidade']);
+					}
+					
+					$arrOutput['checksum_plano_basico_am']  = $checksum;
+					$arrOutput['checksum_plano_basico_am_date']  = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+					$estacaoRd = EstacaoRd::where('fistel', $arrOutput['fistel'])->first();
+					if(!$estacaoRd || $estacaoRd->checksum_basic_plain!=$checksum){
+						EstacaoRd::where('fistel', $arrOutput['fistel'])
+							->update($arrOutput, ['upsert' => true]);
+					}
 				}
 			}
 		}
@@ -139,9 +163,21 @@ class ProcessXMLAnatel extends Command {
 			if ($nodeName == 'row') {
 				$element            = new \SimpleXMLElement($reader->readOuterXML());
 				$objJsonDocument    = json_encode($element);
+				$checksum           = md5($objJsonDocument);
 				$arrOutput          = $this->xml2array(json_decode($objJsonDocument, TRUE));
-				if(isset($arrOutput['attributes'])){
-					EstacaoRd::where('fistel', $arrOutput['attributes']['fistel'])->update($arrOutput['attributes'], ['upsert' => true]);
+				
+				if(isset($arrOutput['fistel'])){
+					if(isset($arrOutput['entidade'])){
+						unset($arrOutput['entidade']);
+					}
+					
+					$arrOutput['checksum_plano_basico_tv_fm']  = $checksum;
+					$arrOutput['checksum_plano_basico_tv_fm_date']  = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+					$estacaoRd = EstacaoRd::where('fistel', $arrOutput['fistel'])->first();
+					if(!$estacaoRd || $estacaoRd->checksum_plano_basico_tv_fm!=$checksum){
+						EstacaoRd::where('fistel', $arrOutput['fistel'])
+							->update($arrOutput, ['upsert' => true]);
+					}
 				}
 			}
 		}
