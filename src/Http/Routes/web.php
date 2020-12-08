@@ -43,7 +43,8 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::get('/emissora-socio/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraSocioController@edit')->name('emissora.socio.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.socio.index', 'nameAdmin' => 'Sócios emissoras, editar']);
 	Route::post('/emissora-socio/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraSocioController@update')->name('emissora.socio.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.socio.index', 'nameAdmin' => 'Sócios emissoras, salva edição']);
 	
-	Route::get('/anatel/emissoras', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoras')->name('anatel.emissoras')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'menuAdmin' => "Emissoras2", 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissoras', 'Emissoras' => '1']);
+	Route::get('/anatel/emissoras', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoras')->name('anatel.emissoras')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'menuAdmin' => "Emissoras2", 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissoras']);
+	Route::get('/anatel/emissora/modal/{_id}', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoraModal')->name('anatel.emissora.modal')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissora modal']);
 });
 
 

@@ -28,7 +28,6 @@
                                 <th>Classe</th>
                                 <th>Status</th>
                                 <th>Entidade</th>
-                                <th>Fistel Geradora</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">
@@ -37,10 +36,11 @@
                                     </spa>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"  placeholder="Bucar Id">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                           placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <select class="fieldSearch form-control text-primary "  >
+                                    <select class="fieldSearch form-control text-primary ">
                                         <option value="">Todos</option>
                                         <option value="AC">AC</option>
                                         <option value="AL">AL</option>
@@ -72,10 +72,11 @@
                                     </select>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"  placeholder="Bucar Id">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                           placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <select class="fieldSearch form-control text-primary "  >
+                                    <select class="fieldSearch form-control text-primary ">
                                         <option value="">Todos</option>
                                         <option value="FM">FM</option>
                                         <option value="GTVD">GTVD</option>
@@ -85,17 +86,18 @@
                                         <option value="RTVD">RTVD</option>
                                         <option value="TV">TV</option>
                                         <option value="TVA">TVA</option>
-
                                     </select>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"  placeholder="Bucar Id">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                           placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"  placeholder="Bucar Id">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                           placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <select class="fieldSearch form-control text-primary "  >
+                                    <select class="fieldSearch form-control text-primary ">
                                         <option value="">(Todos)</option>
                                         <option value="Comercial">Comercial</option>
                                         <option value="Educativo">Educativo</option>
@@ -104,20 +106,30 @@
                                     </select>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"  placeholder="Bucar Id">
+                                    <select class="fieldSearch form-control text-primary ">
+                                        <option value="">Todos</option>
+                                        <option value="A">A</option>
+                                        <option value="A1">A1</option>
+                                        <option value="A2">A2</option>
+                                        <option value="A3">A3</option>
+                                        <option value="A4">A4</option>
+                                        <option value="B">B</option>
+                                        <option value="B1">B1</option>
+                                        <option value="B2">B2</option>
+                                        <option value="C">C</option>
+                                        <option value="E">E</option>
+                                        <option value="E2">E2</option>
+                                        <option value="E3">E3</option>
+                                    </select>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"  placeholder="Bucar Id">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                           placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"  placeholder="Bucar Id">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                           placeholder="Buscar">
                                 </th>
-
-                                <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"  placeholder="Bucar Id">
-                                </th>
-
-
                             </tr>
                             </thead>
                             <tbody>
@@ -126,6 +138,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="modal fade" id="emissoraModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 90%">
+
         </div>
     </div>
 @endsection
@@ -139,7 +156,15 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
     <script>
 
+        function openModal(_id){
+            var url = '{{route('anatel.emissora.modal',[':id'])}}'
+            $('#emissoraModal .modal-dialog').load(url.replace(':id', _id), function (){
+                $('#emissoraModal').modal('toggle')
+            });
+
+        }
         $(document).ready(function () {
+
             $(".select2").select2({
                 width: '100%',
                 placeholder: 'Selecione',
@@ -187,7 +212,7 @@
                     }, 50);
                 },
                 ajax: {
-                    url: '{{ route('anatel.emissoras') }}',
+                    url: '{{route('anatel.emissoras')}}',
                     type: 'GET',
                     data: function (d) {
                         d._token = $("input[name='_token']").val();
@@ -197,37 +222,51 @@
                 columns: [
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
-                            var edit_button = "";
-                                return edit_button
+                            return '<span class="badge badge-secondary mr-1" onclick="openModal(\''+data._id+'\')" role="button">Vizualizar</span>';
                         }
+
                     },
                     {data: "fistel", 'name': 'fistel'},
                     {data: "uf", 'name': 'uf'},
                     {data: "municipio", 'name': 'municipio'},
-                    {data: "servico", 'name': 'servico', render:function (data){
+                    {
+                        data: "servico", 'name': 'servico', render: function (data) {
                             return data ? data : '---';
-                    }},
-                    {data: "canal", 'name': 'canal', render:function (data){
-                        return data ? data : '---';
-                    }},
-                    {data: "frequencia", 'name': 'frequencia', render:function (data){
+                        }
+                    },
+                    {
+                        data: "canal", 'name': 'canal', render: function (data) {
                             return data ? data : '---';
-                    }},
-                    {data: "entidade.finalidade", 'name': 'entidade.finalidade', render:function (data){
+                        }
+                    },
+                    {
+                        data: "frequencia", 'name': 'frequencia', render: function (data) {
                             return data ? data : '---';
-                    }},
-                    {data: "classe", 'name': 'classe', render:function (data){
+                        }
+                    },
+                    {
+                        data: "entidade.finalidade", 'name': 'entidade.finalidade', render: function (data) {
                             return data ? data : '---';
-                    }},
-                    {data: "status", 'name': 'status', render:function (data){
+                        }
+                    },
+                    {
+                        data: "classe", 'name': 'classe', render: function (data) {
                             return data ? data : '---';
-                    }},
-                    {data: "entidade.entidade_nome_entidade", 'name': 'entidade.entidade_nome_entidade', render:function (data){
+                        }
+                    },
+                    {
+                        data: "status", 'name': 'status', render: function (data) {
                             return data ? data : '---';
-                    }},
-                    {data: "entidade.habilitacao_numfistelgeradora", 'name': 'entidade.habilitacao_numfistelgeradora', render:function (data){
+                        }
+                    },
+                    {
+                        data: "entidade.entidade_nome_entidade",
+                        'name': 'entidade.entidade_nome_entidade',
+                        render: function (data) {
                             return data ? data : '---';
-                    }},
+                        }
+                    },
+
                 ]
             });
 

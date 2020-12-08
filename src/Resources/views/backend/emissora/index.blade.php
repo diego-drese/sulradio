@@ -31,13 +31,13 @@
                             </tr>
                             <tr>
                                 <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
-                                                      placeholder="Bucar Id"></th>
+                                                      placeholder="Buscar Id"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
-                                           placeholder="Bucar Razão social"></th>
+                                           placeholder="Buscar Razão social"></th>
                                 <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary"
-                                           id="data_protocolo" placeholder="Bucar serviço"></th>
+                                           id="data_protocolo" placeholder="Buscar serviço"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Localidade"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Bucar Anexo"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Anexo"></th>
                                 <th style="width: 60px">
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>

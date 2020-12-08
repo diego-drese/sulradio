@@ -40,6 +40,11 @@ class AnatelController extends SulradioController {
 		return $this->renderView('SulRadio::backend.estacao-rd.index', []);
 		
 	}
+	public function emissoraModal(Request $request, $_id) {
+		$emissora = EstacaoRd::where('_id', new \MongoDB\BSON\ObjectId($_id))->first();
+		return $this->renderView('SulRadio::backend.estacao-rd.modal', ['emissora'=>$emissora]);
+		
+	}
 	
 	
 	protected function makeParameters($extraParameter = null) {
