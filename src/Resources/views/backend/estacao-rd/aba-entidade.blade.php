@@ -277,7 +277,7 @@
         </div>
     </div>
     <div class="col-12 card card-body bg-light">
-        <h4>Documento da Outorga</h4>
+        <h4>Horário de funcionamento</h4>
         <table id="table_emissoras" class="table table-striped table-bordered">
             <thead>
             <tr>

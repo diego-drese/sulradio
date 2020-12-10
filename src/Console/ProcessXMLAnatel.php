@@ -53,8 +53,10 @@ class ProcessXMLAnatel extends Command {
 	}
 	
 	public function handle() {
+		
 		$this->stacaoRd();
 		$this->planoBasico();
+		$this->documentosHistorico();
 		
 		unlink(storage_path('app/estrangeirosAM.xml'));
 		unlink(storage_path('app/estrangeirosTVFM.xml'));
@@ -81,8 +83,60 @@ class ProcessXMLAnatel extends Command {
 		$this->downloadFile('http://sistemas.anatel.gov.br/se/public/file/b/srd/estacao_rd.zip', 'estacao_rd.zip');
 		$this->unzipFiles('estacao_rd.zip');
 		$this->processStacaoRd();
-	
 	}
+	
+	public function documentosHistorico(){
+		$this->downloadFile('http://sistemas.anatel.gov.br/se/public/file/b/srd/documento_historicos.zip', 'documento_historicos.zip');
+		$this->unzipFiles('documento_historicos.zip');
+		$this->processDocumentosHistorico();
+	}
+	
+	public function processDocumentosHistorico(){
+		$file   = storage_path('app/documento_historicos.xml');
+		$fd     = fopen($file, "r");
+		$contents = fread ($fd, filesize($file));
+		$contents = str_replace("'",'"', $contents);
+		$contents = str_replace('entidade="',"entidade='", $contents);
+		$contents = str_replace('" c',"' c", $contents);
+		$contents = str_replace('/>',"#>", $contents);
+		$contents = str_replace('/documento_rd>',"#documento_rd>", $contents);
+		$contents = str_replace('/',"", $contents);
+		$contents = str_replace('#>',"/>", $contents);
+		$contents = str_replace('#documento_rd>',"/documento_rd>", $contents);
+		file_put_contents($file, $contents);
+		fclose($fd);
+		
+		
+		$this->info("Process start file[{$file}]");
+		$reader = new \XMLReader();
+		$reader->open($file);
+		$line=0;
+		while ($reader->read()) {
+			$line++;
+			$nodeName = null;
+			if ($reader->nodeType == \XMLReader::ELEMENT) {
+				$nodeName = $reader->name;
+			}
+			
+			if ($nodeName == 'row') {
+				
+				$element                    = new \SimpleXMLElement($reader->readOuterXML());
+				$objJsonDocument            = json_encode($element);
+				$arrOutput                  = $this->xml2array(json_decode($objJsonDocument, TRUE));
+				if(!empty($arrOutput['tipodocumento'])){
+					$idDocument = $arrOutput['id'].'-'.$arrOutput['numeroprocesso'].'-'.$arrOutput['numerodocumento'].'-'.$arrOutput['tipodocumento'];
+					$arrOutput['id_document']   = $idDocument;
+					$estacaoRd = EstacaoRd::where('documento_historico.id_document',  $idDocument)->first();
+					if(!$estacaoRd){
+						EstacaoRd::where('id',  $arrOutput['id'])->push('documento_historico', $arrOutput);
+					}
+				}
+			}
+		}
+		$this->info("Process finished file[{$file}]");
+		unlink($file);
+	}
+	
 	public function processStacaoRd(){
 		$file = storage_path('app/estacao_rd.xml');
 		$this->info("Process start file[{$file}]");
