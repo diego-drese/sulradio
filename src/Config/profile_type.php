@@ -1,3 +1,3 @@
 <?php
 
-return ['clinic' => 'Clinic', 'financial' => 'Financial'];
+return ['client_admin' => 'Cliente Administrador', 'client_user' => 'Cliente Usuário'];

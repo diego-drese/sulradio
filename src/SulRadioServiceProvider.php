@@ -26,6 +26,9 @@ class SulRadioServiceProvider extends ServiceProvider {
 		$this->mergeConfigFrom(
 			__DIR__ . '/Config/profile_type.php', 'admin.profile_type'
 		);
+		$this->mergeConfigFrom(
+			__DIR__ . '/Config/profile_type.php', 'sulradio.profile_type'
+		);
 		
 		if (php_sapi_name() != 'cli') {
 			$this->setObservers();
@@ -46,6 +49,8 @@ class SulRadioServiceProvider extends ServiceProvider {
 		if ($key == 'database.connections' && isset($config['sulradio']) == false) {
 			$this->app['config']->set($key, array_merge($config, require $path));
 		} elseif ($key == 'admin.profile_type') {
+			$this->app['config']->set($key, array_merge($config, require $path));
+		}elseif ($key == 'sulradio.profile_type') {
 			$this->app['config']->set($key, array_merge($config, require $path));
 		}
 	}

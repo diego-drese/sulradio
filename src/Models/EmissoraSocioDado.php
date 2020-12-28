@@ -5,12 +5,10 @@ namespace Oka6\SulRadio\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Oka6\SulRadio\Helpers\Helper;
 
 class EmissoraSocioDado extends Model {
 	const TABLE = 'emissora_socio_dado';
-	public $timestamps = false;
 	protected $fillable = [
 		'socioID',
 		'emissoraID',
@@ -49,6 +47,9 @@ class EmissoraSocioDado extends Model {
 	protected $table = 'emissora_socio_dado';
 	protected $primaryKey = 'socioID';
 	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getById($id) {
 		return self::where('socioID', $id)->first();
 	}

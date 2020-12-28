@@ -28,6 +28,7 @@
                                 <th>Classe</th>
                                 <th>Status</th>
                                 <th>Entidade</th>
+                                <th title="Ultima data de atualização">Data</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">
@@ -130,6 +131,9 @@
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                            placeholder="Buscar">
                                 </th>
+                                <th role="row">
+                                    ---
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -141,7 +145,7 @@
         </div>
     </div>
     <div class="modal fade" id="emissoraModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"         aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document" style="max-width: 90%">
+        <div class="modal-dialog modal-lg" id="modalHeight" role="document" style="max-width: 90%">
 
         </div>
     </div>
@@ -157,6 +161,7 @@
     <script>
 
         function openModal(_id){
+            $('#modalHeight').height($( window ).height()-50)
             var url = '{{route('anatel.emissora.modal',[':id'])}}'
             $('#emissoraModal .modal-dialog').load(url.replace(':id', _id), function (){
                 $('#emissoraModal').modal('toggle')
@@ -222,9 +227,8 @@
                 columns: [
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
-                            return '<span class="badge badge-secondary mr-1" onclick="openModal(\''+data._id+'\')" role="button">Vizualizar</span>';
+                            return '<a class="btn btn-primary btn-xs text-white" target="_blank" href="https://sistemas.anatel.gov.br/se/public/view/b/form.php?id='+data.id+'&state='+data.state+'">MOSAICO</a>';
                         }
-
                     },
                     {data: "fistel", 'name': 'fistel'},
                     {data: "uf", 'name': 'uf'},
@@ -266,7 +270,11 @@
                             return data ? data : '---';
                         }
                     },
-
+                    {
+                        data: "updated_at", 'name': 'updated_at', render: function (data) {
+                            return data ? data : '---';
+                        }
+                    },
                 ]
             });
 

@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class ContatoInfo extends Model {
 	const TABLE = 'contato_info';
-	public $timestamps = false;
 	protected $fillable = [
 		'contato_infoID',
 		'fone_contato',
@@ -20,7 +19,9 @@ class ContatoInfo extends Model {
 	protected $connection = 'sulradio';
 	protected $table = 'contato_info';
 	protected $primaryKey = 'contato_infoID';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function insertOrupdateContacts(Request $request, $contactId) {
 		self::where('contatoID', $contactId)->delete();
 		$length = count($request->get('fone_contato'));

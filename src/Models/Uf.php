@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Cache;
 
 class Uf extends Model {
 	const TABLE = 'uf';
-	public $timestamps = false;
 	protected $fillable = [
 		'ufID',
 		'desc_uf',
@@ -16,7 +15,9 @@ class Uf extends Model {
 	];
 	protected $connection = 'sulradio';
 	protected $table = 'uf';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getWithCache() {
 		return Cache::tags(['sulradio'])->remember('uf', 120, function () {
 			$ufs = self::get();

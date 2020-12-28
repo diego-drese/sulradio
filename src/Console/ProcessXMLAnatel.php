@@ -155,6 +155,9 @@ class ProcessXMLAnatel extends Command {
 				$arrOutput['checksum_stacao_rd']        = $checksum;
 				$arrOutput['checksum_stacao_rd_date']   = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
 				$estacaoRd = EstacaoRd::where('fistel', $arrOutput['fistel'])->first();
+				if(!$estacaoRd){
+					$arrOutput['client_id'] = null;
+				}
 				if(!$estacaoRd || $estacaoRd->checksum_stacao_rd!=$checksum){
 					EstacaoRd::where('fistel',  $arrOutput['fistel'])
 						->update($arrOutput, ['upsert' => true]);

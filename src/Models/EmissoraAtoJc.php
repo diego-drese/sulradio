@@ -9,7 +9,6 @@ use Oka6\SulRadio\Helpers\Helper;
 
 class EmissoraAtoJc extends Model {
 	const TABLE = 'emissora_ato_jc';
-	public $timestamps = false;
 	protected $fillable = [
 		'ato_jcID',
 		'emissoraID',
@@ -24,7 +23,9 @@ class EmissoraAtoJc extends Model {
 	protected $connection = 'sulradio';
 	protected $table = 'emissora_ato_jc';
 	protected $primaryKey = 'ato_jcID';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getById($id) {
 		return self::where('ato_jcID', $id)
 			->withTipoAtoJuridico()

@@ -1,14 +1,11 @@
 <?php
 
 namespace Oka6\SulRadio\Models;
-
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 class EmissoraSocioCategoria extends Model {
 	const TABLE = 'emissora_socio_categoria';
-	public $timestamps = false;
 	protected $fillable = [
 		'categoriaID',
 		'desc_categoria',
@@ -18,7 +15,9 @@ class EmissoraSocioCategoria extends Model {
 	protected $connection = 'sulradio';
 	protected $table = 'emissora_socio_categoria';
 	protected $primaryKey = 'categoriaID';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getById($id) {
 		return self::where('categoriaID', $id)->first();
 	}

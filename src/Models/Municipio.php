@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Municipio extends Model {
 	const TABLE = 'municipio';
-	public $timestamps = false;
 	protected $fillable = [
 		'municipioID',
 		'desc_municipio',
@@ -15,7 +14,9 @@ class Municipio extends Model {
 	];
 	protected $connection = 'sulradio';
 	protected $table = 'municipio';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getById($id) {
 		return self::where('municipioID', $id)
 			->join('uf', 'uf.ufID', 'municipio.ufID')

@@ -20,7 +20,8 @@
 					$collection->background(["checksum_plano_basico_tv_fm_date"]);
 					$collection->background(["checksum"]);
 					$collection->background(["documento_historico.id_document"]);
-					$collection->background(["fistel"]); // pay or receive
+					$collection->background(["fistel"]);
+					$collection->background(["updated_at"]);
 				});
 		}
 		

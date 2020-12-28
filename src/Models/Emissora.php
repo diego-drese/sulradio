@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Emissora extends Model {
 	const TABLE = 'emissora';
-	public $timestamps = false;
 	protected $fillable = [
 		'razao_social',
 		'nome_fantasia',
@@ -60,6 +59,10 @@ class Emissora extends Model {
 	protected $connection = 'sulradio';
 	protected $table = 'emissora';
 	protected $primaryKey = 'emissoraID';
+	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	
 	public static function getById($id) {
 		return self::where('emissoraID', $id)

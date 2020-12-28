@@ -2,6 +2,7 @@
 
 namespace Oka6\SulRadio\Models;
 
+use Carbon\Carbon;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class EstacaoRd extends Model {
@@ -60,11 +61,19 @@ class EstacaoRd extends Model {
 		"campocaracteristico",
 		"observacoes",
 		"fistel",
-	
-	
+		"client_id",
 	];
 	protected $table = 'estacao_rd';
-	protected $connection = 'oka6_admin';
+	protected $connection = 'sulradio_mongo';
 	
-	
+	public function getUpdatedAtAttribute($value) {
+		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
+	}
+	public static function getByArrayId($broadcast){
+		return self::whereIn('id', is_array($broadcast) ? $broadcast : [])->get();
+	}
+	public static function updateClientId($clientId, $broadcast){
+		self::where('client_id', $clientId)->update(['client_id'=>null]);
+		self::whereIn('id', $broadcast)->whereNull('client_id')->update(['client_id'=>$clientId]);
+	}
 }

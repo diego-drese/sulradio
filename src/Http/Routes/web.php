@@ -45,6 +45,43 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	
 	Route::get('/anatel/emissoras', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoras')->name('anatel.emissoras')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'menuAdmin' => "Emissoras2", 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissoras']);
 	Route::get('/anatel/emissora/modal/{_id}', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoraModal')->name('anatel.emissora.modal')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissora modal']);
+	
+	/** New System */
+	Route::get('/plan', 'Oka6\SulRadio\Http\Controllers\PlanController@index')->name('plan.index')->where(['iconAdmin' => 'mdi mdi-parking', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Planos", 'nameAdmin' => 'Planos', 'isDefaultAdmin' => '1']);
+	Route::get('/plan/create', 'Oka6\SulRadio\Http\Controllers\PlanController@create')->name('plan.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Planos novo',]);
+	Route::post('/plan', 'Oka6\SulRadio\Http\Controllers\PlanController@store')->name('plan.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Planos , salva novo']);
+	Route::get('/plan/{id}', 'Oka6\SulRadio\Http\Controllers\PlanController@edit')->name('plan.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Planos editar']);
+	Route::post('/plan/{id}', 'Oka6\SulRadio\Http\Controllers\PlanController@update')->name('plan.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Planos, salva edição']);
+	
+	Route::get('/document-type', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@index')->name('document.type.index')->where(['iconAdmin' => 'mdi mdi-file-document', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Tipos de documentos", 'nameAdmin' => 'Tipos de documentos', 'isDefaultAdmin' => '1']);
+	Route::get('/document-type/create', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@create')->name('document.type.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'document.type.index', 'nameAdmin' => 'Tipos de documentos novo',]);
+	Route::post('/document-type', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@store')->name('document.type.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Tipos de documentos , salva novo']);
+	Route::get('/document-type/{id}', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@edit')->name('document.type.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'document.type.index', 'nameAdmin' => 'Tipos de documentos editar']);
+	Route::post('/document-type/{id}', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@update')->name('document.type.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Tipos de documentos, salva edição']);
+	
+	Route::get('/client', 'Oka6\SulRadio\Http\Controllers\ClientController@index')->name('client.index')->where(['iconAdmin' => 'mdi mdi-ticket-account', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Clientes", 'nameAdmin' => 'Clientes', 'isDefaultAdmin' => '1']);
+	Route::get('/client/broadcast/', 'Oka6\SulRadio\Http\Controllers\ClientController@index')->name('client.index')->where(['iconAdmin' => 'mdi mdi-ticket-account', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Clientes", 'nameAdmin' => 'Clientes', 'isDefaultAdmin' => '1']);
+	Route::get('/client/create', 'Oka6\SulRadio\Http\Controllers\ClientController@create')->name('client.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes novo',]);
+	Route::post('/client', 'Oka6\SulRadio\Http\Controllers\ClientController@store')->name('client.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Clientes , salva novo']);
+	Route::get('/client/{id}', 'Oka6\SulRadio\Http\Controllers\ClientController@edit')->name('client.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes editar']);
+	Route::post('/client/{id}', 'Oka6\SulRadio\Http\Controllers\ClientController@update')->name('client.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes, salva edição']);
+	
+	Route::get('/client/{id}/payment', 'Oka6\SulRadio\Http\Controllers\ClientController@payment')->name('client.payment')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes, pagamentos']);
+	Route::get('/client/{id}/payment/add', 'Oka6\SulRadio\Http\Controllers\ClientController@paymentAdd')->name('client.payment.add')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes, adiciona pagamento']);
+	Route::get('/client/{id}/payment/reverse', 'Oka6\SulRadio\Http\Controllers\ClientController@paymentReverse')->name('client.payment.reverse')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes, estorna pagamento']);
+	
+	Route::get('/client/{id}/user', 'Oka6\SulRadio\Http\Controllers\ClientController@user')->name('client.user')->where(['iconAdmin' => 'fas fa-users', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes, usuários']);
+	Route::get('/client/{id}/user/create', 'Oka6\SulRadio\Http\Controllers\ClientController@userCreate')->name('client.user.create')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, adiciona usuário']);
+	Route::post('/client/{id}/user/store', 'Oka6\SulRadio\Http\Controllers\ClientController@userStore')->name('client.user.store')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, salva usuário']);
+	Route::get('/client/{id}/user/{idUser}', 'Oka6\SulRadio\Http\Controllers\ClientController@userEdit')->name('client.user.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, edita usuário']);
+	Route::post('/client/{id}/user/{idUser}/update', 'Oka6\SulRadio\Http\Controllers\ClientController@userUpdate')->name('client.user.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, atualiza usuário']);
+	
+	Route::get('/client/{id}/broadcast', 'Oka6\SulRadio\Http\Controllers\ClientController@broadcast')->name('client.broadcast')->where(['iconAdmin' => 'mdi mdi-radio', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes, emissoras']);
+});
+
+Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function () {
+	Route::any('/city/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchCity')->name('city.search');
+	Route::any('/broadcast/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchBroadcast')->name('broadcast.search');
 });
 
 

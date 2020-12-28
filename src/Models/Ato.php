@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ato extends Model {
 	const TABLE = 'ato';
-	public $timestamps = false;
 	protected $fillable = [
 		'atoID',
 		'tipo_atoID',
@@ -51,7 +50,9 @@ class Ato extends Model {
 	protected $connection = 'sulradio';
 	protected $table = 'ato';
 	protected $primaryKey = 'atoID';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getById($id) {
 		return self::where('atoID', $id)
 			->first();

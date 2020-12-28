@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\Cache;
 
 class Funcao extends Model {
 	const TABLE = 'funcao';
-	public $timestamps = false;
 	protected $fillable = [
 		'funcaoID',
 		'desc_funcao',
 	];
 	protected $connection = 'sulradio';
 	protected $table = 'funcao';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getById($id) {
 		return self::where('funcaoID', $id)->first();
 	}

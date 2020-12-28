@@ -8,7 +8,6 @@ use Oka6\SulRadio\Helpers\Helper;
 
 class EmissoraProcesso extends Model {
 	const TABLE = 'emissora_processo';
-	public $timestamps = false;
 	protected $fillable = [
 		'processoID',
 		'emissoraID',
@@ -24,7 +23,9 @@ class EmissoraProcesso extends Model {
 	protected $connection = 'sulradio';
 	protected $table = 'emissora_processo';
 	protected $primaryKey = 'processoID';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getById($id) {
 		return self::where('processoID', $id)
 			->first();

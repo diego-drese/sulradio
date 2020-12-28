@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Cache;
 
 class Servico extends Model {
 	const TABLE = 'servico';
-	public $timestamps = false;
 	protected $fillable = [
 		'servicoID',
 		'desc_servico',
@@ -17,7 +16,9 @@ class Servico extends Model {
 	];
 	protected $connection = 'sulradio';
 	protected $table = 'servico';
-	
+	public function usesTimestamps() : bool{
+		return false;
+	}
 	public static function getById($id) {
 		return self::where('servicoID', $id)->first();
 	}
