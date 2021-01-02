@@ -18,12 +18,14 @@
                 </div>
             </div>
         </div>
+
+
         <div class="col-lg-3 col-md-6">
             <div class="card">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-7">
-                            <i class="fas fa-balance-scale font-20 text-danger"></i>
+                            <i class="mdi mdi-scale-balance font-20 text-danger"></i>
                             <p class="font-16 m-b-5">Atos</p>
                         </div>
                         <div class="col-5">
