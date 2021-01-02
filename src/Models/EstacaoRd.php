@@ -72,8 +72,5 @@ class EstacaoRd extends Model {
 	public static function getByArrayId($broadcast){
 		return self::whereIn('id', is_array($broadcast) ? $broadcast : [])->get();
 	}
-	public static function updateClientId($clientId, $broadcast){
-		self::where('client_id', $clientId)->update(['client_id'=>null]);
-		self::whereIn('id', $broadcast)->whereNull('client_id')->update(['client_id'=>$clientId]);
-	}
+	
 }

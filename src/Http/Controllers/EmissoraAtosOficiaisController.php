@@ -4,10 +4,12 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Models\Ato;
 use Oka6\SulRadio\Models\AtoCategoria;
+use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\Finalidade;
 use Oka6\SulRadio\Models\Municipio;
@@ -108,6 +110,8 @@ class EmissoraAtosOficiaisController extends SulradioController {
 	}
 	
 	protected function makeParameters($extraParameter = null) {
+		$user = Auth::user();
+		$emissora = Emissora::getById($extraParameter['emissoraID'], $user);
 		$parameters = [
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('emissora.atos.oficiais.create', [1]),
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('emissora.atos.oficiais.edit', [1, 1]),
@@ -115,12 +119,13 @@ class EmissoraAtosOficiaisController extends SulradioController {
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('emissora.atos.oficiais.update', [1, 1]),
 			'tipoAto' => TipoAto::getWithCache(),
 			'uf' => Uf::getWithCache(),
+			'client' => Client::getById($emissora->client_id),
 			'categoria' => AtoCategoria::getWithCache(),
 			'servico' => Servico::getWithCache(),
 			'finalidade' => Finalidade::getWithCache(),
 			'tipoPenalidade' => TipoPenalidade::getWithCache(),
 			'referenciaPenalidade' => ReferencialPenalidade::getWithCache(),
-			'emissora' => Emissora::getById($extraParameter['emissoraID']),
+			'emissora' => $emissora,
 		
 		];
 		$this->parameters = $parameters;

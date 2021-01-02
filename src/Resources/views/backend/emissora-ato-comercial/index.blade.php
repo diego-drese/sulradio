@@ -2,23 +2,16 @@
 @section('title', 'Atos junta comercial')
 @section('content')
     <div class="row">
+        <div class="col-6">
+            @include('SulRadio::backend.emissora.header')
+        </div>
+        <div class="col-6">
+            @include('SulRadio::backend.client.header')
+        </div>
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex  align-items-center m-b-10">
-                        <h4 class="card-title">
-                            {{$emissora->razao_social}}<br/>
-                            @if($emissora->desc_status_sead=="ATIVO")
-                                <span class="font-10 badge badge-success">ATIVO</span>
-                            @elseif($emissora->desc_status_sead=="INATIVO")
-                                <span class="font-10 badge badge-danger">INATIVO</span>
-                            @elseif($emissora->desc_status_sead=="CONCORRENCIA")
-                                <span class="font-10 badge badge-info">CONCORRENCIA</span>
-                            @else
-                                ---
-                            @endif <br/>
-                            <span class="font-10">{{$emissora->desc_municipio}} ({{$emissora->desc_uf}})</span>
-                        </h4>
                         <div class="ml-auto">
                             <div class="btn-group">
                                 <a href="{{route('emissora.index')}}" class="btn btn-primary m-r-5">

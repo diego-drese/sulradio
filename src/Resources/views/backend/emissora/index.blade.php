@@ -26,7 +26,7 @@
                                 <th>Razão Social</th>
                                 <th>Serviço</th>
                                 <th>Localidade</th>
-                                <th>Status SEAD</th>
+                                <th>Cliente SEAD</th>
                                 <th style="width: 120px">Ações</th>
                             </tr>
                             <tr>
@@ -62,6 +62,7 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
     <script>
         var hasEdit = '{{$hasEdit}}';
+        var hasEditClient = '{{$hasEditClient}}';
         $(document).ready(function () {
             var table_emissoras = $('#table_emissoras').DataTable({
                 language: {
@@ -127,17 +128,19 @@
                         }
                     },
                     {
-                        data: "desc_status_sead",
-                        'name': 'status_sead.desc_status_sead',
+                        data: "company_name",
+                        'name': 'client.company_name',
                         render: function (data, display, row) {
-                            if (data == "ATIVO") {
-                                return '<span class="badge badge-success mr-1 ">ATIVO</span>';
-                            } else if (data == 'INATIVO') {
-                                return '<span class="badge badge-danger mr-1 ">INATIVO</span>';
-                            } else if (data == 'CONCORRENCIA') {
-                                return '<span class="badge badge-info mr-1 ">CONCORRENCIA</span>';
+                            if (data) {
+                                if(hasEditClient){
+                                    return '<a href="'+row['client']+'" target="_blank" class="badge badge-success mr-1">'+data+'</a>';
+                                }else{
+                                    return '<span class="badge badge-success mr-1">'+data+'</span>';
+                                }
+
+                            } else {
+                                return '<span class="badge badge-danger mr-1" title="Esta emissora nao possui cliente.">---</span>';
                             }
-                            return '---';
                         }
                     },
                     {
@@ -164,6 +167,9 @@
                             @endif
                             @if($hasEndereco)
                                 edit_button += '<a href="' + data.endereco + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Endereços</b></a>';
+                            @endif
+                            @if($hasDocument)
+                                edit_button += '<a href="' + data.documents + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos</b></a>';
                             @endif
                             return edit_button
                         }

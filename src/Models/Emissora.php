@@ -3,7 +3,7 @@
 namespace Oka6\SulRadio\Models;
 
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;use function GuzzleHttp\json_decode;
 
 class Emissora extends Model {
 	const TABLE = 'emissora';
@@ -64,8 +64,9 @@ class Emissora extends Model {
 		return false;
 	}
 	
-	public static function getById($id) {
+	public static function getById($id, $user) {
 		return self::where('emissoraID', $id)
+			->filterClient($user)
 			->withLocalidade()
 			->withStatusSead()
 			->withServico()
@@ -82,9 +83,20 @@ class Emissora extends Model {
 		$query->leftJoin('servico', 'servico.servicoID', 'emissora.servicoID');
 		return $query;
 	}
+	public function scopeFilterClient($query, $user) {
+		if($user->client_id){
+			$client = Client::getById($user->client_id);
+			$query->whereIn('emissoraID', json_decode($client->broadcast));
+		}
+		return $query;
+	}
 	
 	public function scopeWithStatusSead($query) {
 		$query->leftJoin('status_sead', 'status_sead.status_seadID', 'emissora.status_seadID');
+		return $query;
+	}
+	public function scopeWithClient($query) {
+		$query->leftJoin('client', 'client.id', 'emissora.client_id');
 		return $query;
 	}
 	
@@ -93,4 +105,16 @@ class Emissora extends Model {
 		return $query;
 	}
 	
+	public static function updateClientId($clientId, $broadcast){
+		self::where('client_id', $clientId)->update(['client_id'=>null]);
+		self::whereIn('emissoraID', $broadcast)->whereNull('client_id')->update(['client_id'=>$clientId]);
+	}
+	
+	public static function getByArrayId($broadcast){
+		return self::whereIn('emissoraID', is_array($broadcast) ? $broadcast : [])
+			->withLocalidade()
+			->withServico()
+			->withUf()
+			->get();
+	}
 }

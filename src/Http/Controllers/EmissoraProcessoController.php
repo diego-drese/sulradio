@@ -4,8 +4,10 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Models\Ato;
+use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\EmissoraProcesso;
 use Oka6\SulRadio\Models\EmissoraProcessoFase;
@@ -73,13 +75,16 @@ class EmissoraProcessoController extends SulradioController {
 	}
 	
 	protected function makeParameters($extraParameter = null) {
+		$user = Auth::user();
+		$emissora = Emissora::getById($extraParameter['emissoraID'], $user);
 		$parameters = [
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('emissora.processo.create', [1]),
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('emissora.processo.edit', [1, 1]),
 			'hasStore' => ResourceAdmin::hasResourceByRouteName('emissora.processo.store', [1]),
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('emissora.processo.update', [1, 1]),
 			'processoFase' => EmissoraProcessoFase::getWithCache(),
-			'emissora' => Emissora::getById($extraParameter['emissoraID']),
+			'client' => Client::getById($emissora->client_id),
+			'emissora' => $emissora,
 		
 		];
 		$this->parameters = $parameters;

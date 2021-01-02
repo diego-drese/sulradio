@@ -1,22 +1,26 @@
 <?php
 	
 	use Illuminate\Support\Facades\Schema;
-	use Jenssegers\Mongodb\Schema\Blueprint;
 	use Illuminate\Database\Migrations\Migration;
+	use Illuminate\Database\Schema\Blueprint;
 	
 	class CreatePlanTable extends Migration {
 		
-		protected $connection = 'sulradio_mongo';
+		protected $connection = 'sulradio';
 		
 		public function up() {
 			Schema::connection($this->connection)
-				->table('plan', function(Blueprint $collection) {
-					$collection->background(["name"]);
-					$collection->background(["max_broadcast"]);
-					$collection->background(["max_upload"]);
-					$collection->background(["max_user"]);
-					$collection->background(["updated_at"]);
-					$collection->background(["is_active"]);
+				->create('plan', function(Blueprint $table) {
+					$table->increments('id');
+					$table->string('name', 191);
+					$table->decimal('value', 10,2);
+					$table->smallInteger('frequency');
+					$table->smallInteger('max_upload');
+					$table->smallInteger('max_broadcast');
+					$table->smallInteger('max_user');
+					$table->tinyInteger('is_active');
+					$table->text('description');
+					$table->timestamps();
 				});
 		}
 		

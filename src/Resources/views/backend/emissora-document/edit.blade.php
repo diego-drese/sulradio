@@ -1,5 +1,5 @@
 @extends('Admin::layouts.backend.main')
-@section('title', 'Criar endereço')
+@section('title', 'Editar Documento')
 @section('content')
     <div class="row">
         <div class="col-6">
@@ -12,16 +12,17 @@
             <div class="card">
                 <div class="card-body ">
                     <form id="form-profile" method="post"
-                          action="{{route('emissora.endereco.store', [$emissora->emissoraID])}}"
+                          action="{{route('emissora.document.update', [$data->emissora_id, $data->id])}}"
                           enctype="multipart/form-data">
                         {{ csrf_field() }}
-                        @include('SulRadio::backend.emissora-endereco.form')
+                        @include('SulRadio::backend.emissora-document.form')
                     </form>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
 
 
 

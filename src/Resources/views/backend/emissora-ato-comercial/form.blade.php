@@ -1,16 +1,3 @@
-<h4 class="card-title">
-    {{$emissora->razao_social}}<br/>
-    @if($emissora->desc_status_sead=="ATIVO")
-        <span class="font-10 badge badge-success">ATIVO</span>
-    @elseif($emissora->desc_status_sead=="INATIVO")
-        <span class="font-10 badge badge-danger">INATIVO</span>
-    @elseif($emissora->desc_status_sead=="CONCORRENCIA")
-        <span class="font-10 badge badge-info">CONCORRENCIA</span>
-    @else
-        ---
-    @endif <br/>
-    <span class="font-10">{{$emissora->desc_municipio}} ({{$emissora->desc_uf}})</span>
-</h4>
 <div class="row">
     <div class="col-md-7 form-group {{$errors->has('tipo_ato_juridicoID') ? 'has-error' : ''}} ">
         <label for="tipo_ato_juridicoID">Categoria *</label>

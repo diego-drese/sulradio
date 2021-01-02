@@ -192,7 +192,7 @@
             <select name="plan_id" id="plan_id" class="form-control">
                 <option value="">Selecione</option>
                 @foreach($plans as $plan)
-                    <option value="{{$plan->_id}}" {{old('plan_id', $data->exists() ? $data->plan_id : '') == $plan->_id ? 'selected' : ''}}>{{$plan->name}}</option>
+                    <option value="{{$plan->id}}" {{old('plan_id', $data->exists() ? $data->plan_id : '') == $plan->id ? 'selected' : ''}}>{{$plan->name}}</option>
                 @endforeach
             </select>
             <div class="input-group-append">
@@ -225,7 +225,7 @@
         <div class="input-group mb-3">
             <select name="broadcast[]" id="broadcast" class="form-control" multiple required>
                 @foreach($broadcast as $value)
-                    <option value="{{$value->id}}" selected>{{$value->servico.'-'.$value->entidade['entidade_nome_entidade']."({$value->municipio})"}}</option>
+                    <option value="{{$value->emissoraID}}" selected>{{$value->desc_servico.'-'.$value->nome_fantasia."({$value->desc_municipio} {$value->desc_uf})"}}</option>
                 @endforeach
             </select>
             <div class="input-group-append">
@@ -357,7 +357,7 @@
                 data: function (params) {
                     var query = {
                         search: params.term,
-                        client_id: '{{$data->_id}}',
+                        client_id: '{{$data->id}}',
                         search_select: '1'
                     }
                     return query;

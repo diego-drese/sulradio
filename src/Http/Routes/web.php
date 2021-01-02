@@ -43,6 +43,13 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::get('/emissora-socio/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraSocioController@edit')->name('emissora.socio.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.socio.index', 'nameAdmin' => 'Sócios emissoras, editar']);
 	Route::post('/emissora-socio/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraSocioController@update')->name('emissora.socio.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.socio.index', 'nameAdmin' => 'Sócios emissoras, salva edição']);
 	
+	Route::get('/emissora-document/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentController@index')->name('emissora.document.index')->where(['iconAdmin' => 'fas fa-file-alt', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Documentos emissoras']);
+	Route::get('/emissora-document/{emissoraID}/create', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentController@create')->name('emissora.document.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'emissora.document.index', 'nameAdmin' => 'Documentos emissoras, adicionar',]);
+	Route::post('/emissora-document/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentController@store')->name('emissora.document.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Documentos emissoras , salva novo']);
+	Route::get('/emissora-document/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentController@edit')->name('emissora.document.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.index', 'nameAdmin' => 'Documentos emissoras, editar']);
+	Route::post('/emissora-document/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentController@update')->name('emissora.document.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.index', 'nameAdmin' => 'Documentos emissoras, salva edição']);
+	Route::get('/emissora-document/{emissoraID}/timeline/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentController@timeline')->name('emissora.document.timeline')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.index', 'nameAdmin' => 'Documentos emissoras, timeline']);
+	
 	Route::get('/anatel/emissoras', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoras')->name('anatel.emissoras')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'menuAdmin' => "Emissoras2", 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissoras']);
 	Route::get('/anatel/emissora/modal/{_id}', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoraModal')->name('anatel.emissora.modal')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissora modal']);
 	
@@ -60,7 +67,6 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/document-type/{id}', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@update')->name('document.type.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Tipos de documentos, salva edição']);
 	
 	Route::get('/client', 'Oka6\SulRadio\Http\Controllers\ClientController@index')->name('client.index')->where(['iconAdmin' => 'mdi mdi-ticket-account', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Clientes", 'nameAdmin' => 'Clientes', 'isDefaultAdmin' => '1']);
-	Route::get('/client/broadcast/', 'Oka6\SulRadio\Http\Controllers\ClientController@index')->name('client.index')->where(['iconAdmin' => 'mdi mdi-ticket-account', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Clientes", 'nameAdmin' => 'Clientes', 'isDefaultAdmin' => '1']);
 	Route::get('/client/create', 'Oka6\SulRadio\Http\Controllers\ClientController@create')->name('client.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes novo',]);
 	Route::post('/client', 'Oka6\SulRadio\Http\Controllers\ClientController@store')->name('client.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Clientes , salva novo']);
 	Route::get('/client/{id}', 'Oka6\SulRadio\Http\Controllers\ClientController@edit')->name('client.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes editar']);
@@ -77,11 +83,18 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/client/{id}/user/{idUser}/update', 'Oka6\SulRadio\Http\Controllers\ClientController@userUpdate')->name('client.user.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, atualiza usuário']);
 	
 	Route::get('/client/{id}/broadcast', 'Oka6\SulRadio\Http\Controllers\ClientController@broadcast')->name('client.broadcast')->where(['iconAdmin' => 'mdi mdi-radio', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes, emissoras']);
+	
+	Route::get('/metrics', 'Oka6\SulRadio\Http\Controllers\MetricsController@index')->name('metrics.index')->where(['iconAdmin' => 'fas fa-chart-pie', 'parentRouteNameAdmin' => 'metrics.index', 'menuAdmin' => "Métricas", 'nameAdmin' => 'Métricas', 'isDefaultAdmin' => '1']);
+	Route::get('/metrics/broadcast', 'Oka6\SulRadio\Http\Controllers\MetricsController@broadcast')->name('metrics.broadcast')->where(['iconAdmin' => 'mdi mdi-radio', 'parentRouteNameAdmin' => 'metrics.index', 'nameAdmin' => 'Métricas Emissoras', 'isDefaultAdmin' => '0']);
+	Route::get('/metrics/document/action', 'Oka6\SulRadio\Http\Controllers\MetricsController@documentAction')->name('metrics.document.action')->where(['iconAdmin' => 'mdi mdi-file-document', 'parentRouteNameAdmin' => 'metrics.index', 'nameAdmin' => 'Métricas Ações em Documentos', 'isDefaultAdmin' => '0']);
+	Route::get('/metrics/document/new', 'Oka6\SulRadio\Http\Controllers\MetricsController@documentNew')->name('metrics.document.new')->where(['iconAdmin' => 'mdi mdi-file-document', 'parentRouteNameAdmin' => 'metrics.index', 'nameAdmin' => 'Métricas Novos Documentos', 'isDefaultAdmin' => '0']);
+	//Route::get('/metrics/document', 'Oka6\SulRadio\Http\Controllers\MetricsController@document')->name('metrics.document')->where(['iconAdmin' => 'mdi mdi-file-document', 'parentRouteNameAdmin' => 'metrics.index', 'nameAdmin' => 'Métricas Documentos', 'isDefaultAdmin' => '0']);
 });
 
 Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function () {
 	Route::any('/city/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchCity')->name('city.search');
 	Route::any('/broadcast/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchBroadcast')->name('broadcast.search');
+	Route::any('/document/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocument')->name('document.download');
 });
 
 

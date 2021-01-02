@@ -4,8 +4,10 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Models\Ato;
+use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Contato;
 use Oka6\SulRadio\Models\ContatoInfo;
 use Oka6\SulRadio\Models\Emissora;
@@ -74,13 +76,16 @@ class EmissoraContatoController extends SulradioController {
 	}
 	
 	protected function makeParameters($extraParameter = null) {
+		$user = Auth::user();
+		$emissora = Emissora::getById($extraParameter['emissoraID'], $user);
 		$parameters = [
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('emissora.contato.create', [1]),
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('emissora.contato.edit', [1, 1]),
 			'hasStore' => ResourceAdmin::hasResourceByRouteName('emissora.contato.store', [1]),
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('emissora.contato.update', [1, 1]),
 			'funcao' => Funcao::getWithCache(),
-			'emissora' => Emissora::getById($extraParameter['emissoraID']),
+			'client' => Client::getById($emissora->client_id),
+			'emissora' => $emissora,
 		
 		];
 		$this->parameters = $parameters;

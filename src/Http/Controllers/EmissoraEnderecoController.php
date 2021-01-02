@@ -4,8 +4,10 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Models\Ato;
+use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\EmissoraEndereco;
 use Oka6\SulRadio\Models\EmissoraProcesso;
@@ -84,6 +86,8 @@ class EmissoraEnderecoController extends SulradioController {
 	}
 	
 	protected function makeParameters($extraParameter = null) {
+		$user = Auth::user();
+		$emissora = Emissora::getById($extraParameter['emissoraID'], $user);
 		$parameters = [
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('emissora.endereco.create', [1]),
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('emissora.endereco.edit', [1, 1]),
@@ -91,7 +95,8 @@ class EmissoraEnderecoController extends SulradioController {
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('emissora.endereco.update', [1, 1]),
 			'tipoEndereco' => EmissoraTipoEndereco::getWithCache(),
 			'uf' => Uf::getWithCache(),
-			'emissora' => Emissora::getById($extraParameter['emissoraID']),
+			'client' => Client::getById($emissora->client_id),
+			'emissora' => $emissora,
 		
 		];
 		$this->parameters = $parameters;

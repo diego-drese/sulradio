@@ -1,18 +1,4 @@
-<h4 class="card-title">
-    {{$emissora->razao_social}}<br/>
-    @if($emissora->desc_status_sead=="ATIVO")
-        <span class="font-10 badge badge-success">ATIVO</span>
-    @elseif($emissora->desc_status_sead=="INATIVO")
-        <span class="font-10 badge badge-danger">INATIVO</span>
-    @elseif($emissora->desc_status_sead=="CONCORRENCIA")
-        <span class="font-10 badge badge-info">CONCORRENCIA</span>
-    @else
-        ---
-    @endif <br/>
-    <span class="font-10">{{$emissora->desc_municipio}} ({{$emissora->desc_uf}})</span>
-</h4>
 <div class="row">
-
     <div class="col-md-8 form-group {{$errors->has('nome_contato') ? 'has-error' : ''}} ">
         <label for="nome_contato">Nome *</label>
         <input type="nome_contato" class="form-control" value="{{old('nome_contato',$data->exists() ? $data->nome_contato : '')}}"

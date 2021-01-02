@@ -6,14 +6,12 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Oka6\Admin\Http\Library\ResourceAdmin;
-use Oka6\Admin\Library\MongoUtils;
 use Oka6\Admin\Models\Profile;
+use Oka6\Admin\Models\Sequence;
 use Oka6\Admin\Models\User;
-use Oka6\SulRadio\Models\Cities;
 use Oka6\SulRadio\Models\Client;
-use Oka6\SulRadio\Models\EstacaoRd;
+use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\Plan;
-use Oka6\SulRadio\Models\States;
 use Oka6\SulRadio\Models\UserSulRadio;
 use Yajra\DataTables\DataTables;
 
@@ -25,13 +23,13 @@ class ClientController extends SulradioController {
 			$query = Client::query();
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) {
-					return route('client.edit', [$row->_id]);
+					return route('client.edit', [$row->id]);
 				})->addColumn('plan_name', function ($row) {
 					return Plan::getById($row->plan_id)->name;
 				})->addColumn('users_url', function ($row) {
-					return route('client.user', [$row->_id]);
+					return route('client.user', [$row->id]);
 				})->addColumn('broadcast_url', function ($row) {
-					return route('client.broadcast', [$row->_id]);
+					return route('client.broadcast', [$row->id]);
 				})->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.client.index', []);
@@ -54,16 +52,17 @@ class ClientController extends SulradioController {
 			'broadcast' => 'required',
 		]);
 		if($request->get('city_id')){
-			$city   = Cities::getById($request->get('city_id'));
-			$state  = States::getByIdWithCache($city->state_id);
-			$dataForm['city_name'] = $city->title." ({$state->letter})";
+//			$city   = Cities::getById($request->get('city_id'));
+//			$state  = States::getByIdWithCache($city->state_id);
+//			$dataForm['city_name'] = $city->title." ({$state->letter})";
 		}
-		
-		$dataForm['users']          = [];
+		$brodcast                   = $dataForm['broadcast'];
+		$dataForm['users']          = json_encode([]);
 		$dataForm['uploads_gb']     = 0;
-		$dataForm['validated_at']   = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+		$dataForm['broadcast']      = json_encode($brodcast);
+		$dataForm['validated_at']   = date('Y-m-d H:i:s');
 		$client = Client::create($dataForm);
-		EstacaoRd::updateClientId($client->_id , $dataForm['broadcast']);
+		Emissora::updateClientId($client->id , $brodcast);
 		toastr()->success('Cliente criado com sucesso', 'Sucesso');
 		return redirect(route('client.index'));
 		
@@ -71,7 +70,7 @@ class ClientController extends SulradioController {
 	
 	public function edit($id) {
 		$data = Client::getById($id);
-		return $this->renderView('SulRadio::backend.client.edit', ['data' => $data, 'broadcast'=> EstacaoRd::getByArrayId($data->broadcast)]);
+		return $this->renderView('SulRadio::backend.client.edit', ['data' => $data, 'broadcast'=> Emissora::getByArrayId(json_decode($data->broadcast))]);
 	}
 	
 	public function update(Request $request, $id) {
@@ -87,9 +86,11 @@ class ClientController extends SulradioController {
 			'is_active' => 'required',
 			'broadcast' => 'required',
 		]);
+		$brodcast                   = $dataForm['broadcast'];
+		$dataForm['broadcast']      = json_encode($brodcast);
 		$data->fill($dataForm);
 		$data->save();
-		EstacaoRd::updateClientId($id , $dataForm['broadcast']);
+		Emissora::updateClientId($id , $brodcast);
 		toastr()->success("{$data->name} Atualizado com sucesso", 'Sucesso');
 		return redirect(route('client.index'));
 	}
@@ -98,7 +99,7 @@ class ClientController extends SulradioController {
 			$query = UserSulRadio::query()->client($clientId);
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) use($clientId) {
-					return route('client.user.edit', [$clientId, $row->_id]);
+					return route('client.user.edit', [$clientId, $row->id]);
 				})->addColumn('profile_name', function ($row) {
 					$profile = Profile::getById($row->profile_id);
 					return $profile->name;
@@ -124,7 +125,8 @@ class ClientController extends SulradioController {
 			},]
 		
 		], ['required' => 'Campo obrigatório', 'unique' => 'Email já cadastrado']);
-		$dataForm['client_id']  = new \MongoDB\BSON\ObjectId($clientId);
+		$dataForm['id']         = Sequence::getSequence('users');
+		$dataForm['client_id']  = $clientId;
 		$dataForm['password']   = bcrypt($request->get('password_confirmation'));
 		UserSulRadio::create($dataForm);
 		toastr()->success('Usuário criado com sucesso', 'Sucesso');
@@ -149,7 +151,6 @@ class ClientController extends SulradioController {
 			},]
 		], ['required' => 'Campo obrigatório', 'unique' => 'Email já cadastrado']);
 		$user                   = UserSulRadio::getBy_Id($userId);
-		$dataForm['client_id']  = new \MongoDB\BSON\ObjectId($clientId);
 		if ($request->get('password_confirmation')) {
 			$dataForm['password'] = bcrypt($request->get('password_confirmation'));
 		}

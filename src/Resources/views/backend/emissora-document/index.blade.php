@@ -1,5 +1,5 @@
 @extends('Admin::layouts.backend.main')
-@section('title', 'Contatos')
+@section('title', 'Documentos')
 @section('content')
     <div class="row">
         <div class="col-6">
@@ -18,7 +18,7 @@
                                     <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
                                 </a>
                                 @if($hasAdd)
-                                    <a href="{{route('emissora.contato.create',$emissora->emissoraID)}}"
+                                    <a href="{{route('emissora.document.create',$emissora->emissoraID)}}"
                                        class="btn btn-primary">
                                         <span class="fa fa-plus"></span> <b>Adicionar</b>
                                     </a>
@@ -28,18 +28,23 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="tableContatos" class="table table-striped table-bordered">
+                        <table id="tableProcessos" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th role="row" style="width: 60px">Id</th>
                                 <th>Nome</th>
-                                <th>Função</th>
+                                <th>Validade</th>
+                                <th>Arquivo</th>
+                                <th>Tamanho</th>
+                                <th>Tipo de documento</th>
                                 <th style="width: 80px">Ações</th>
                             </tr>
                             <tr>
-                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Id"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome"></th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" placeholder="Buscar Função"></th>
+
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Nome"></th>
+                                <th> --- </th>
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar tipo dea rquivo"></th>
+                                <th> --- </th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar por tipo"></th>
                                 <th>
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
@@ -66,9 +71,10 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
     <script>
         var hasEdit = '{{$hasEdit}}';
+        var hasTimeLine = '{{$hasTimeLine}}';
         $(document).ready(function () {
 
-            var tableContatos = $('#tableContatos').DataTable({
+            var tableProcessos = $('#tableProcessos').DataTable({
                 language: {
                     "sEmptyTable": "Nenhum registro encontrado",
                     "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -103,14 +109,14 @@
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#tableContatos thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                $('#tableProcessos thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
                     }, 50);
                 },
                 ajax: {
-                    url: '{{ route('emissora.contato.index', $emissoraID) }}',
+                    url: '{{ route('emissora.document.index', $emissoraID) }}',
                     type: 'GET',
                     data: function (d) {
                         d._token = $("input[name='_token']").val();
@@ -118,30 +124,45 @@
                     }
                 },
                 columns: [
-                    {data: "contatoID", 'name': 'contatoID'},
-                    {data: "nome_contato", 'name': 'nome_contato'},
-                    {data: "desc_funcao", 'name': 'funcao.desc_funcao'},
+                    {data: "name", 'name': 'document.name'},
+                    {data: "validated", 'name': 'document.validated', render: function(data){
+                        if(data){
+                            return data;
+                        }
+                        return '---';
+                    }},
+                    {data: "file_type", 'name': 'document.file_type', render: function(data, display, row){
+                        return '<a href="'+row['download']+'" target="_blank">'+data+'</a>';
+                    }},
+                    {data: "file_size", 'name': 'document.file_size'},
+                    {data: "document_type_name", 'name': 'document_type.name'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
-                            if (!hasEdit) return '---';
                             var edit_button = "";
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            if (hasEdit) {
+                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            }
+                            if (hasTimeLine) {
+                                edit_button += '<a href="' + data.timeline + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Tmeline</b></a>';
+                            }
+
+
                             return edit_button
                         }
                     }
                 ]
             });
 
-            $('#tableContatos thead tr:eq(1) th').each(function (i) {
+            $('#tableProcessos thead tr:eq(1) th').each(function (i) {
                 $('.fieldSearch', this).on('keyup change', function () {
-                    if (tableContatos.column(i).search() !== this.value) {
-                        tableContatos.column(i).search(this.value).draw();
+                    if (tableProcessos.column(i).search() !== this.value) {
+                        tableProcessos.column(i).search(this.value).draw();
                     }
                 });
             });
 
             $('#clearFilter').click(function () {
-                tableContatos.state.clear();
+                tableProcessos.state.clear();
                 window.location.reload();
             })
 

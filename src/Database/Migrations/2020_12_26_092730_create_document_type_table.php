@@ -1,18 +1,19 @@
 <?php
 	
 	use Illuminate\Support\Facades\Schema;
-	use Jenssegers\Mongodb\Schema\Blueprint;
+	use Illuminate\Database\Schema\Blueprint;
 	use Illuminate\Database\Migrations\Migration;
 	
 	class CreateDocumentTypeTable extends Migration {
-		
-		protected $connection = 'sulradio_mongo';
-		
+		protected $connection = 'sulradio';
 		public function up() {
 			Schema::connection($this->connection)
-				->table('document_type', function(Blueprint $collection) {
-					$collection->background(["name"]);
-					$collection->background(["is_active"]);
+				->create('document_type', function(Blueprint $table) {
+					$table->increments('id');
+					$table->string('name', 191);
+					$table->tinyInteger('is_active');
+					$table->text('description');
+					$table->timestamps();
 				});
 		}
 		

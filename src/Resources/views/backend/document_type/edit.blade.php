@@ -5,7 +5,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body ">
-                    <form id="form-profile" method="post" action="{{route('document.type.update', $data->_id)}}"
+                    <form id="form-profile" method="post" action="{{route('document.type.update', $data->id)}}"
                           enctype="multipart/form-data">
                         {{ csrf_field() }}
                         @include('SulRadio::backend.document_type.form')

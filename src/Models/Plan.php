@@ -3,7 +3,7 @@
 namespace Oka6\SulRadio\Models;
 
 use Carbon\Carbon;
-use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class Plan extends Model {
 	const TABLE = 'plan';
@@ -18,13 +18,13 @@ class Plan extends Model {
 		'is_active'
 	];
 	protected $table = 'plan';
-	protected $connection = 'sulradio_mongo';
+	protected $connection = 'sulradio';
 	
 	public function getUpdatedAtAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
 	}
 	public static function getById($id) {
-		return self::where('_id', new \MongoDB\BSON\ObjectId($id))->first();
+		return self::where('id',$id)->first();
 	}
 	public static function getAll() {
 		return self::get();

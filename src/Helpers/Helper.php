@@ -10,6 +10,9 @@ class Helper {
 		$string = str_replace('R$ ', '', $string);
 		return (double)str_replace(',', '.', str_replace('.', '', $string));
 	}
+	public static function formatInteger($number) {
+		return number_format($number, 0, ',', '.');
+	}
 	
 	public static function bcoToMoney($text) {
 		return number_format($text, 2, ",", ".");

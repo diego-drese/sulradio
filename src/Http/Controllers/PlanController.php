@@ -17,7 +17,7 @@ class PlanController extends SulradioController {
 			$query = Plan::query();
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) {
-					return route('plan.edit', [$row->_id]);
+					return route('plan.edit', [$row->id]);
 				})->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.plan.index', []);

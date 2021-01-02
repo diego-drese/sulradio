@@ -17,7 +17,7 @@ class DocumentTypeController extends SulradioController {
 			$query = DocumentType::query();
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) {
-					return route('document.type.edit', [$row->_id]);
+					return route('document.type.edit', [$row->id]);
 				})->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.document_type.index', []);

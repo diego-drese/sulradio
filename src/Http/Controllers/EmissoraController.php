@@ -4,7 +4,7 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
-use Oka6\Admin\Http\Library\ResourceAdmin;
+use Illuminate\Support\Facades\Auth;use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\Municipio;
 use Oka6\SulRadio\Models\Servico;
@@ -18,11 +18,13 @@ class EmissoraController extends SulradioController {
 	use ValidatesRequests;
 	
 	public function index(Request $request) {
-		
 		if ($request->ajax()) {
+			$user = Auth::user();
 			$date = $request->get('date');
 			$query = Emissora::query()
+				->filterClient($user)
 				->withStatusSead()
+				->withClient()
 				->withServico()
 				->withLocalidade()
 				->withUf();
@@ -50,6 +52,13 @@ class EmissoraController extends SulradioController {
 					return route('emissora.contato.index', [$row->emissoraID]);
 				})->addColumn('socios', function ($row) {
 					return route('emissora.socio.index', [$row->emissoraID]);
+				})->addColumn('documents', function ($row) {
+					return route('emissora.document.index', [$row->emissoraID]);
+				})->addColumn('client', function ($row) {
+					if($row->client_id){
+						return route('client.edit', [$row->client_id]);
+					}
+					return null;
 				})->setRowClass(function () {
 					return 'center';
 				})
@@ -79,7 +88,8 @@ class EmissoraController extends SulradioController {
 	}
 	
 	public function edit($id) {
-		$data = Emissora::getById($id);
+		$user = Auth::user();
+		$data = Emissora::getById($id, $user);
 		$data->ufID = null;
 		$data->sedufID = null;
 		$ufID = Municipio::getById($data->municipioID);
@@ -97,7 +107,8 @@ class EmissoraController extends SulradioController {
 	}
 	
 	public function update(Request $request, $id) {
-		$data = Emissora::getById($id);
+		$user = Auth::user();
+		$data = Emissora::getById($id, $user);
 		$dataForm = $request->all();
 		$this->validate($request, [
 			'status_seadID' => 'required',
@@ -125,6 +136,8 @@ class EmissoraController extends SulradioController {
 			'hasSocios' => ResourceAdmin::hasResourceByRouteName('emissora.socio.index', [1]),
 			'hasContato' => ResourceAdmin::hasResourceByRouteName('emissora.contato.index', [1]),
 			'hasEndereco' => ResourceAdmin::hasResourceByRouteName('emissora.endereco.index', [1]),
+			'hasDocument' => ResourceAdmin::hasResourceByRouteName('emissora.document.index', [1]),
+			'hasEditClient' => ResourceAdmin::hasResourceByRouteName('client.edit', [1]),
 			
 			'statusSead' => StatusSead::getWithCache(),
 			'servico' => Servico::getWithCache(),

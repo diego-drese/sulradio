@@ -1,39 +1,4 @@
 <div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex  align-items-center m-b-10">
-                    <h4 class="card-title">
-                        {{$emissora->razao_social}}<br/>
-                        @if($emissora->desc_status_sead=="ATIVO")
-                            <span class="font-10 badge badge-success">ATIVO</span>
-                        @elseif($emissora->desc_status_sead=="INATIVO")
-                            <span class="font-10 badge badge-danger">INATIVO</span>
-                        @elseif($emissora->desc_status_sead=="CONCORRENCIA")
-                            <span class="font-10 badge badge-info">CONCORRENCIA</span>
-                        @else
-                            ---
-                        @endif <br/>
-                        <span class="font-10">{{$emissora->desc_municipio}} ({{$emissora->desc_uf}})</span>
-                    </h4>
-                    <div class="ml-auto">
-                        <div class="btn-group">
-                            <a href="{{route('emissora.atos.oficiais.index', [$emissoraID])}}" class="btn btn-primary m-r-5">
-                                <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
-                            </a>
-                            @if($hasStore || $hasUpdate)
-                                <button style="float: right;" type="submit" class="btn btn-success">Salvar</button>
-                            @endif
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
     <div class="col-md-6 form-group {{$errors->has('tipo_atoID') ? 'has-error' : ''}} ">
         <label for="tipo_atoID">Tipo *</label>
         <select class="form-control select2" id="tipo_atoID" name="tipo_atoID" required>

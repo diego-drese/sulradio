@@ -1,8 +1,3 @@
-<div class="callout callout-success">
-    <h5>Empresa: <b>{{$client->company_name}}</b></h5>
-    <h6>Nome: <b>{{$client->name}}</b></h6>
-    <h6>{{$client->document_type}}: <b>{{$client->document}}</b></h6>
-</div>
 <div class="row">
     <div class="col-md-4 form-group {{$errors->has('name') ? 'text-danger' : ''}} ">
         <label for="name">Nome *</label>
@@ -159,7 +154,7 @@
     @if($hasStore || $hasUpdate)
         <button style="float: right;" type="submit" class="btn btn-success">Salvar</button>
     @endif
-    <a style="float: right;" href="{{route('client.user',[$client->_id])}}" class="btn btn-primary m-r-5">
+    <a style="float: right;" href="{{route('client.user',[$client->id])}}" class="btn btn-primary m-r-5">
         <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
     </a>
 </div>
@@ -176,43 +171,7 @@
         .select2-container .select2-selection--single {
             height: 32px;
         }
-        .callout {
-            border-radius: 0.25rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-            background-color: #ffffff;
-            border-left: 5px solid #e9ecef;
-            margin-bottom: 1rem;
-            padding: 1rem;
-        }
 
-        .callout a {
-            color: #495057;
-            text-decoration: underline;
-        }
-
-        .callout a:hover {
-            color: #e9ecef;
-        }
-
-        .callout p:last-child {
-            margin-bottom: 0;
-        }
-
-        .callout.callout-danger {
-            border-left-color: #bd2130;
-        }
-
-        .callout.callout-warning {
-            border-left-color: #d39e00;
-        }
-
-        .callout.callout-info {
-            border-left-color: #117a8b;
-        }
-
-        .callout.callout-success {
-            border-left-color: #1e7e34;
-        }
     </style>
 @endsection
 @section('script_footer_end')

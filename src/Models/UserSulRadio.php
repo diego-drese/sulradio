@@ -21,7 +21,7 @@ class UserSulRadio extends User {
 		'description',
 	];
 	public function scopeClient($query, $clientId){
-		return $query->where('client_id',  new \MongoDB\BSON\ObjectId($clientId));
+		return $query->where('client_id',  $clientId);
 	}
 	
 	public static function getBy_Id($userId){

@@ -3,7 +3,7 @@
 namespace Oka6\SulRadio\Models;
 
 use Carbon\Carbon;
-use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model {
 	const TABLE = 'client';
@@ -32,12 +32,12 @@ class Client extends Model {
 		'validated_at',
 	];
 	protected $table = 'client';
-	protected $connection = 'sulradio_mongo';
+	protected $connection = 'sulradio';
 	
 	public function getValidatedAtAttribute($value) {
-		return $value ? (new Carbon($value->toDateTime()))->format('d/m/Y H:i') : '';
+		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
 	}
 	public static function getById($id) {
-		return self::where('_id', new \MongoDB\BSON\ObjectId($id))->first();
+		return self::where('id', $id)->first();
 	}
 }
