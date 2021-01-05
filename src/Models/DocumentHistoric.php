@@ -55,7 +55,7 @@ class DocumentHistoric extends Model {
 		
 		if($user->client_id){
 			$client = Client::getById($user->client_id);
-			$query->whereIn('document.emissora_id', json_encode($client->broad_cast));
+			$query->whereIn('document.emissora_id', json_decode($client->broadcast));
 		}
 		$timeline           = $query->get();
 		$totalTimeLine      = count($timeline);

@@ -24,9 +24,9 @@
                     <ul class="timeline">
                     @foreach($timeline as $key=>$item)
                         <li class="{{$key%2==0 ? 'timeline-item' : 'timeline-item timeline-inverted'}}">
-                            <div class="timeline-badge danger">
+                            <div class="timeline-badge white-box">
                                 <span class="font-12">
-                                    <img alt="user" src="{{$item->user_picture ? $item->user_picture : '/vendor/oka6/admin/assets/images/users/user_avatar.svg'}}" class="img-fluid">
+                                    <img alt="user" class="avatar-default  d-xs-none" src="{{$item->user_picture ? $item->user_picture : '/vendor/oka6/admin/assets/images/users/user_avatar.svg'}}" class="img-fluid">
 
                                 </span>
                             </div>
