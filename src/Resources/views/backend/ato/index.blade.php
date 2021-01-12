@@ -15,6 +15,7 @@
                             <thead class="">
                             <tr>
                                 <th role="row">Emissora</th>
+                                <th>Serviço</th>
                                 <th>Tipo do Ato</th>
                                 <th>Categoria</th>
                                 <th>Número do ato</th>
@@ -25,6 +26,7 @@
                             </tr>
                             <tr>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Emissora"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Serviço"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Tipo"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Categoria"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Numero"></th>
@@ -103,6 +105,7 @@
                 },
                 columns: [
                     {data: "razao_social", 'name': 'emissora.razao_social'},
+                    {data: "desc_servico", 'name': 'servico.desc_servico'},
                     {data: "desc_tipo_ato", 'name': 'tipo_ato.desc_tipo_ato'},
                     {data: "desc_categoria", 'name': 'ato_categoria.desc_categoria'},
                     {data: "numero_ato", 'name': 'ato.numero_ato'},
