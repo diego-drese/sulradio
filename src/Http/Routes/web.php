@@ -1,6 +1,9 @@
 <?php
 
 Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin\Http\Middleware\MiddlewareAdmin']], function () {
+	Route::get('/atos-oficiais', 'Oka6\SulRadio\Http\Controllers\AtosController@index')->name('atos.index')->where(['iconAdmin' => 'fas fa-gavel', 'menuAdmin' => "Atos oficiais", 'parentRouteNameAdmin' => 'Sulradio', 'nameAdmin' => 'Atos oficiais', 'isDefaultAdmin' => '1']);
+	
+	
 	Route::get('/emissora', 'Oka6\SulRadio\Http\Controllers\EmissoraController@index')->name('emissora.index')->where(['iconAdmin' => 'mdi mdi-radio', 'menuAdmin' => "Emissoras", 'parentRouteNameAdmin' => 'Sulradio', 'nameAdmin' => 'Emissoras', 'isDefaultAdmin' => '1']);
 	Route::get('/emissora/create', 'Oka6\SulRadio\Http\Controllers\EmissoraController@create')->name('emissora.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Emissoras novo',]);
 	Route::post('/emissora', 'Oka6\SulRadio\Http\Controllers\EmissoraController@store')->name('emissora.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Emissoras , salva novo']);

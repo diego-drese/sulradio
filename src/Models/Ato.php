@@ -93,7 +93,11 @@ class Ato extends Model {
 	public function scopeWithLocalidade($query) {
 		return $query->leftJoin('municipio', 'municipio.municipioID', 'ato.municipioID');
 	}
-	
+	public function scopeJoinEmissora($query) {
+		return $query->join('emissora', 'emissora.emissoraID', 'ato.emissoraID')
+			->leftJoin('municipio', 'municipio.municipioID', 'emissora.municipioID')
+			->leftJoin('uf', 'uf.ufID', 'municipio.ufID');
+	}
 	public function scopeWithEmissora($query, $emissoraID) {
 		return $query->where('emissoraID', $emissoraID);
 	}
@@ -104,6 +108,10 @@ class Ato extends Model {
 	
 	public function scopeWithServico($query) {
 		return $query->leftJoin('servico', 'servico.servicoID', 'ato.servicoID');
+	}
+	
+	public function scopeWithCategoria($query) {
+		return $query->leftJoin('ato_categoria', 'ato_categoria.categoriaID', 'ato.categoriaID');
 	}
 	
 	

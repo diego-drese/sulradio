@@ -56,4 +56,10 @@ class EmissoraAtoJc extends Model {
 	public function scopeWithEmissora($query, $emissoraID) {
 		return $query->where('emissoraID', $emissoraID);
 	}
+	
+	public function scopeJoinEmissora($query) {
+		return $query->join('emissora', 'emissora.emissoraID', 'ato.emissoraID')
+			->leftJoin('municipio', 'municipio.municipioID', 'emissora.municipioID')
+			->leftJoin('uf', 'uf.ufID', 'municipio.ufID');
+	}
 }
