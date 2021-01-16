@@ -41,6 +41,9 @@ class Helper {
 		$dateBr = \DateTime::createFromFormat($format, $date);
 		return MongoUtils::convertDatePhpToMongo($dateBr->format('Y-m-d H:i:s'));
 	}
+	public static function stripAccents($stripAccents){
+		return strtr($stripAccents,'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ','aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+	}
 	
 	public static function slugify($text, $capitalize = false) {
 		// replace non letter or digits by -
@@ -78,15 +81,15 @@ class Helper {
 		}
 		$format = 'd/m/Y';
 		if ($date && strpos($date, ':')) {
-			if (strpos($date, 'H')) {
+			$times = explode(':', $date);
+			if(count($times)==3){
+				$format .= ' H:i:s';
+			}elseif(count($times)==2){
+				$format .= ' H:i';
+			}elseif(count($times)==1){
 				$format .= ' H';
-				if (strpos($date, 'i')) {
-					$format .= ':i';
-				}
-				if (strpos($date, 's')) {
-					$format .= ':s';
-				}
 			}
+		
 		}
 		$dateBr = \DateTime::createFromFormat($format, $date);
 		return $dateBr->format('Y-m-d H:i:s');

@@ -21,8 +21,8 @@ class CreateDouTable extends Migration {
 			$table->background('type_id');
 			$table->background('type_name');
 			$table->background('date');
-			$table->background('category_id');
-			$table->background('category_name');
+			$table->background('categories.id');
+			$table->background('categories.name');
 			$table->background('page_number');
 			$table->background('edition_number');
 			$table->background('id_materia');
@@ -30,7 +30,7 @@ class CreateDouTable extends Migration {
 			$table->background('data');
 			$table->background('ementa');
 			$table->background('titulo');
-			$table->background('subTitulo');
+			$table->background('sub_titulo');
 			$table->background('created_at');
 			$table->background('updated_at');
 		});

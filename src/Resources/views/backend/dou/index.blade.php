@@ -1,0 +1,316 @@
+@extends('Admin::layouts.backend.main')
+@section('title', 'Diario oficial da união')
+@section('content')
+    <div class="card">
+        <div class="card-body">
+
+            <div class=" align-items-center m-b-10">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="categories">Orgão</label>
+                            <select class="form-control" id="categories" multiple>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="type">Tipo</label>
+                            <select class="form-control" id="type" multiple>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-5">
+                        <div class="form-group">
+                            <label for="subject">Assunto</label>
+                            <input id="subject" type="search" name="dates" class="form-control" autocomplete="off" >
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="doc">Seção</label>
+                            <select class="form-control" id="pub" multiple>
+                                <option value="DO1">Seção 1</option>
+                                <option value="DO2">Seção 2</option>
+                                <option value="DO3">Seção 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="doc">Periodo</label>
+                            <input type="text" name="period" id="period" class="form-control shawCalRanges">
+                        </div>
+                    </div>
+                    <div class="col-1">
+                        <div class="form-group">
+                            <label for="doc">&nbsp;</label><br/>
+                            <button style=""  class="btn btn-success" id="searsh">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="note-full-container" class="note-has-grid row">
+
+        <div class="col-md-12">
+            <div class="card card-body">
+            <table id="table" class="table table-striped table-bordered" role="grid">
+                <thead style="display:none">
+                <tr>
+                    <td>
+                        Noticia
+                    </td>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            </div>
+
+        </div>
+    </div>
+@endsection
+
+@section('style_head')
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/select2.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/daterangepicker.css')}}">
+    <style>
+        .select2-selection.select2-selection--single, .select2-selection--multiple {
+            height: 32px;
+
+        }
+
+        /*.select2-container {z-index: 100002;}*/
+        /*.swal2-container.swal2-shown{z-index: 900000;}*/
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            height: auto;
+            line-height: 20px;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            height: auto;
+            line-height: 20px;
+        }
+
+        .select2-search__field {
+            width: 100% !important;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #fff;
+            color: black;
+        }
+        .openModal{
+            cursor:pointer;
+        }
+        .openModal:hover{
+            text-decoration: underline;
+        }
+    </style>
+@endsection
+@section('script_footer_end')
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/daterangepicker.js')}}></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#categories').select2({
+                width:'100%',
+                placeholder: 'Buscar por orgão',
+                tag:true,
+                minimumInputLength: 3,
+                ajax: {
+                    url: '{{route('dou.index')}}',
+                    data: function (params) {
+                        var query = {
+                            search_category: params.term
+                        }
+                        return query;
+                    },
+                    processResults: function (data) {
+                        var myData = $.map(data, function (obj) {
+                                  obj.text = obj.text || obj.name;
+                                  return obj;
+                                });
+                        return {
+                          results: myData
+                        }
+                    }
+                },
+            });
+
+            $('#type').select2({
+                width:'100%',
+                placeholder: 'Buscar por tipos',
+                tag:true,
+                minimumInputLength: 3,
+                ajax: {
+                    url: '{{route('dou.index')}}',
+                    data: function (params) {
+                        var query = {
+                            search_type: params.term
+                        }
+                        return query;
+                    },
+                    processResults: function (data) {
+                        console.log(data);
+                        var myData = $.map(data, function (obj) {
+                                  obj.text = obj.text || obj.name;
+                                  return obj;
+                                });
+                        return {
+                          results: myData
+                        }
+                    }
+                },
+            });
+            $('#pub').select2({
+                width:'100%',
+                tag:true,
+            });
+            var daterangepicker = $('#period').daterangepicker({
+                startDate: moment().subtract(30, 'days'),
+                autoUpdateInput:false,
+                endDate:  moment(),
+                valueDefault: null,
+                locale: {
+                    "format": "dd/mm/yy"
+                },
+                alwaysShowCalendars: true,
+                ranges: {
+                    'Últimos 03 Dias': [moment().subtract(3, 'days'), moment()],
+                    'Últimos 05 Dias': [moment().subtract(5, 'days'), moment()],
+                    'Últimos 07 Dias': [moment().subtract(7, 'days'), moment()],
+                    'Últimos 15 Dias': [moment().subtract(15, 'days'), moment()],
+                    'Últimos 30 Dias': [moment().subtract(30, 'days'), moment()],
+                    'Últimos 60 Dias': [moment().subtract(60, 'days'), moment()],
+                    'Últimos 90 Dias': [moment().subtract(90, 'days'), moment()],
+                    'Últimos 180 Dias': [moment().subtract(90, 'days'), moment()],
+                },
+                locale:{
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    applyLabel: 'Aplicar',
+                    cancelLabel: 'Cancelar',
+                    weekLabel: 'Sem',
+                    customRangeLabel: 'Período de',
+                }
+                }, function(start, end) {
+                    $('#period').val(start.format('L')+' - '+ end.format('L'))
+
+            });
+
+            $('#date').change(function () {
+                var dateFilter = this.value;
+                ajaxData(urlDocumentNew, {date:dateFilter}, buildPieChart, 'document_new');
+                ajaxData(urlDocumentAction, {date:dateFilter}, buildPieChart, 'document_action');
+            });
+            var table = $('#table').DataTable({
+                language: {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "_MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                serverSide: true,
+                processing: true,
+                autoWidth: false,
+                orderCellsTop: true,
+                //stateSave: true,
+                searching: false,
+                lengthChange: false,
+                ajax: {
+                    url: '{{ route('dou.index') }}',
+                    type: 'GET',
+                    data: function (d) {
+                        d._token = $("input[name='_token']").val();
+                        d.length = 10;
+                        d.categories = $("#categories").val();
+                        d.types = $("#type").val();
+                        d.subject = $("#subject").val();
+                        d.pub = $("#pub").val();
+                        d.period = $("#period").val();
+                        return d;
+                    }
+                },
+                columns: [
+                    { data: null, searchable: false, orderable: false, render: function (data) {
+                            var categories  = data.categories;
+                            var organ       = categories[0];
+                            var subOrgans   = '';
+                            for(var i=1; i<categories.length;i++ ){
+                                subOrgans+=(i>1? ' / ': '')+categories[i]['name'];
+                            }
+                            return '<div >'+
+                                        '<span class="side-stick"></span>'+
+                                        '<h4 class="note-title text-truncate w-75 mb-0">'+organ.name+'</h4>'+
+                                        '<h5 class="note-title text-truncate w-75 mb-0">'+subOrgans+'</h5>'+
+                                        '<h6 class="note-title text-truncate w-75 mb-0">'+data.pub_name+' - '+data.type_name+'</h6>'+
+                                        '<p class="note-date font-12 text-muted">'+moment(data.date).format('ll')+'</p>'+
+                                        '<h3 class="note-title text-truncate w-75 mb-0 openModal " id="dou-'+data.id+'">'+(data.identifica ? data.identifica : data.name)+'</h3>'+
+                                        '<div class="note-content">'+
+                                             '<p class="note-inner-content text-muted">'+
+                                            (data.ementa ? data.ementa : '')+
+                                            '</p>'+
+                                            '<p class="note-inner-content text-muted">'+
+                                            (data.text_start)+
+                                            '</p>'+
+                                        '</div>'+
+                                        '<div class="d-flex align-items-center">'+
+                                            '<span class="mr-1">'+
+                                                    '<i class="mdi mdi-radio" style="font-size: 14px;"></i>'+
+                                                '</span>'+
+                                        '</div>'+
+                                    '</div>';
+                            }
+                    }
+                ]
+            });
+            $('#searsh').click(function(){
+                table.draw();
+            });
+             $(document).on("click", ".openModal" , function() {
+                alert('ok');
+            });
+});
+
+
+
+</script>
+
+@endsection
