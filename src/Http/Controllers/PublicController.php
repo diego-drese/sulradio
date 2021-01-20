@@ -28,8 +28,9 @@ class PublicController extends SulradioController {
 		return response()->json($query, 200);
 	}
 	public function searchBroadcast(Request $request) {
-		$search = $request->get('search');
-		$clientID = $request->get('client_id');
+		$search         = $request->get('search');
+		$clientID       = $request->get('client_id');
+		$ignoreClient   = $request->get('ignore_client');
 		$query  = Emissora::where('razao_social', 'like', '%'.$search.'%')
 			->withLocalidade()
 			->withServico()
@@ -41,7 +42,7 @@ class PublicController extends SulradioController {
 			$broadcast->id      = $broadcast->emissoraID;
 			$broadcast->name    = $broadcast->nome_fantasia;
 			$broadcast->text    = $broadcast->desc_servico.'-'.$broadcast->razao_social."({$broadcast->desc_municipio} {$broadcast->desc_uf})";
-			if($broadcast->client_id!=null && $broadcast->client_id!=$clientID){
+			if(!$ignoreClient && $broadcast->client_id!=null && $broadcast->client_id!=$clientID){
 				$broadcast->disabled = true;
 			}
 		}

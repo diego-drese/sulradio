@@ -31,6 +31,12 @@ class Dou extends Model {
 	protected $table = 'dou';
 	protected $connection = 'sulradio_mongo';
 	protected $dates  = ['created_at', 'updated_at', 'date'];
+	
+	public static function getById($id){
+		return self::where('id', $id)->first();
+	}
+	
+	
 	public static function scopeWithCategories($query, $categories){
 		if(!is_array($categories)){
 			return $query;

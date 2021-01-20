@@ -26,19 +26,32 @@ class DouController extends SulradioController {
 		$totalDocuments     =  Helper::formatInteger(Document::currentVersion()->count());
 		$totalAtos          =  Helper::formatInteger(Ato::count());
 		if ($request->ajax()) {
+			
 			$searchCategory = $request->get('search_category');
-			$searchType     = $request->get('search_type');
-			
-			
 			if($searchCategory){
 				$search = DouCategory::searchCategory($searchCategory);
 				return response()->json($search);
 			}
+			$searchType     = $request->get('search_type');
 			if($searchType){
 				$search = DouType::searchCategory($searchType);
 				return response()->json($search);
 			}
+			
+			$searchEmissora     = $request->get('search_emissora');
+			if($searchEmissora){
+				$search = Emissora::get;
+				return response()->json($search);
+			}
+			$id     = $request->get('id');
+			if($id){
+				$search = Dou::getById($id);
+				return response()->json($search);
+			}
+			
 			$query          = Dou::query();
+			$order          = $request->get('my_order');
+			$direction      = $request->get('direction');
 			$period         = $request->get('period');
 			if($period){
 				$query->withPeriod($period);
@@ -59,10 +72,11 @@ class DouController extends SulradioController {
 			if($pub){
 				$query->withPub($pub);
 			}
-			$query->orderBy('date', 'desc');
-			
-			
-			
+			if($order && $direction){
+				$query->orderBy($order, $direction);
+			}else{
+				$query->orderBy('date', 'desc');
+			}
 		
 			return DataTables::of($query)->toJson(true);
 			/** Busca os artigos */
@@ -72,10 +86,8 @@ class DouController extends SulradioController {
 	
 	protected function makeParameters($extraParameter = null) {
 		$parameters = [
-			'hasAdd' => ResourceAdmin::hasResourceByRouteName('plan.create'),
-			'hasEdit' => ResourceAdmin::hasResourceByRouteName('plan.edit', [1]),
-			'hasStore' => ResourceAdmin::hasResourceByRouteName('plan.store'),
-			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('plan.update', [1])
+			'hasAddAto' => ResourceAdmin::hasResourceByRouteName('plan.store'),
+			'hasEditAto' => ResourceAdmin::hasResourceByRouteName('plan.store'),
 		];
 		$this->parameters = $parameters;
 	}

@@ -1,4 +1,5 @@
 <div class="row">
+    <input type="hidden" name="douId" value="{{isset($douId) ? $douId : ''}}">
     <div class="col-md-6 form-group {{$errors->has('tipo_atoID') ? 'has-error' : ''}} ">
         <label for="tipo_atoID">Tipo *</label>
         <select class="form-control select2" id="tipo_atoID" name="tipo_atoID" required>
@@ -138,24 +139,6 @@
             <span class="help-block">{{$errors->first('classe')}}</span>
         @endif
     </div>
-    <div class="col-md-3 form-group {{$errors->has('tipo_ato_ref') ? 'has-error' : ''}} ">
-        <label for="tipo_ato_ref">Tipo ato ref.</label>
-        <select class="form-control select2" id="tipo_ato_ref" name="tipo_ato_ref">
-            <option value="">Selecione</option>
-            @foreach($tipoAto as $key=>$value)
-                <option {{old('tipo_ato_ref', $data->exists() ? $data->tipo_ato_ref : '') == $value->tipo_ato_ref ? 'selected="selected"' : ''}}  value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-md-2 form-group {{$errors->has('ato_ref') ? 'has-error' : ''}} ">
-        <label for="ato_ref">Nº. ato ref.</label>
-        <input type="text" autocomplete="off" class="form-control" value="{{old('ato_ref',$data->exists() ? $data->ato_ref : '')}}"
-               name="ato_ref"
-               id="ato_ref">
-        @if($errors->has('ato_ref'))
-            <span class="help-block">{{$errors->first('ato_ref')}}</span>
-        @endif
-    </div>
     <div class="col-md-2 form-group {{$errors->has('concorrenciaID') ? 'has-error' : ''}} ">
         <label for="ato_ref">Nº. conc.</label>
         <input type="number" class="form-control"
@@ -164,16 +147,6 @@
                id="concorrenciaID">
         @if($errors->has('concorrenciaID'))
             <span class="help-block">{{$errors->first('concorrenciaID')}}</span>
-        @endif
-    </div>
-    <div class="col-md-2 form-group date {{$errors->has('data_renovacao') ? 'has-error' : ''}} ">
-        <label for="ato_ref">Data renovação</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('data_renovacao',$data->exists() ? $data->data_renovacao : '')}}"
-               name="data_renovacao"
-               id="data_renovacao">
-        @if($errors->has('data_renovacao'))
-            <span class="help-block">{{$errors->first('data_renovacao')}}</span>
         @endif
     </div>
 
@@ -187,85 +160,12 @@
             <span class="help-block">{{$errors->first('ato_outorgaID')}}</span>
         @endif
     </div>
-    <div class="col-md-2 form-group {{$errors->has('tipo_ato_outorga') ? 'has-error' : ''}} ">
-        <label for="tipo_ato_outorga">Tipo ato out.</label>
-        <select class="form-control select2" id="tipo_ato_outorga" name="tipo_ato_outorga">
-            <option value="">Selecione</option>
-            @foreach($tipoAto as $key=>$value)
-                <option {{old('tipo_atoID', $data->exists() ? $data->tipo_atoID : '') == $value->tipo_atoID ? 'selected="selected"' : ''}} value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-md-2 form-group date {{$errors->has('data_ato_outorga') ? 'has-error' : ''}} ">
-        <label for="data_ato_outorga">Data ato out.</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('data_ato_outorga',$data->exists() ? $data->data_ato_outorga : '')}}"
-               name="data_ato_outorga"
-               id="data_ato_outorga">
-        @if($errors->has('data_ato_outorga'))
-            <span class="help-block">{{$errors->first('data_ato_outorga')}}</span>
-        @endif
-    </div>
-    <div class="col-md-2 form-group date {{$errors->has('data_dou_outorga') ? 'has-error' : ''}} ">
-        <label for="data_dou_outorga">Data DOU out.</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('data_dou_outorga',$data->exists() ? $data->data_dou_outorga : '')}}"
-               name="data_dou_outorga"
-               id="data_dou_outorga"
-                >
-        @if($errors->has('data_dou_outorga'))
-            <span class="help-block">{{$errors->first('data_dou_outorga')}}</span>
-        @endif
-    </div>
-    <div class="col-md-2 form-group {{$errors->has('ato_renovacao') ? 'has-error' : ''}} ">
-        <label for="ato_renovacao">Nº. ato ren.</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('ato_renovacao',$data->exists() ? $data->ato_renovacao : '')}}"
-               name="ato_renovacao"
-               id="ato_renovacao">
-        @if($errors->has('ato_renovacao'))
-            <span class="help-block">{{$errors->first('ato_renovacao')}}</span>
-        @endif
-    </div>
-    <div class="col-md-4 form-group {{$errors->has('tipo_ato_renovacao') ? 'has-error' : ''}} ">
-        <label for="tipo_ato_renovacao">Tipo ato ren.</label>
-        <select class="form-control select2" id="tipo_ato_renovacao" name="tipo_ato_renovacao">
-            <option value="">Selecione</option>
-            @foreach($tipoAto as $key=>$value)
-                <option {{old('tipo_ato_renovacao', $data->exists() ? $data->tipo_ato_renovacao : '') == $value->tipo_atoID ? 'selected="selected"' : ''}}  value="{{$value->tipo_atoID}}">{{$value->desc_tipo_ato}}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-md-2 form-group date {{$errors->has('data_ato_renovacao') ? 'has-error' : ''}} ">
-        <label for="data_ato_renovacao">Data ato ren.</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('data_ato_renovacao',$data->exists() ? $data->data_ato_renovacao : '')}}"
-               name="data_ato_renovacao"
-               id="data_ato_renovacao">
-        @if($errors->has('data_ato_renovacao'))
-            <span class="help-block">{{$errors->first('data_ato_renovacao')}}</span>
-        @endif
-    </div>
-    <div class="col-md-2 form-group date {{$errors->has('data_dou_renovacao') ? 'has-error' : ''}} ">
-        <label for="data_dou_renovacao">Data DOU ren.</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('data_dou_renovacao',$data->exists() ? $data->data_dou_renovacao : '')}}"
-               name="data_dou_renovacao"
-               id="data_dou_renovacao">
-        @if($errors->has('data_dou_renovacao'))
-            <span class="help-block">{{$errors->first('data_dou_renovacao')}}</span>
-        @endif
-    </div>
-    <div class="col-md-2 form-group {{$errors->has('processo_renovacao') ? 'has-error' : ''}} ">
-        <label for="processo_renovacao">Nº. processo ren.</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('processo_renovacao',$data->exists() ? $data->processo_renovacao : '')}}"
-               name="processo_renovacao"
-               id="processo_renovacao">
-        @if($errors->has('processo_renovacao'))
-            <span class="help-block">{{$errors->first('processo_renovacao')}}</span>
-        @endif
-    </div>
+
+
+
+
+
+
     <div class="col-md-4 form-group {{$errors->has('tipo_penalidadeID') ? 'has-error' : ''}} ">
         <label for="tipo_penalidadeID">Tipo de penalidade.</label>
         <select class="form-control select2" id="tipo_penalidadeID" name="tipo_penalidadeID">
@@ -294,16 +194,7 @@
             <span class="help-block">{{$errors->first('processo_renovacao')}}</span>
         @endif
     </div>
-    <div class="col-md-4 form-group date {{$errors->has('data_inicio_renovacao') ? 'has-error' : ''}} ">
-        <label for="ato_ref">Renova conc/perm. a partir de</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('data_inicio_renovacao',$data->exists() ? $data->data_inicio_renovacao : '')}}"
-               name="data_inicio_renovacao"
-               id="data_inicio_renovacao">
-        @if($errors->has('data_inicio_renovacao'))
-            <span class="help-block">{{$errors->first('data_inicio_renovacao')}}</span>
-        @endif
-    </div>
+
     <div class="col-md-12 form-group {{$errors->has('observacao') ? 'has-error' : ''}} ">
         <label for="observacao">Observações</label>
         <textarea rows="7" name="observacao" class="form-control"

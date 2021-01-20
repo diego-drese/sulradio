@@ -23,7 +23,7 @@
                         </div>
                     </div>
 
-                    <div class="col-5">
+                    <div class="col-6">
                         <div class="form-group">
                             <label for="subject">Assunto</label>
                             <input id="subject" type="search" name="dates" class="form-control" autocomplete="off" >
@@ -43,11 +43,32 @@
 
                     <div class="col-3">
                         <div class="form-group">
-                            <label for="doc">Periodo</label>
+                            <label for="period">Periodo</label>
                             <input type="text" name="period" id="period" class="form-control shawCalRanges">
                         </div>
                     </div>
-                    <div class="col-1">
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="order">Ordenar</label>
+                            <select class="form-control" id="order">
+                                <option value="date">Data da publicação</option>
+                                <option value="titulo">Orgão</option>
+                                <option value="pub_name">Sessao</option>
+                                <option value="type_name">Tipo</option>
+                                <option value="identifica">Assunto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="direction">Ordenação</label>
+                            <select class="form-control" id="direction">
+                                <option value="asc">A-Z</option>
+                                <option value="desc">Z-A</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-2">
                         <div class="form-group">
                             <label for="doc">&nbsp;</label><br/>
                             <button style=""  class="btn btn-success" id="searsh">Buscar</button>
@@ -60,7 +81,6 @@
     </div>
 
     <div id="note-full-container" class="note-has-grid row">
-
         <div class="col-md-12">
             <div class="card card-body">
             <table id="table" class="table table-striped table-bordered" role="grid">
@@ -77,6 +97,34 @@
             </table>
             </div>
 
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <h5 id="modal-organ">Orgão</h5>
+                        <h5 id="modal-sub-organ">Sub orgão</h5>
+                        <p id="info">Sessão - Tipo - data</p>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="text">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <select name="broadcast" id="broadcast" class="form-control">
+                    </select>
+                    <button type="button" class="btn btn-success" id="attoEmissora" data-emissora-ato="" data-dou-id="">Atos&nbsp;Emissora</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -117,6 +165,10 @@
         .openModal:hover{
             text-decoration: underline;
         }
+        b, strong {
+            font-weight: bolder;
+            padding: 0 2px;
+        }
     </style>
 @endsection
 @section('script_footer_end')
@@ -125,12 +177,15 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/daterangepicker.js')}}></script>
 
     <script type="text/javascript">
+
         $(document).ready(function () {
+
             $('#categories').select2({
                 width:'100%',
                 placeholder: 'Buscar por orgão',
                 tag:true,
                 minimumInputLength: 3,
+
                 ajax: {
                     url: '{{route('dou.index')}}',
                     data: function (params) {
@@ -179,6 +234,33 @@
             $('#pub').select2({
                 width:'100%',
                 tag:true,
+            });
+
+            $("#broadcast").select2({
+                width: 'calc(100% - 38px)',
+                minimumInputLength: 3,
+                placeholder: 'Selecione',
+                allowClear: true,
+                dropdownParent: $('#modal'),
+                ajax: {
+                    url: '{{route('broadcast.search')}}',
+                    data: function (params) {
+                        var query = {
+                            search: params.term,
+                            client_id: 1,
+                            ignore_client: 1,
+                            search_select: '1'
+                        }
+                        return query;
+                    },
+                    processResults: function (data) {
+                        // Transforms the top-level key of the response object from 'items' to 'results'
+                        return {
+                            results: data
+                        };
+                    }
+                }
+
             });
             var daterangepicker = $('#period').daterangepicker({
                 startDate: moment().subtract(30, 'days'),
@@ -265,6 +347,8 @@
                         d.subject = $("#subject").val();
                         d.pub = $("#pub").val();
                         d.period = $("#period").val();
+                        d.my_order = $("#order").val();
+                        d.direction = $("#direction").val();
                         return d;
                     }
                 },
@@ -275,6 +359,11 @@
                             var subOrgans   = '';
                             for(var i=1; i<categories.length;i++ ){
                                 subOrgans+=(i>1? ' / ': '')+categories[i]['name'];
+                            }
+                            var urlAto  = '{{route('emissora.atos.oficiais.edit', [':emiddoraId', ':id'])}}';
+                            var linkAto = '<i class="mdi mdi-radio" style="font-size: 14px;"></i>'
+                            if(data.ato_id){
+                                linkAto='<a target="_blank" href="'+urlAto.replace(':emiddoraId', data.emissora_id).replace(':id', data.ato_id)+'"><i class="mdi mdi-radio text-success" style="font-size: 14px;"></i> '+data.emissora_name+'</a>'
                             }
                             return '<div >'+
                                         '<span class="side-stick"></span>'+
@@ -293,7 +382,7 @@
                                         '</div>'+
                                         '<div class="d-flex align-items-center">'+
                                             '<span class="mr-1">'+
-                                                    '<i class="mdi mdi-radio" style="font-size: 14px;"></i>'+
+                                                    linkAto+
                                                 '</span>'+
                                         '</div>'+
                                     '</div>';
@@ -304,8 +393,61 @@
             $('#searsh').click(function(){
                 table.draw();
             });
-             $(document).on("click", ".openModal" , function() {
-                alert('ok');
+
+            $('#attoEmissora').click(function(){
+                var emissoraId = $('#broadcast').val();
+                var emissoraAtoId = $('#attoEmissora').attr('data-emissora-ato');
+                var atoId = $('#attoEmissora').attr('data-dou-id');
+                if(!emissoraId){
+                    return false;
+                }
+                var urlAdd  = '{{route('emissora.atos.oficiais.create', [':emiddoraId'])}}';
+                var urlEdit = '{{route('emissora.atos.oficiais.edit', [':emiddoraId', ':id'])}}';
+                var url     = '';
+                if(emissoraAtoId){
+                    url = urlEdit.replace(':emiddoraId', emissoraId).replace(':id',emissoraAtoId);
+                }else{
+                    url = urlAdd.replace(':emiddoraId', emissoraId)+'?dou_id='+atoId;
+                }
+                window.open(url);
+            });
+
+            $(document).on("click", ".openModal" , function() {
+                var id = this.id.split('-')[1];
+                $.ajax({
+                    url: '{{ route('dou.index') }}',
+                    type: "get",
+                    dataType: 'json',
+                    data: {id:id},
+                    beforeSend: function () {
+
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        var categories  = data.categories;
+                        var organ       = categories[0];
+                        var subOrgans   = '';
+                        for(var i=1; i<categories.length;i++ ){
+                            subOrgans+=(i>1? ' / ': '')+categories[i]['name'];
+                        }
+                        $('#modal #attoEmissora').attr('data-dou-id', data.id);
+                        $('#modal #attoEmissora').attr('data-emissora-ato', (data.ato_id ? data.ato_id : ''));
+                        $('#modal #modal-organ').html(organ.name);
+                        $('#modal #modal-sub-organ').html(subOrgans);
+
+                        var info = data.pub_name+" - "+data.type_name+' - '+moment(data.date).format('ll');
+                        $('#modal #info').html(info);
+                        $('#modal #title').html((data.identifica ? data.identifica : data.name));
+                        $('#modal #text').html(data.text);
+                        if(data.emissora_id){
+                            $('#broadcast').html('<option value="'+data.emissora_id+'">'+data.emissora_name+'</option>').trigger('change');
+                        }
+                    },
+                    error: function (erro) {
+                        toastr.error(erro.responseJSON.message, 'Erro');
+                    }
+                });
+                $('#modal').modal('show')
             });
 });
 

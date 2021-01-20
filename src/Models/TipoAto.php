@@ -15,6 +15,7 @@ class TipoAto extends Model {
 	];
 	protected $connection = 'sulradio';
 	protected $table = 'tipo_ato';
+	protected $primaryKey = 'tipo_atoID';
 	public function usesTimestamps() : bool{
 		return false;
 	}
@@ -22,6 +23,18 @@ class TipoAto extends Model {
 		return Cache::tags(['sulradio'])->remember('tipo_ato', 120, function () {
 			return self::get();
 		});
+	}
+	public static function getOrCreateByName($name) {
+		$tipo = self::where('desc_tipo_ato', $name)->first();
+		if(!$tipo){
+			$tipo = self::create([
+				'desc_tipo_ato'=> mb_strtoupper($name, 'UTF-8'),
+				'orgaoID'=>1,
+			]);
+		}
+		
+		Cache::tags('sulradio')->flush();
+		return $tipo;
 	}
 	
 	
