@@ -54,11 +54,10 @@ class EmissoraAtosOficiaisController extends SulradioController {
 		if($douId){
 			$dou                = Dou::getById($douId);
 			$tipo               = TipoAto::getOrCreateByName($dou->type_name);
-			$dataDou            = MongoUtils::convertDateMongoToPhpDateTime($dou->date);
 			$data->tipo_atoID   = $tipo->tipo_atoID;
 			$data->numero_ato   = $dou->id;
 			$data->numero_ato   = $dou->id;
-			$data->data_dou     = $dataDou->format('d/m/Y');
+			$data->data_dou     = $dou->date->format('Y-m-d H:i:s');
 			$data->secao        = $dou->pub_name;
 			$data->pagina       = $dou->page_number;
 			$text               = str_replace('>','> ',$dou->text);
