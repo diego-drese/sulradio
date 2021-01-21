@@ -25,6 +25,7 @@ class DouController extends SulradioController {
 		$totalBroadCast     =  Helper::formatInteger(Emissora::count());
 		$totalDocuments     =  Helper::formatInteger(Document::currentVersion()->count());
 		$totalAtos          =  Helper::formatInteger(Ato::count());
+		$lastProcessed      =  Dou::getLastProcessed();
 		if ($request->ajax()) {
 			
 			$searchCategory = $request->get('search_category');
@@ -81,7 +82,7 @@ class DouController extends SulradioController {
 			return DataTables::of($query)->toJson(true);
 			/** Busca os artigos */
 		}
-		return $this->renderView('SulRadio::backend.dou.index', ['totalClients' => $totalClients, 'totalBroadCast'=>$totalBroadCast, 'totalDocuments'=>$totalDocuments, 'totalAtos'=>$totalAtos]);
+		return $this->renderView('SulRadio::backend.dou.index', ['totalClients' => $totalClients, 'totalBroadCast'=>$totalBroadCast, 'totalDocuments'=>$totalDocuments, 'totalAtos'=>$totalAtos, 'lastProcessed'=>$lastProcessed]);
 	}
 	
 	protected function makeParameters($extraParameter = null) {

@@ -63,8 +63,8 @@
                         <div class="form-group">
                             <label for="direction">Ordenação</label>
                             <select class="form-control" id="direction">
-                                <option value="asc">A-Z</option>
                                 <option value="desc">Z-A</option>
+                                <option value="asc">A-Z</option>
                             </select>
                         </div>
                     </div>
@@ -72,6 +72,12 @@
                         <div class="form-group">
                             <label for="doc">&nbsp;</label><br/>
                             <button style=""  class="btn btn-success" id="searsh">Buscar</button>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label for="doc">Último processamento:</label><br/>
+                            <p class="note-date font-12 text-muted p-t-5">{{$lastProcessed}}</p>
                         </div>
                     </div>
                 </div>
@@ -138,7 +144,6 @@
             height: 32px;
 
         }
-
         /*.select2-container {z-index: 100002;}*/
         /*.swal2-container.swal2-shown{z-index: 900000;}*/
         .select2-container--default.select2-container--focus .select2-selection--multiple {

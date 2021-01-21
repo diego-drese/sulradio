@@ -26,6 +26,8 @@ class Dou extends Model {
 		'titulo',
 		'sub_titulo',
 		'text',
+		'created_at',
+		'updated_at',
 	];
 	
 	protected $table = 'dou';
@@ -36,6 +38,10 @@ class Dou extends Model {
 		return self::where('id', $id)->first();
 	}
 	
+	public static function getLastProcessed(){
+		$query = self::orderBy('created_at', 'desc')->first();
+		return $query ? $query->created_at->setTimeZone('America/Sao_Paulo')->format('d/m/Y H:i') : '';
+	}
 	
 	public static function scopeWithCategories($query, $categories){
 		if(!is_array($categories)){

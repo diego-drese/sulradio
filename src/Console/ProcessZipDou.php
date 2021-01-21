@@ -123,7 +123,6 @@ class ProcessZipDou extends Command {
 	}
 	
 	public function handle() {
-		$this->firstInsert();
 		$this->unzipFiles();
 		$this->processXml();
 	}
@@ -161,7 +160,7 @@ class ProcessZipDou extends Command {
 				$text           = is_string($body['Texto']) ?  $body['Texto'] : '';
 				$textStart      = strip_tags(str_replace('>', '> ', $text));
 				$textStart      = $this->limit_text($textStart, 30);
-				
+				$date           = MongoUtils::convertDatePhpToMongo($pubDate);
 				$dataSave       = [
 					'id'=>$attributes['id'],
 					'name'=>$attributes['name'],
@@ -169,7 +168,7 @@ class ProcessZipDou extends Command {
 					'pub_name'=>$attributes['pubName'],
 					'type_id'=>$douType->id,
 					'type_name'=>$douType->name,
-					'date'=>MongoUtils::convertDatePhpToMongo($pubDate),
+					'date'=>$date,
 					'categories'=>$douCategories->toArray(),
 					'page_number'=>$attributes['numberPage'],
 					'edition_number'=>$attributes['editionNumber'],
@@ -181,7 +180,9 @@ class ProcessZipDou extends Command {
 					'sub_titulo'=> is_string($body['SubTitulo']) ? $body['SubTitulo']: null,
 					'text_start'=> $textStart,
 					'text'=> $text,
+					'created_at'=>MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s')),
 				];
+				
 				Dou::where('id', $attributes['id'])->update($dataSave, ['upsert' => true]);
 			}catch (\Exception $e){
 				$this->error('Error parse file['.$file.'] e['.$e->getMessage().']');
@@ -193,14 +194,10 @@ class ProcessZipDou extends Command {
 	public function unzipFiles(){
 		$files = array_diff(scandir($this->getPathZip()), ['..', '.']);
 		$this->info("unzipFiles, files[".implode(',', $files)."]");
+		$zip = new \ZipArchive();
 		foreach ($files as $file){
-			$zip = new \ZipArchive();
 			if ($zip->open($this->getPathZip($file)) === TRUE) {
-				for($i = 0; $i < $zip->numFiles; $i++) {
-					$filename = $zip->getNameIndex($i);
-					$fileinfo = pathinfo($filename);
-					copy("zip://".$this->getPathZip($file)."#".$filename, $this->getPathXml($fileinfo['basename']));
-				}
+				$zip->extractTo($this->getPathXml());
 				$zip->close();
 			}
 			unlink($this->getPathZip($file));
