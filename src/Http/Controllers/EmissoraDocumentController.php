@@ -107,11 +107,11 @@ class EmissoraDocumentController extends SulradioController {
 			Storage::disk('spaces')->putFileAs("", $request->file('file'), $fileName);
 			
 			$dataForm['emissora_id']    = $emissoraID;
+			$dataForm['status']         = 1;
 			$dataForm['file_name']      = $fileName;
 			$dataForm['file_type']      = $fileType;
 			$dataForm['file_preview']   = '';
 			$dataForm['file_size']      = $filesize;
-			$dataForm['status']         = 1;
 		}
 		Document::createOrUpdate($dataForm, Auth::user(), $id);
 		toastr()->success("Documento Atualizado com sucesso", 'Sucesso');

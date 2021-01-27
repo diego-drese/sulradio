@@ -295,6 +295,10 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
     <script>
+        $('#cnpj').mask('00.000.000/0000-00', {
+            reverse: false, onKeyPress: function (value, event, currentField, options) {
+            }
+        });
         $(".select2").select2({
             width: '100%',
             placeholder: 'Selecione',

@@ -101,7 +101,7 @@ class Document extends Model {
 		$action             = DocumentHistoric::ACTION_CREATED;
 		$data['version']    = 0;
 		$data['document_id']= 0;
-		$data['status']= Document::STATUS_CURRENT_VERSION;
+		$data['status']     = Document::STATUS_CURRENT_VERSION;
 		if($id){
 			$oldDocument            = Document::getById($id, $user);
 			if($oldDocument->status!=Document::STATUS_CURRENT_VERSION){
@@ -113,6 +113,15 @@ class Document extends Model {
 			$action                 = DocumentHistoric::ACTION_UPDATED;
 			$data['version']        = $oldDocument->version+1;
 			$data['document_id']    = $oldDocument->id;
+			$data['emissora_id']    = $oldDocument->emissora_id;
+			
+			if(!isset($data['file_name'])){
+				$data['file_name']      = $oldDocument->file_name;
+				$data['file_type']      = $oldDocument->file_type;
+				$data['file_preview']   = '';
+				$data['file_size']      = $oldDocument->file_size;
+			}
+			
 		}
 		$document = Document::create($data);
 		DocumentHistoric::create([
