@@ -25,6 +25,7 @@ class Dou extends Model {
 		'ementa',
 		'titulo',
 		'sub_titulo',
+		'url_dou',
 		'text',
 		'created_at',
 		'updated_at',

@@ -33,6 +33,7 @@ class Ato extends Model {
 		'data_renovacao',
 		'concorrenciaID',
 		'emissoraID',
+		'ato_url',
 		'ato_outorgaID',
 		'tipo_ato_outorga',
 		'data_ato_outorga',

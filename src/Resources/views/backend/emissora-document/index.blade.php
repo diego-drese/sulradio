@@ -72,6 +72,21 @@
     <script>
         var hasEdit = '{{$hasEdit}}';
         var hasTimeLine = '{{$hasTimeLine}}';
+        function copyUrl(ele){
+            var copyText    = document.createElement('textarea');
+            var id          = ele.id.split('-')[1];
+            /* Select the text field */
+            copyText.value = $('#document-'+id).attr('href');
+            document.body.appendChild(copyText);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); /* For mobile devices */
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+            document.body.removeChild(copyText);
+
+            /* Alert the copied text */
+            toastr.success('Copiado', copyText.value)
+        }
         $(document).ready(function () {
 
             var tableProcessos = $('#tableProcessos').DataTable({
@@ -132,7 +147,7 @@
                         return '---';
                     }},
                     {data: "file_type", 'name': 'document.file_type', render: function(data, display, row){
-                        return '<a href="'+row['download']+'" target="_blank">'+data+'</a>';
+                        return '<a id="document-'+row.id+'" href="'+row['download']+'" target="_blank">'+data+'</a>  <a href="#" onclick="copyUrl(this)"  id="copy-'+row.id+'" title="copiar"><span class="mdi mdi-content-copy font-24 text-success" title="Copiar"></span></a>';
                     }},
                     {data: "file_size", 'name': 'document.file_size'},
                     {data: "document_type_name", 'name': 'document_type.name'},
@@ -160,6 +175,8 @@
                     }
                 });
             });
+
+
 
             $('#clearFilter').click(function () {
                 tableProcessos.state.clear();

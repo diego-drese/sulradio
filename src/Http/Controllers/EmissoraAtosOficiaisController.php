@@ -60,6 +60,7 @@ class EmissoraAtosOficiaisController extends SulradioController {
 			$data->data_dou     = $dou->date->format('Y-m-d H:i:s');
 			$data->secao        = $dou->pub_name;
 			$data->pagina       = $dou->page_number;
+			$data->ato_url      = $dou->url_dou;
 			$text               = str_replace('>','> ',$dou->text);
 			$data->observacao   = strip_tags($text);
 			

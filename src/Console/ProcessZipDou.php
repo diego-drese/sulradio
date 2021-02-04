@@ -168,6 +168,7 @@ class ProcessZipDou extends Command {
 					'pub_name'=>$attributes['pubName'],
 					'type_id'=>$douType->id,
 					'type_name'=>$douType->name,
+					'url_dou'=>isset($attributes['pdfPage']) ? $attributes['pdfPage'] : '',
 					'date'=>$date,
 					'categories'=>$douCategories->toArray(),
 					'page_number'=>$attributes['numberPage'],

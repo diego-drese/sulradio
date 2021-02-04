@@ -200,7 +200,30 @@
         <textarea rows="7" name="observacao" class="form-control"
                   id="observacao">{{$data->exists() && $data->observacao  ? $data->observacao : ''}}</textarea>
     </div>
+    <div class="col-md-12 form-group {{$errors->has('valor_penalidade') ? 'has-error' : ''}} ">
+        <label for="ato_url">Url</label>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                @if(old('ato_url', $data->exists() && filter_var($data->ato_url, FILTER_VALIDATE_URL) ? $data->ato_url : '#') != '#')
+                    <button class="btn btn-success" onclick="copyUrl()" type="button" id="execCopy">Copiar</button>
+                    <input type="text" style="display: none" id="copy" value="{{old('ato_url', $data->exists() && filter_var($data->ato_url, FILTER_VALIDATE_URL) ? $data->ato_url : '#')}}">
+                @endif
+            </div>
+            <input type="text" class="form-control"
+                   value="{{old('ato_url',$data->exists() ? $data->ato_url : '')}}"
+                   name="ato_url"
+                   id="ato_url">
+            <div class="input-group-append">
+                @if(old('ato_url', $data->exists() && filter_var($data->ato_url, FILTER_VALIDATE_URL) ? $data->ato_url : '#') != '#')
+                    <a href="{{old('ato_url', $data->exists() && filter_var($data->ato_url, FILTER_VALIDATE_URL) ? $data->ato_url : '#')}}" target="_blank" class="btn btn-info" type="button">Navegar</a>
+                @endif
 
+            </div>
+        </div>
+        @if($errors->has('ato_url'))
+            <span class="help-block">{{$errors->first('ato_url')}}</span>
+        @endif
+    </div>
 </div>
 
 <div class="col-md-12 form-group">
@@ -267,6 +290,18 @@
             placeholder: 'Selecione',
             allowClear: true
         });
+
+        function copyUrl(){
+            var copyText = document.getElementById("ato_url");
+            /* Select the text field */
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); /* For mobile devices */
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+
+            /* Alert the copied text */
+            toastr.success('Copiado', copyText.value)
+        }
         $('#ufID').change(function () {
             if (!this.value) return false;
             var municipioID = $(this).attr('data-municipioID');
