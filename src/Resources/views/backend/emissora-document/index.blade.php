@@ -85,7 +85,7 @@
             document.body.removeChild(copyText);
 
             /* Alert the copied text */
-            toastr.success('Copiado', copyText.value)
+            toastr.success(copyText.value, 'Copiado')
         }
         $(document).ready(function () {
 

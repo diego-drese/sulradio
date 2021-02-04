@@ -300,7 +300,7 @@
             document.execCommand("copy");
 
             /* Alert the copied text */
-            toastr.success('Copiado', copyText.value)
+            toastr.success(copyText.value, 'Copiado')
         }
         $('#ufID').change(function () {
             if (!this.value) return false;
