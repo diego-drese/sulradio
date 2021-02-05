@@ -118,16 +118,24 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
+
                 </div>
+
+                <div class="row" style="padding: 20px 0px;border-bottom: solid 1px #ccc;margin: 0">
+                    <div class="col-9">
+                        <select name="broadcast" id="broadcast" class="form-control"></select>
+                    </div>
+                    <div class="col-3">
+                        <button type="button" class="btn btn-success" id="attoEmissora" data-emissora-ato="" data-dou-id="">Atos&nbsp;Emissora</button>
+                    </div>
+                </div>
+
                 <div class="modal-body">
                     <div id="text">
 
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <select name="broadcast" id="broadcast" class="form-control">
-                    </select>
-                    <button type="button" class="btn btn-success" id="attoEmissora" data-emissora-ato="" data-dou-id="">Atos&nbsp;Emissora</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                 </div>
             </div>
@@ -242,7 +250,7 @@
             });
 
             $("#broadcast").select2({
-                width: 'calc(100% - 38px)',
+                width: '100%',
                 minimumInputLength: 3,
                 placeholder: 'Selecione',
                 allowClear: true,
