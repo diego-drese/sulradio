@@ -107,7 +107,7 @@ class Helper {
 			"Ü" => "ue",
 			"Ж" => "zh", "ж" => "zh",
 		);
-		return normalizer_normalize($stripAccents);
+		return strtr($stripAccents, $char_map);
 	}
 	
 	public static function slugify($text, $capitalize = false) {
