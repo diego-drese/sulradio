@@ -65,6 +65,7 @@ class Document extends Model {
 	
 	public static function getById($id, $user) {
 		return self::where('id', $id)
+			->select('document.*', 'document.file_type as file_type_origin', 'document.file_size as file_size_origin')
 			->filterClient($user->client_id)
 			->first();
 	}
@@ -117,9 +118,9 @@ class Document extends Model {
 			
 			if(!isset($data['file_name'])){
 				$data['file_name']      = $oldDocument->file_name;
-				$data['file_type']      = $oldDocument->file_type;
+				$data['file_type']      = $oldDocument->file_type_origin;
 				$data['file_preview']   = '';
-				$data['file_size']      = $oldDocument->file_size;
+				$data['file_size']      = $oldDocument->file_size_origin;
 			}
 			
 		}
