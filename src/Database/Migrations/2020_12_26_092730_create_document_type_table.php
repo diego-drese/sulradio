@@ -12,7 +12,7 @@
 					$table->increments('id');
 					$table->string('name', 191);
 					$table->tinyInteger('is_active');
-					$table->text('description');
+					$table->text('description')->nullable();
 					$table->timestamps();
 				});
 		}
