@@ -1,22 +1,21 @@
 @extends('Admin::layouts.backend.main')
-@section('title', 'Criar Ato oficial')
+@section('title', 'Editar pasta de documento')
 @section('content')
     <div class="row">
-       @include('SulRadio::backend.emissora_header.header')
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body ">
-                    <form id="form-profile" method="post"
-                          action="{{route('emissora.atos.oficiais.store', [$emissora->emissoraID])}}"
+                    <form id="form-profile" method="post" action="{{route('document.folder.update', $data->id)}}"
                           enctype="multipart/form-data">
                         {{ csrf_field() }}
-                        @include('SulRadio::backend.emissora-ato.form')
+                        @include('SulRadio::backend.document_type.form')
                     </form>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
 
 
 

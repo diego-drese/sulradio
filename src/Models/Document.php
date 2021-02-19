@@ -14,6 +14,7 @@ class Document extends Model {
 		'name',
 		'description',
 		'document_type_id',
+		'document_folder_id',
 		'version',
 		'document_id',
 		'emissora_id',
@@ -35,6 +36,10 @@ class Document extends Model {
 	}
 	public function scopeWithDocumentType($query) {
 		$query->join('document_type', 'document_type.id', 'document.document_type_id');
+		return $query;
+	}
+	public function scopeWithDocumentFolder($query) {
+		$query->leftJoin('document_folder', 'document_folder.id', 'document.document_folder_id');
 		return $query;
 	}
 	public function scopeCurrentVersion($query) {

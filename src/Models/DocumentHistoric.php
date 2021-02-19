@@ -48,9 +48,11 @@ class DocumentHistoric extends Model {
 				'document.file_type as file_type',
 				'document.file_size as file_size',
 				'document_type.name as document_type_name',
+				'document_folder.name as document_folder_name',
 			)
 			->join('document', 'document.id', 'document_historic.document_id')
 			->join('document_type', 'document_type.id', 'document.document_type_id')
+			->leftJoin('document_folder', 'document_folder.id', 'document.document_folder_id')
 			->orderBy('document_historic.id', 'DESC');
 		
 		if($user->client_id){

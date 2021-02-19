@@ -2,12 +2,7 @@
 @section('title', 'Documentos')
 @section('content')
     <div class="row">
-        <div class="col-6">
-            @include('SulRadio::backend.emissora.header')
-        </div>
-        <div class="col-6">
-            @include('SulRadio::backend.client.header')
-        </div>
+       @include('SulRadio::backend.emissora_header.header')
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -35,15 +30,17 @@
                                 <th>Validade</th>
                                 <th>Arquivo</th>
                                 <th>Tamanho</th>
-                                <th>Tipo de documento</th>
+                                <th>Pasta</th>
+                                <th>Tipo</th>
                                 <th style="width: 80px">Ações</th>
                             </tr>
                             <tr>
 
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Nome"></th>
                                 <th> --- </th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar tipo dea rquivo"></th>
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar tipo de arquivo"></th>
                                 <th> --- </th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar por pasta"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar por tipo"></th>
                                 <th>
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
@@ -150,6 +147,7 @@
                         return '<a id="document-'+row.id+'" href="'+row['download']+'" target="_blank">'+data+'</a>  <a href="#" onclick="copyUrl(this)"  id="copy-'+row.id+'" title="copiar"><span class="mdi mdi-content-copy font-24 text-success" title="Copiar"></span></a>';
                     }},
                     {data: "file_size", 'name': 'document.file_size'},
+                    {data: "document_folder_name", 'name': 'document_folder.name'},
                     {data: "document_type_name", 'name': 'document_type.name'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {

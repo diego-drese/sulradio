@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-6 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
+    <div class="col-md-4 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
         <label for="numero_ato">Nome *</label>
         <input type="name" class="form-control" value="{{old('name',$data->exists() ? $data->name : '')}}"
                name="name"
@@ -9,7 +9,17 @@
             <span class="help-block">{{$errors->first('name')}}</span>
         @endif
     </div>
-    <div class="col-md-6 form-group {{$errors->has('document_type_id') ? 'has-error' : ''}} ">
+    <div class="col-md-4 form-group {{$errors->has('document_folder_id') ? 'has-error' : ''}} ">
+        <label for="document_folder_id">Pasta *</label>
+        <select class="form-control select2" id="document_folder_id" name="document_folder_id" required>
+            <option value="">Selecione</option>
+            @foreach($documentFolder as $key=>$value)
+                <option {{isset($data->exists) && $value->id==$data->document_folder_id ? 'selected="selected"' : '' }} value="{{$value->id}}">{{$value->name}}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-4 form-group {{$errors->has('document_type_id') ? 'has-error' : ''}} ">
         <label for="document_type_id">Tipo *</label>
         <select class="form-control select2" id="document_type_id" name="document_type_id" required>
             <option value="">Selecione</option>
@@ -18,6 +28,9 @@
             @endforeach
         </select>
     </div>
+
+
+
     <div class="col-md-12 form-group {{$errors->has('description') ? 'has-error' : ''}} ">
         <label for="description">Observações</label>
         <textarea rows="7" name="description" class="form-control" id="description">{{$data->exists() && $data->description  ? $data->description : ''}}</textarea>

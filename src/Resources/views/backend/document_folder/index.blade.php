@@ -1,41 +1,43 @@
 @extends('Admin::layouts.backend.main')
-@section('title', 'Contatos')
+@section('title', 'Pastas de documentos')
 @section('content')
     <div class="row">
-       @include('SulRadio::backend.emissora_header.header')
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex  align-items-center m-b-10">
+                    <div class="d-flex no-block align-items-center m-b-10">
+                        <h4 class="card-title">&nbsp;</h4>
                         <div class="ml-auto">
                             <div class="btn-group">
-                                <a href="{{route('emissora.index')}}" class="btn btn-primary m-r-5">
-                                    <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
-                                </a>
                                 @if($hasAdd)
-                                    <a href="{{route('emissora.contato.create',$emissora->emissoraID)}}"
-                                       class="btn btn-primary">
+                                    <a href="{{route('document.folder.create')}}" class="btn btn-primary">
                                         <span class="fa fa-plus"></span> <b>Adicionar</b>
                                     </a>
                                 @endif
-
                             </div>
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="tableContatos" class="table table-striped table-bordered">
+                        <table id="table_plans" class="table table-striped table-bordered" role="grid"
+                               aria-describedby="file_export_info">
                             <thead>
                             <tr>
-                                <th role="row" style="width: 60px">Id</th>
                                 <th>Nome</th>
-                                <th>Função</th>
-                                <th style="width: 80px">Ações</th>
+                                <th>Ativo</th>
+                                <th style="width: 120px">Ações</th>
                             </tr>
                             <tr>
-                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Id"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome"></th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" placeholder="Buscar Função"></th>
+                                <th role="row">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
+                                </th>
                                 <th>
+                                    <select class="form-control fieldSearch">
+                                        <option value="">Todos</option>
+                                        <option value="1">Sim</option>
+                                        <option value="0">Não</option>
+                                    </select>
+                                </th>
+                                <th style="width: 60px">
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
                                     </spa>
@@ -54,16 +56,13 @@
 
 @section('style_head')
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
-    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/select2.css')}}">
 @endsection
 @section('script_footer_end')
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
-    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
     <script>
         var hasEdit = '{{$hasEdit}}';
         $(document).ready(function () {
-
-            var tableContatos = $('#tableContatos').DataTable({
+            var table_plans = $('#table_plans').DataTable({
                 language: {
                     "sEmptyTable": "Nenhum registro encontrado",
                     "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -98,14 +97,14 @@
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#tableContatos thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                $('#table_plans thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
                     }, 50);
                 },
                 ajax: {
-                    url: '{{ route('emissora.contato.index', $emissoraID) }}',
+                    url: '{{ route('document.folder.index') }}',
                     type: 'GET',
                     data: function (d) {
                         d._token = $("input[name='_token']").val();
@@ -113,33 +112,41 @@
                     }
                 },
                 columns: [
-                    {data: "contatoID", 'name': 'contatoID'},
-                    {data: "nome_contato", 'name': 'nome_contato'},
-                    {data: "desc_funcao", 'name': 'funcao.desc_funcao'},
+                    {data: "name", 'name': 'name'},
+                    {data: "is_active", 'name': 'is_active',
+                        render: function (data, display, row) {
+                            if (data == "1") {
+                                return '<span class="badge badge-success mr-1 ">SIM</span>';
+                            } else if (data == '0') {
+                                return '<span class="badge badge-danger mr-1 ">NÃO</span>';
+                            }
+                            return '---';
+                        }
+                    },
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
-                            if (!hasEdit) return '---';
                             var edit_button = "";
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            @if($hasEdit)
+                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            @endif
                             return edit_button
                         }
                     }
                 ]
             });
 
-            $('#tableContatos thead tr:eq(1) th').each(function (i) {
+            $('#table_plans thead tr:eq(1) th').each(function (i) {
                 $('.fieldSearch', this).on('keyup change', function () {
-                    if (tableContatos.column(i).search() !== this.value) {
-                        tableContatos.column(i).search(this.value).draw();
+                    if (table_plans.column(i).search() !== this.value) {
+                        table_plans.column(i).search(this.value, true).draw();
                     }
                 });
             });
 
             $('#clearFilter').click(function () {
-                tableContatos.state.clear();
+                table_plans.state.clear();
                 window.location.reload();
             })
-
         });
     </script>
 

@@ -2,12 +2,7 @@
 @section('title', 'Documento timeline')
 @section('content')
     <div class="row">
-        <div class="col-6">
-            @include('SulRadio::backend.emissora.header')
-        </div>
-        <div class="col-6">
-            @include('SulRadio::backend.client.header')
-        </div>
+       @include('SulRadio::backend.emissora_header.header')
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -41,6 +36,8 @@
                                         Nome: {{$item->document_name}}
                                     </p>
                                     <p>
+                                        Pasta: {{$item->document_folder_name ? $item->document_folder_name : '---'}}
+                                    </p><p>
                                         Tipo: {{$item->document_type_name}}
                                     </p>
                                     <p>

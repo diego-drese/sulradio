@@ -2,12 +2,7 @@
 @section('title', 'Endereços')
 @section('content')
     <div class="row">
-        <div class="col-6">
-            @include('SulRadio::backend.emissora.header')
-        </div>
-        <div class="col-6">
-            @include('SulRadio::backend.client.header')
-        </div>
+       @include('SulRadio::backend.emissora_header.header')
         <div class="col-12">
             <div class="card">
                 <div class="card-body">

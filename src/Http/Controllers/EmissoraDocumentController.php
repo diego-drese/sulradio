@@ -10,6 +10,7 @@ use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Models\Ato;
 use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Document;
+use Oka6\SulRadio\Models\DocumentFolder;
 use Oka6\SulRadio\Models\DocumentHistoric;
 use Oka6\SulRadio\Models\DocumentType;
 use Oka6\SulRadio\Models\Emissora;
@@ -25,10 +26,11 @@ class EmissoraDocumentController extends SulradioController {
 	use ValidatesRequests;
 	public function index(Request $request, $emissoraID) {
 		if ($request->ajax()) {
-			$query = Document::select('document.*', 'document_type.name as document_type_name')
+			$query = Document::select('document.*', 'document_type.name as document_type_name', 'document_folder.name as document_folder_name')
 				->where('emissora_id', $emissoraID)
 				->currentVersion()
-				->withDocumentType();
+				->withDocumentType()
+				->withDocumentFolder();
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) {
 					return route('emissora.document.edit', [$row->emissora_id, $row->id]);
@@ -94,7 +96,7 @@ class EmissoraDocumentController extends SulradioController {
 			'name' => 'required',
 			'description' => 'required',
 			'document_type_id' => 'required',
-			'file' => 'nullable|mimes:pdf,xlsx,csv,jpg,png,jpeg,html,doc,txt,xls|max:10240',
+			'file' => 'nullable|mimes:pdf,xlsx,csv,jpg,png,jpeg,html,doc,txt,xls|max:20240',
 		]);
 		if(!is_dir(Document::getPathUpload())){
 			toastr()->error('Não foi encontrado a pasta para salvar seu arquivo, entre em contato com o adminstrador do sistema ', 'Erro');
@@ -129,6 +131,7 @@ class EmissoraDocumentController extends SulradioController {
 			'hasTimeLine' => ResourceAdmin::hasResourceByRouteName('emissora.document.timeline', [1, 1]),
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('emissora.document.update', [1, 1]),
 			'documentType' => DocumentType::getWithCache(),
+			'documentFolder' => DocumentFolder::getWithCache(),
 			'client' => Client::getById($emissora->client_id),
 			'emissora' => $emissora,
 		
