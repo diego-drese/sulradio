@@ -69,15 +69,7 @@
             <span class="help-block">{{$errors->first('indicativo_chamada')}}</span>
         @endif
     </div>
-    <div class="col-md-2 form-group {{$errors->has('horario') ? 'has-error' : ''}} ">
-        <label for="horario">Horário</label>
-        <input type="text" autocomplete="off" class="form-control" value="{{old('horario',$data->exists() ? $data->horario : '')}}"
-               name="horario"
-               id="horario">
-        @if($errors->has('horario'))
-            <span class="help-block">{{$errors->first('horario')}}</span>
-        @endif
-    </div>
+
     <div class="col-md-2 form-group {{$errors->has('faixa_fronteira') ? 'has-error' : ''}} ">
         <label for="faixa_fronteira">Faixa Fronteira</label>
         <select class="form-control select2" id="faixa_fronteira" name="faixa_fronteira">
@@ -143,7 +135,7 @@
     </div>
 
     <div class="col-md-2 form-group {{$errors->has('potencia') ? 'has-error' : ''}} ">
-        <label for="potencia">Potência Dia(KW)</label>
+        <label for="potencia">Potência Dia/Noite(KW)</label>
         <input type="text" autocomplete="off" class="form-control" value="{{old('potencia',$data->exists() ? $data->classe : '')}}"
                name="potencia"
                id="potencia">
@@ -152,16 +144,7 @@
         @endif
     </div>
 
-    <div class="col-md-2 form-group {{$errors->has('potencia_noturna') ? 'has-error' : ''}} ">
-        <label for="classe">Potência Noite(KW)</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('potencia_noturna',$data->exists() ? $data->potencia_noturna : '')}}"
-               name="potencia_noturna"
-               id="potencia_noturna">
-        @if($errors->has('potencia_noturna'))
-            <span class="help-block">{{$errors->first('potencia_noturna')}}</span>
-        @endif
-    </div>
+
 
     <div class="col-md-4 form-group {{$errors->has('cnpj') ? 'has-error' : ''}} ">
         <label for="classe">CNPJ</label>
@@ -204,7 +187,7 @@
     </div>
 
     <div class="col-md-4 form-group {{$errors->has('endereco_sede') ? 'has-error' : ''}} ">
-        <label for="endereco_sede">Endereço - Sede Administrativa</label>
+        <label for="endereco_sede">Endereço - Sede </label>
         <input type="text" autocomplete="off" class="form-control"
                value="{{old('endereco_sede',$data->exists() ? $data->endereco_sede : '')}}"
                name="endereco_sede"

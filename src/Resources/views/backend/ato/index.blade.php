@@ -14,6 +14,7 @@
                                aria-describedby="file_export_info">
                             <thead class="">
                             <tr>
+                                <th style="width: 80px">Ações</th>
                                 <th role="row">Emissora</th>
                                 <th>Serviço</th>
                                 <th>Tipo do Ato</th>
@@ -22,9 +23,13 @@
                                 <th>Data do Ato</th>
                                 <th>Data DOU</th>
                                 <th>Estado</th>
-                                <th style="width: 80px">Ações</th>
                             </tr>
                             <tr>
+                                <th>
+                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
+                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
+                                    </spa>
+                                </th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Emissora"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Serviço"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Tipo"></th>
@@ -33,11 +38,7 @@
                                 <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar por ano"></th>
                                 <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar por ano"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Estado"></th>
-                                <th>
-                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
-                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
-                                    </spa>
-                                </th>
+
                             </tr>
                             </thead>
                         </table>
@@ -104,6 +105,13 @@
                     }
                 },
                 columns: [
+                    {
+                        data: null, searchable: false, orderable: false, render: function (data) {
+                            var edit_button = "";
+                            edit_button += '<a href="' + data.edit_url + '" target="_blank" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            return edit_button
+                        }
+                    },
                     {data: "razao_social", 'name': 'emissora.razao_social'},
                     {data: "desc_servico", 'name': 'servico.desc_servico'},
                     {data: "desc_tipo_ato", 'name': 'tipo_ato.desc_tipo_ato'},
@@ -112,13 +120,7 @@
                     {data: "data_ato", 'name': 'ato.data_ato'},
                     {data: "data_dou", 'name': 'ato.data_dou'},
                     {data: "uf_extenso", 'name': 'uf.uf_extenso'},
-                    {
-                        data: null, searchable: false, orderable: false, render: function (data) {
-                            var edit_button = "";
-                            edit_button += '<a href="' + data.edit_url + '" target="_blank" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
-                            return edit_button
-                        }
-                    }
+
                 ]
             });
 

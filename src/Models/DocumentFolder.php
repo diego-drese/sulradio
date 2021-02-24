@@ -12,7 +12,8 @@ class DocumentFolder extends Model {
 	protected $fillable = [
 		'name',
 		'description',
-		'is_active'
+		'is_active',
+		'goal',
 	];
 	protected $table = 'document_folder';
 	protected $connection = 'sulradio';
@@ -25,9 +26,10 @@ class DocumentFolder extends Model {
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
-	public static function getWithCache() {
-		return Cache::tags(['sulradio'])->remember('document_folder', 120, function () {
+	public static function getWithCache($goal) {
+		return Cache::tags(['sulradio'])->remember('document_folder-'.$goal, 120, function () use($goal){
 			return self::where('is_active', 1)
+				->where('goal', $goal)
 				->orderBy('name', 'asc')
 				->get();
 		});

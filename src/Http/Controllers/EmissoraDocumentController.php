@@ -24,31 +24,44 @@ use Yajra\DataTables\DataTables;
 
 class EmissoraDocumentController extends SulradioController {
 	use ValidatesRequests;
+	public $goal = Document::GOAL_CLIENT;
 	public function index(Request $request, $emissoraID) {
 		if ($request->ajax()) {
 			$query = Document::select('document.*', 'document_type.name as document_type_name', 'document_folder.name as document_folder_name')
 				->where('emissora_id', $emissoraID)
+				->where('document.goal', $this->goal)
 				->currentVersion()
 				->withDocumentType()
 				->withDocumentFolder();
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) {
-					return route('emissora.document.edit', [$row->emissora_id, $row->id]);
+					if($this->goal==Document::GOAL_CLIENT)
+						return route('emissora.document.edit', [$row->emissora_id, $row->id]);
+					if($this->goal==Document::GOAL_LEGAL)
+						return route('emissora.document.legal.edit', [$row->emissora_id, $row->id]);
+					if($this->goal==Document::GOAL_ENGINEERING)
+						return route('emissora.document.engineering.edit', [$row->emissora_id, $row->id]);
 				})->addColumn('download', function ($row) {
 					return route('document.download', [$row->id]);
 				})->addColumn('timeline', function ($row) {
-					return route('emissora.document.timeline', [$row->emissora_id, $row->id]);
+					if($this->goal==Document::GOAL_CLIENT)
+						return route('emissora.document.timeline', [$row->emissora_id, $row->id]);
+					if($this->goal==Document::GOAL_LEGAL)
+						return route('emissora.document.legal.timeline', [$row->emissora_id, $row->id]);
+					if($this->goal==Document::GOAL_ENGINEERING)
+						return route('emissora.document.engineering.timeline', [$row->emissora_id, $row->id]);
 				})->setRowClass(function () {
 					return 'center';
 				})->rawColumns([
 					'file_type'
 				])->toJson(true);
 		}
-		return $this->renderView('SulRadio::backend.emissora-document.index', ['emissoraID' => $emissoraID]);
+		
+		return $this->renderView('SulRadio::backend.emissora-document.index', ['emissoraID' => $emissoraID, 'id'=>0]);
 	}
 	
 	public function create(Ato $data, $emissoraID) {
-		return $this->renderView('SulRadio::backend.emissora-document.create', ['data' => $data, 'emissoraID' => $emissoraID]);
+		return $this->renderView('SulRadio::backend.emissora-document.create', ['data' => $data, 'emissoraID' => $emissoraID, 'id'=>0]);
 	}
 	
 	public function store(Request $request, $emissoraID) {
@@ -61,7 +74,7 @@ class EmissoraDocumentController extends SulradioController {
 		]);
 		if(!is_dir(Document::getPathUpload())){
 			toastr()->error('Não foi encontrado a pasta para salvar seu arquivo, entre em contato com o adminstrador do sistema ', 'Erro');
-			return redirect(route('emissora.document.index', $emissoraID));
+			return $this->redirect($emissoraID);
 		}
 		$fileName   = date('YmdHis').'-'.$request->file('file')->getClientOriginalName();
 		$filesize   = $request->file('file')->getSize();
@@ -73,21 +86,20 @@ class EmissoraDocumentController extends SulradioController {
 		$dataForm['file_preview']   = '';
 		$dataForm['file_size']      = $filesize;
 		$dataForm['status']         = 1;
-		Document::createOrUpdate($dataForm, Auth::user(), null);
-		
+		Document::createOrUpdate($dataForm, Auth::user(), $this->goal, null);
 		toastr()->success('Documento Criado com sucesso', 'Sucesso');
-		return redirect(route('emissora.document.index', $emissoraID));
-		
+		return $this->redirect($emissoraID);
 	}
 	
 	public function edit($emissoraID, $id) {
 		$data = Document::getById($id, Auth::user());
-		return $this->renderView('SulRadio::backend.emissora-document.edit', ['data' => $data, 'emissoraID' => $emissoraID]);
+		return $this->renderView('SulRadio::backend.emissora-document.edit', ['data' => $data, 'emissoraID' => $emissoraID, 'id'=>$id]);
 	}
 	
 	public function timeline($emissoraID, $id) {
 		$timeline = DocumentHistoric::getTimeLineById($id, Auth::user());
-		return $this->renderView('SulRadio::backend.emissora-document.timeline', ['timeline' => $timeline, 'emissoraID' => $emissoraID]);
+		return $this->renderView('SulRadio::backend.emissora-document.timeline', ['timeline' => $timeline, 'emissoraID' => $emissoraID, 'id'=>$id]);
+		
 	}
 	
 	public function update(Request $request, $emissoraID, $id) {
@@ -100,7 +112,7 @@ class EmissoraDocumentController extends SulradioController {
 		]);
 		if(!is_dir(Document::getPathUpload())){
 			toastr()->error('Não foi encontrado a pasta para salvar seu arquivo, entre em contato com o adminstrador do sistema ', 'Erro');
-			return redirect(route('emissora.document.index', $emissoraID));
+			return $this->redirect($emissoraID);
 		}
 		if($request->file()){
 			$fileName   = date('YmdHis').'-'.$request->file('file')->getClientOriginalName();
@@ -115,27 +127,54 @@ class EmissoraDocumentController extends SulradioController {
 			$dataForm['file_preview']   = '';
 			$dataForm['file_size']      = $filesize;
 		}
-		Document::createOrUpdate($dataForm, Auth::user(), $id);
+		Document::createOrUpdate($dataForm, Auth::user(), $this->goal, $id);
 		toastr()->success("Documento Atualizado com sucesso", 'Sucesso');
-		return redirect(route('emissora.document.index', [$emissoraID]));
+		return $this->redirect($emissoraID);
 	}
-	
+	protected function redirect($emissoraID){
+		if($this->goal==Document::GOAL_CLIENT)
+			return redirect(route('emissora.document.index', [$emissoraID]));
+		if($this->goal==Document::GOAL_LEGAL)
+			return redirect(route('emissora.document.legal.index', [$emissoraID]));
+		if($this->goal==Document::GOAL_ENGINEERING)
+			return redirect(route('emissora.document.engineering.index', [$emissoraID]));
+	}
 	
 	protected function makeParameters($extraParameter = null) {
 		$user = Auth::user();
 		$emissora = Emissora::getById($extraParameter['emissoraID'], $user);
 		$parameters = [
+			'goal' => $this->goal,
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('emissora.document.create', [1]),
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('emissora.document.edit', [1, 1]),
 			'hasStore' => ResourceAdmin::hasResourceByRouteName('emissora.document.store', [1]),
 			'hasTimeLine' => ResourceAdmin::hasResourceByRouteName('emissora.document.timeline', [1, 1]),
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('emissora.document.update', [1, 1]),
-			'documentType' => DocumentType::getWithCache(),
-			'documentFolder' => DocumentFolder::getWithCache(),
+			'documentType' => DocumentType::getWithCache($this->goal),
+			'documentFolder' => DocumentFolder::getWithCache($this->goal),
 			'client' => Client::getById($emissora->client_id),
 			'emissora' => $emissora,
-		
 		];
+		if($this->goal==Document::GOAL_CLIENT){
+			$parameters['save_url'] = route('emissora.document.store', [$extraParameter['emissoraID']]);
+			$parameters['add_url'] = route('emissora.document.create', [$extraParameter['emissoraID']]);
+			$parameters['update_url'] = route('emissora.document.update', [$extraParameter['emissoraID'], $extraParameter['id']]);
+			$parameters['datatable_url'] = route('emissora.document.index', [$extraParameter['emissoraID']]);
+			$parameters['back_url'] = route('emissora.document.index', [$extraParameter['emissoraID']]);
+		}else if($this->goal==Document::GOAL_LEGAL){
+			$parameters['save_url'] = route('emissora.document.legal.store', [$extraParameter['emissoraID']]);
+			$parameters['add_url'] = route('emissora.document.legal.create', [$extraParameter['emissoraID']]);
+			$parameters['update_url'] = route('emissora.document.legal.update', [$extraParameter['emissoraID'], $extraParameter['id']]);
+			$parameters['datatable_url'] = route('emissora.document.legal.index', [$extraParameter['emissoraID']]);
+			$parameters['back_url'] = route('emissora.document.legal.index', [$extraParameter['emissoraID']]);
+		}else if($this->goal==Document::GOAL_ENGINEERING){
+			$parameters['save_url'] = route('emissora.document.engineering.store', [$extraParameter['emissoraID']]);
+			$parameters['add_url'] = route('emissora.document.engineering.create', [$extraParameter['emissoraID']]);
+			$parameters['update_url'] = route('emissora.document.engineering.update', [$extraParameter['emissoraID'], $extraParameter['id']]);
+			$parameters['datatable_url'] = route('emissora.document.engineering.index', [$extraParameter['emissoraID']]);
+			$parameters['back_url'] = route('emissora.document.engineering.index', [$extraParameter['emissoraID']]);
+		}
+		
 		$this->parameters = $parameters;
 	}
 	

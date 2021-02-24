@@ -1,5 +1,5 @@
 @extends('Admin::layouts.backend.main')
-@section('title', 'Editar Documento')
+@section('title', 'Editar Documento - '. $goal)
 @section('content')
     <div class="row">
        @include('SulRadio::backend.emissora_header.header')
@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-body ">
                     <form id="form-profile" method="post"
-                          action="{{route('emissora.document.update', [$data->emissora_id, $data->id])}}"
+                          action="{{$update_url}}"
                           enctype="multipart/form-data">
                         {{ csrf_field() }}
                         @include('SulRadio::backend.emissora-document.form')

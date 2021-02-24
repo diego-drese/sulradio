@@ -60,7 +60,7 @@
     @if($hasStore || $hasUpdate)
         <button style="float: right;" type="submit" class="btn btn-success">Salvar</button>
     @endif
-    <a style="float: right;" href="{{route('emissora.document.index', [$emissoraID])}}" class="btn btn-primary m-r-5">
+    <a style="float: right;" href="{{$back_url}}" class="btn btn-primary m-r-5">
         <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
     </a>
 </div>

@@ -2,7 +2,7 @@
 @section('title', 'Contatos')
 @section('content')
     <div class="row">
-       @include('SulRadio::backend.emissora_header.header')
+        @include('SulRadio::backend.emissora_header.header')
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -26,20 +26,18 @@
                         <table id="tableContatos" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th role="row" style="width: 60px">Id</th>
+                                <th style="width: 80px">Ações</th>
                                 <th>Nome</th>
                                 <th>Função</th>
-                                <th style="width: 80px">Ações</th>
                             </tr>
                             <tr>
-                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Id"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome"></th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" placeholder="Buscar Função"></th>
                                 <th>
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
                                     </spa>
                                 </th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome"></th>
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" placeholder="Buscar Função"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -98,7 +96,7 @@
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#tableContatos thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                $('#tableProcessos thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
@@ -113,9 +111,6 @@
                     }
                 },
                 columns: [
-                    {data: "contatoID", 'name': 'contatoID'},
-                    {data: "nome_contato", 'name': 'nome_contato'},
-                    {data: "desc_funcao", 'name': 'funcao.desc_funcao'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             if (!hasEdit) return '---';
@@ -123,7 +118,11 @@
                             edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
                             return edit_button
                         }
-                    }
+                    },
+
+                    {data: "nome_contato", 'name': 'nome_contato'},
+                    {data: "desc_funcao", 'name': 'funcao.desc_funcao'},
+
                 ]
             });
 

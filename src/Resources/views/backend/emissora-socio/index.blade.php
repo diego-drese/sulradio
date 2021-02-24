@@ -26,20 +26,19 @@
                         <table id="tableSocio" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th role="row" style="width: 60px">Id</th>
+                                <th style="width: 80px">Ações</th>
                                 <th>Nome</th>
                                 <th>Categoria</th>
-                                <th style="width: 80px">Ações</th>
                             </tr>
                             <tr>
-                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Id"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Nome"></th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" placeholder="Buscar Categoria"></th>
                                 <th>
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
                                     </spa>
                                 </th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Nome"></th>
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" placeholder="Buscar Categoria"></th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -113,9 +112,6 @@
                     }
                 },
                 columns: [
-                    {data: "socioID", 'name': 'socioID'},
-                    {data: "nome", 'name': 'nome'},
-                    {data: "desc_categoria", 'name': 'emissora_socio_categoria.desc_categoria'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             if (!hasEdit) return '---';
@@ -123,7 +119,10 @@
                             edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
                             return edit_button
                         }
-                    }
+                    },
+                    {data: "nome", 'name': 'nome'},
+                    {data: "desc_categoria", 'name': 'emissora_socio_categoria.desc_categoria'},
+
                 ]
             });
 

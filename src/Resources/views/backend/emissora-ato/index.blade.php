@@ -27,24 +27,23 @@
                                aria-describedby="file_export_info">
                             <thead class="">
                             <tr>
-                                <th role="row">#</th>
+                                <th style="width: 80px">Ações</th>
                                 <th>Tipo do Ato</th>
                                 <th>Número do ato</th>
                                 <th>Data do Ato</th>
                                 <th>Data DOU</th>
-                                <th style="width: 80px">Ações</th>
                             </tr>
                             <tr>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Id"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Tipo"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Numero"></th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar por ano"></th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar por ano"></th>
                                 <th>
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
                                     </spa>
                                 </th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Tipo"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Numero"></th>
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar por ano"></th>
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar por ano"></th>
+
                             </tr>
                             </thead>
                         </table>
@@ -112,18 +111,18 @@
                     }
                 },
                 columns: [
-                    {data: "atoID", 'name': 'atoID'},
-                    {data: "desc_tipo_ato", 'name': 'tipo_ato.desc_tipo_ato'},
-                    {data: "numero_ato", 'name': 'ato.numero_ato'},
-                    {data: "data_ato", 'name': 'ato.data_ato'},
-                    {data: "data_dou", 'name': 'ato.data_dou'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             var edit_button = "";
                             edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
                             return edit_button
                         }
-                    }
+                    },
+                    {data: "desc_tipo_ato", 'name': 'tipo_ato.desc_tipo_ato'},
+                    {data: "numero_ato", 'name': 'ato.numero_ato'},
+                    {data: "data_ato", 'name': 'ato.data_ato'},
+                    {data: "data_dou", 'name': 'ato.data_dou'},
+
                 ]
             });
 

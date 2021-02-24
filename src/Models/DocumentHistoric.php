@@ -13,7 +13,8 @@ class DocumentHistoric extends Model {
 	protected $fillable = [
 		'user_id',
 		'document_id',
-		'action'
+		'action',
+		'goal',
 	];
 	protected $table = 'document_historic';
 	protected $connection = 'sulradio';
@@ -43,6 +44,7 @@ class DocumentHistoric extends Model {
 				'document_historic.*',
 				'document.document_id as document_id_version',
 				'document.name as document_name',
+				'document.goal as goal',
 				'document.file_name as file_name',
 				'document.file_type as file_type',
 				'document.file_type as file_type',

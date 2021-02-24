@@ -27,16 +27,19 @@
                         <table id="tableProcessos" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th role="row" style="width: 60px">Id</th>
+                                <th style="width: 80px">Ações</th>
                                 <th>Processo</th>
                                 <th>Dt. Protocolo</th>
                                 <th>Situação</th>
                                 <th>Anexado</th>
-                                <th style="width: 80px">Ações</th>
+
                             </tr>
                             <tr>
-                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
-                                                      placeholder="Buscar Id"></th>
+                                <th>
+                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
+                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
+                                    </spa>
+                                </th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Processo">
                                 </th>
                                 <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary"
@@ -44,11 +47,7 @@
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Situação">
                                 </th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Anexo"></th>
-                                <th>
-                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
-                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
-                                    </spa>
-                                </th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -122,11 +121,6 @@
                     }
                 },
                 columns: [
-                    {data: "processoID", 'name': 'processoID'},
-                    {data: "sicap", 'name': 'sicap'},
-                    {data: "data_protocolo", 'name': 'data_protocolo'},
-                    {data: "desc_processo_fase", 'name': 'emissora_processo_fase.desc_processo_fase'},
-                    {data: "processo_vinculo", 'name': 'processo_vinculo'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             if (!hasEdit) return '---';
@@ -134,7 +128,12 @@
                             edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
                             return edit_button
                         }
-                    }
+                    },
+                    {data: "sicap", 'name': 'sicap'},
+                    {data: "data_protocolo", 'name': 'data_protocolo'},
+                    {data: "desc_processo_fase", 'name': 'emissora_processo_fase.desc_processo_fase'},
+                    {data: "processo_vinculo", 'name': 'processo_vinculo'},
+
                 ]
             });
 

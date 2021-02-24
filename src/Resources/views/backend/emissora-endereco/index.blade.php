@@ -26,24 +26,24 @@
                         <table id="tableProcessos" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th role="row" style="width: 60px">Id</th>
+                                <th style="width: 80px">Ações</th>
                                 <th>Tipo de Endereço</th>
                                 <th>UF</th>
                                 <th>Município</th>
                                 <th>Endereço</th>
-                                <th style="width: 80px">Ações</th>
+
                             </tr>
                             <tr>
-                                <th role="row"><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Id"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Tipo"></th>
-                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar Uf"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Município"></th>
-                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Rua"></th>
                                 <th>
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
                                     </spa>
                                 </th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Tipo"></th>
+                                <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar Uf"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Município"></th>
+                                <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Rua"></th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -117,7 +117,14 @@
                     }
                 },
                 columns: [
-                    {data: "enderecoID", 'name': 'enderecoID'},
+                    {
+                        data: null, searchable: false, orderable: false, render: function (data) {
+                            if (!hasEdit) return '---';
+                            var edit_button = "";
+                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            return edit_button
+                        }
+                    },
                     {data: "desc_tipo_endereco", 'name': 'emissora_tipo_endereco.desc_tipo_endereco'},
                     {data: "desc_uf", 'name': 'uf.desc_uf'},
                     {data: "desc_municipio", 'name': 'municipio.desc_municipio'},
@@ -128,14 +135,7 @@
 
                             return endereco;
                     }},
-                    {
-                        data: null, searchable: false, orderable: false, render: function (data) {
-                            if (!hasEdit) return '---';
-                            var edit_button = "";
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
-                            return edit_button
-                        }
-                    }
+
                 ]
             });
 

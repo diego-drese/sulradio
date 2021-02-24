@@ -22,6 +22,7 @@
                                aria-describedby="file_export_info">
                             <thead>
                             <tr>
+                                <th style="width: 120px">Ações</th>
                                 <th>Nome</th>
                                 <th>Max Upload</th>
                                 <th>Max Estações</th>
@@ -29,7 +30,7 @@
                                 <th>Frequência</th>
                                 <th>Valor</th>
                                 <th>Ativo</th>
-                                <th style="width: 120px">Ações</th>
+
                             </tr>
                             <tr>
                                 <th role="row">
@@ -140,6 +141,15 @@
                     }
                 },
                 columns: [
+                    {
+                        data: null, searchable: false, orderable: false, render: function (data) {
+                            var edit_button = "";
+                            @if($hasEdit)
+                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            @endif
+                                return edit_button
+                        }
+                    },
                     {data: "name", 'name': 'name'},
                     {data: "max_upload", 'name': 'max_upload', render : function (data){
                         return data+'GB';
@@ -160,15 +170,7 @@
                             return '---';
                         }
                     },
-                    {
-                        data: null, searchable: false, orderable: false, render: function (data) {
-                            var edit_button = "";
-                            @if($hasEdit)
-                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
-                            @endif
-                            return edit_button
-                        }
-                    }
+
                 ]
             });
 

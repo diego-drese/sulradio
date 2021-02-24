@@ -26,10 +26,10 @@
                         <table id="tableProcessos" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th role="row" style="width: 60px">Id</th>
+                                <th style="width: 80px">Ações</th>
                                 <th>Tipo</th>
                                 <th>Data</th>
-                                <th style="width: 80px">Ações</th>
+
                             </tr>
                             <tr>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Id"></th>
@@ -113,9 +113,6 @@
                     }
                 },
                 columns: [
-                    {data: "ato_jcID", 'name': 'ato_jcID'},
-                    {data: "desc_tipo_ato_juridico", 'name': 'emissora_tipo_ato_juridico.desc_tipo_ato_juridico'},
-                    {data: "data_arquivo_junta", 'name': 'data_arquivo_junta'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             if (!hasEdit) return '---';
@@ -123,7 +120,11 @@
                             edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
                             return edit_button
                         }
-                    }
+                    },
+                    {data: "ato_jcID", 'name': 'ato_jcID'},
+                    {data: "desc_tipo_ato_juridico", 'name': 'emissora_tipo_ato_juridico.desc_tipo_ato_juridico'},
+                    {data: "data_arquivo_junta", 'name': 'data_arquivo_junta'},
+
                 ]
             });
 

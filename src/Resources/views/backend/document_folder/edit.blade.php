@@ -8,7 +8,7 @@
                     <form id="form-profile" method="post" action="{{route('document.folder.update', $data->id)}}"
                           enctype="multipart/form-data">
                         {{ csrf_field() }}
-                        @include('SulRadio::backend.document_type.form')
+                        @include('SulRadio::backend.document_folder.form')
                     </form>
                 </div>
             </div>

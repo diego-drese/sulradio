@@ -1,5 +1,5 @@
 @extends('Admin::layouts.backend.main')
-@section('title', 'Documentos')
+@section('title', 'Documentos - '.$goal)
 @section('content')
     <div class="row">
        @include('SulRadio::backend.emissora_header.header')
@@ -13,7 +13,7 @@
                                     <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
                                 </a>
                                 @if($hasAdd)
-                                    <a href="{{route('emissora.document.create',$emissora->emissoraID)}}"
+                                    <a href="{{$add_url}}"
                                        class="btn btn-primary">
                                         <span class="fa fa-plus"></span> <b>Adicionar</b>
                                     </a>
@@ -26,13 +26,14 @@
                         <table id="tableProcessos" class="table table-striped table-bordered">
                             <thead>
                             <tr>
+                                <th style="width: 80px">Ações</th>
                                 <th>Nome</th>
                                 <th>Validade</th>
                                 <th>Arquivo</th>
                                 <th>Tamanho</th>
                                 <th>Pasta</th>
                                 <th>Tipo</th>
-                                <th style="width: 80px">Ações</th>
+
                             </tr>
                             <tr>
 
@@ -128,7 +129,7 @@
                     }, 50);
                 },
                 ajax: {
-                    url: '{{ route('emissora.document.index', $emissoraID) }}',
+                    url: '{{ $datatable_url }}',
                     type: 'GET',
                     data: function (d) {
                         d._token = $("input[name='_token']").val();
@@ -136,19 +137,6 @@
                     }
                 },
                 columns: [
-                    {data: "name", 'name': 'document.name'},
-                    {data: "validated", 'name': 'document.validated', render: function(data){
-                        if(data){
-                            return data;
-                        }
-                        return '---';
-                    }},
-                    {data: "file_type", 'name': 'document.file_type', render: function(data, display, row){
-                        return '<a id="document-'+row.id+'" href="'+row['download']+'" target="_blank">'+data+'</a>  <a href="#" onclick="copyUrl(this)"  id="copy-'+row.id+'" title="copiar"><span class="mdi mdi-content-copy font-24 text-success" title="Copiar"></span></a>';
-                    }},
-                    {data: "file_size", 'name': 'document.file_size'},
-                    {data: "document_folder_name", 'name': 'document_folder.name'},
-                    {data: "document_type_name", 'name': 'document_type.name'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             var edit_button = "";
@@ -162,7 +150,21 @@
 
                             return edit_button
                         }
-                    }
+                    },
+                    {data: "name", 'name': 'document.name'},
+                    {data: "validated", 'name': 'document.validated', render: function(data){
+                        if(data){
+                            return data;
+                        }
+                        return '---';
+                    }},
+                    {data: "file_type", 'name': 'document.file_type', render: function(data, display, row){
+                        return '<a id="document-'+row.id+'" href="'+row['download']+'" target="_blank">'+data+'</a>  <a href="#" onclick="copyUrl(this)"  id="copy-'+row.id+'" title="copiar"><span class="mdi mdi-content-copy font-24 text-success" title="Copiar"></span></a>';
+                    }},
+                    {data: "file_size", 'name': 'document.file_size'},
+                    {data: "document_folder_name", 'name': 'document_folder.name'},
+                    {data: "document_type_name", 'name': 'document_type.name'},
+
                 ]
             });
 

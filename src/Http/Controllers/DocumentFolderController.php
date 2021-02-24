@@ -4,6 +4,7 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Models\DocumentFolder;
 use Yajra\DataTables\DataTables;
@@ -35,6 +36,7 @@ class DocumentFolderController extends SulradioController {
 			'is_active' => 'required',
 		]);
 		DocumentFolder::create($dataForm);
+		Cache::tags('sulradio')->flush();
 		toastr()->success('Plano Criado com sucesso', 'Sucesso');
 		return redirect(route('document.folder.index'));
 		
@@ -54,7 +56,7 @@ class DocumentFolderController extends SulradioController {
 		]);
 		$data->fill($dataForm);
 		$data->save();
-		
+		Cache::tags('sulradio')->flush();
 		toastr()->success("{$data->name} Atualizado com sucesso", 'Sucesso');
 		return redirect(route('document.folder.index'));
 	}

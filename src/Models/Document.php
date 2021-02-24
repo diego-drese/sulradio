@@ -25,9 +25,13 @@ class Document extends Model {
 		'historic',
 		'status',
 		'validated',
+		'goal',
 	];
-	const STATUS_CURRENT_VERSION = 1;
-	const STATUS_OLD_VERSION = 0;
+	const STATUS_CURRENT_VERSION    = 1;
+	const STATUS_OLD_VERSION        = 0;
+	const GOAL_CLIENT               = 'Cliente';
+	const GOAL_ENGINEERING          = 'Engenharia';
+	const GOAL_LEGAL                = 'Jurídico';
 	
 	protected $table = 'document';
 	protected $connection = 'sulradio';
@@ -103,10 +107,11 @@ class Document extends Model {
 		
 		return '<span class="fas fa-file font-24 text-danger" title="Naão definido"></span>';
 	}
-	public static function createOrUpdate($data, $user, $id=null){
+	public static function createOrUpdate($data, $user, $goal, $id=null){
 		$action             = DocumentHistoric::ACTION_CREATED;
 		$data['version']    = 0;
 		$data['document_id']= 0;
+		$data['goal']       = $goal;
 		$data['status']     = Document::STATUS_CURRENT_VERSION;
 		if($id){
 			$oldDocument            = Document::getById($id, $user);

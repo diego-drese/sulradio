@@ -4,6 +4,7 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Models\DocumentType;
 use Yajra\DataTables\DataTables;
@@ -35,6 +36,7 @@ class DocumentTypeController extends SulradioController {
 			'is_active' => 'required',
 		]);
 		DocumentType::create($dataForm);
+		Cache::tags('sulradio')->flush();
 		toastr()->success('Plano Criado com sucesso', 'Sucesso');
 		return redirect(route('document.type.index'));
 		
@@ -42,6 +44,7 @@ class DocumentTypeController extends SulradioController {
 	
 	public function edit($id) {
 		$data = DocumentType::getById($id);
+		
 		return $this->renderView('SulRadio::backend.document_type.edit', ['data' => $data]);
 	}
 	
@@ -54,7 +57,7 @@ class DocumentTypeController extends SulradioController {
 		]);
 		$data->fill($dataForm);
 		$data->save();
-		
+		Cache::tags('sulradio')->flush();
 		toastr()->success("{$data->name} Atualizado com sucesso", 'Sucesso');
 		return redirect(route('document.type.index'));
 	}

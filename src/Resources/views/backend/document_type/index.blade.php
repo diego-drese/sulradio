@@ -22,11 +22,17 @@
                                aria-describedby="file_export_info">
                             <thead>
                             <tr>
+                                <th style="width: 120px">Ações</th>
                                 <th>Nome</th>
                                 <th>Ativo</th>
-                                <th style="width: 120px">Ações</th>
+                                <th>Finalidade</th>
                             </tr>
                             <tr>
+                                <th style="width: 60px">
+                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
+                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
+                                    </spa>
+                                </th>
                                 <th role="row">
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
                                 </th>
@@ -37,11 +43,15 @@
                                         <option value="0">Não</option>
                                     </select>
                                 </th>
-                                <th style="width: 60px">
-                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
-                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
-                                    </spa>
+                                <th role="row">
+                                    <select class="form-control fieldSearch">
+                                        <option value="">Todos</option>
+                                        <option value="Cliente">Cliente</option>
+                                        <option value="Jurídico">Jurídico</option>
+                                        <option value="Engenharia">Engenharia</option>
+                                    </select>
                                 </th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -112,7 +122,17 @@
                     }
                 },
                 columns: [
+                    {
+                        data: null, searchable: false, orderable: false, render: function (data) {
+                            var edit_button = "";
+                            @if($hasEdit)
+                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            @endif
+                                return edit_button
+                        }
+                    },
                     {data: "name", 'name': 'name'},
+
                     {data: "is_active", 'name': 'is_active',
                         render: function (data, display, row) {
                             if (data == "1") {
@@ -123,15 +143,8 @@
                             return '---';
                         }
                     },
-                    {
-                        data: null, searchable: false, orderable: false, render: function (data) {
-                            var edit_button = "";
-                            @if($hasEdit)
-                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
-                            @endif
-                            return edit_button
-                        }
-                    }
+                    {data: "goal", 'name': 'goal'},
+
                 ]
             });
 

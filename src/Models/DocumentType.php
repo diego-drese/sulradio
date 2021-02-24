@@ -12,7 +12,8 @@ class DocumentType extends Model {
 	protected $fillable = [
 		'name',
 		'description',
-		'is_active'
+		'is_active',
+		'goal',
 	];
 	protected $table = 'document_type';
 	protected $connection = 'sulradio';
@@ -25,9 +26,10 @@ class DocumentType extends Model {
 		return self::where('id', $id)->first();
 	}
 	
-	public static function getWithCache() {
-		return Cache::tags(['sulradio'])->remember('document_type', 120, function () {
+	public static function getWithCache($goal) {
+		return Cache::tags(['sulradio'])->remember('document_type-'.$goal, 120, function () use($goal) {
 			return self::where('is_active', 1)
+				->where('goal', $goal)
 				->orderBy('name', 'asc')
 				->get();
 		});

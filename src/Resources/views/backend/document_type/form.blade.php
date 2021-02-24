@@ -12,7 +12,23 @@
             <span class="help-block">{{$errors->first('name')}}</span>
         @endif
     </div>
-
+    <div class="col-md-3 form-group {{$errors->has('goal') ? 'has-error' : ''}} ">
+        <label for="goal">Finalidade</label>
+        <div class="input-group mb-3">
+            <select name="goal" id="goal" class="form-control" required {{$data->id ? 'disabled': ''}}>
+                <option value=""> Selecione </option>
+                <option value="Cliente" {{old('goal', $data->exists() ? $data->goal : '') == "Cliente" ? 'selected' : ''}}> Cliente </option>
+                <option value="Jurídico" {{old('goal', $data->exists() ? $data->goal : '') == "Jurídico" ? 'selected' : ''}}> Jurídico </option>
+                <option value="Engenharia" {{old('goal', $data->exists() ? $data->goal : '') == "Engenharia" ? 'selected' : ''}}> Engenharia </option>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-adjust"></i></span>
+            </div>
+        </div>
+        @if($errors->has('goal'))
+            <span class="help-block">{{$errors->first('goal')}}</span>
+        @endif
+    </div>
     <div class="col-md-3 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
         <label for="is_active">Ativo</label>
         <div class="input-group mb-3">
