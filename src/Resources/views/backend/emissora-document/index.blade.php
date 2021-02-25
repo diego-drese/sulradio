@@ -36,18 +36,18 @@
 
                             </tr>
                             <tr>
-
+                                <th>
+                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
+                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
+                                    </spa>
+                                </th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Nome"></th>
                                 <th> --- </th>
                                 <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar tipo de arquivo"></th>
                                 <th> --- </th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar por pasta"></th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar por tipo"></th>
-                                <th>
-                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
-                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
-                                    </spa>
-                                </th>
+
                             </tr>
                             </thead>
                             <tbody>
