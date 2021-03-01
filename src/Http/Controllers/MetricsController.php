@@ -5,6 +5,7 @@ namespace Oka6\SulRadio\Http\Controllers;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Oka6\Admin\Http\Library\ResourceAdmin;
+use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Models\Ato;
 use Oka6\SulRadio\Models\Client;
@@ -12,6 +13,7 @@ use Oka6\SulRadio\Models\Document;
 use Oka6\SulRadio\Models\DocumentHistoric;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\Plan;
+use Oka6\SulRadio\Models\Ticket;
 use Yajra\DataTables\DataTables;
 
 class MetricsController extends SulradioController {
@@ -22,7 +24,19 @@ class MetricsController extends SulradioController {
 		$totalBroadCast     =  Helper::formatInteger(Emissora::count());
 		$totalDocuments     =  Helper::formatInteger(Document::currentVersion()->count());
 		$totalAtos          =  Helper::formatInteger(Ato::count());
-		return $this->renderView('SulRadio::backend.metrics.index', ['totalClients' => $totalClients, 'totalBroadCast'=>$totalBroadCast, 'totalDocuments'=>$totalDocuments, 'totalAtos'=>$totalAtos]);
+		$totalTickets          =  Helper::formatInteger(Ticket::count());
+		$totalTicketsOpen          =  Helper::formatInteger(Ticket::whereNull('completed_at')->count());
+		$totalTicketsClosed          =  Helper::formatInteger(Ticket::whereNotNull('completed_at')->count());
+		return $this->renderView('SulRadio::backend.metrics.index',
+			[
+				'totalClients' => $totalClients,
+				'totalBroadCast'=>$totalBroadCast,
+				'totalDocuments'=>$totalDocuments,
+				'totalAtos'=>$totalAtos,
+				'totalTickets'=>$totalTickets,
+				'totalTicketsOpen'=>$totalTicketsOpen,
+				'totalTicketsClosed'=>$totalTicketsClosed,
+			]);
 	}
 	
 	public function broadcast(Request $request) {
@@ -51,6 +65,77 @@ class MetricsController extends SulradioController {
 		}
 		return response()->json(['data'=>$documents, 'result'=>true]);
 	}
+	public function ticketUser(Request $request) {
+		$date       = explode(' - ', $request->get('date'));
+		$dateStart  = new \DateTime(Helper::convertDateBrToMysql($date[0]));
+		$dateStart->setTime('0', '0', '0');
+		$dateEnd    = new \DateTime(Helper::convertDateBrToMysql($date[1]));
+		$dateEnd->setTime('23', '59','59');
+		
+		$tickets = Ticket::selectRaw('count(1) as total, agent_id as agent_id')
+			->where('ticket.created_at', '>=', $dateStart)
+			->where('ticket.created_at', '<=', $dateEnd)
+			->groupBy('agent_id')
+			->get();
+		foreach ($tickets as &$ticket){
+			$user = User::getByIdStatic($ticket->agent_id);
+			$ticket->name=$user->name;
+		}
+		return response()->json(['data'=>$tickets, 'result'=>true]);
+	}
+	
+	public function ticketPriority(Request $request) {
+		$date       = explode(' - ', $request->get('date'));
+		$dateStart  = new \DateTime(Helper::convertDateBrToMysql($date[0]));
+		$dateStart->setTime('0', '0', '0');
+		$dateEnd    = new \DateTime(Helper::convertDateBrToMysql($date[1]));
+		$dateEnd->setTime('23', '59','59');
+		
+		$tickets = Ticket::selectRaw('count(1) as total,  ticket_priority.color as color_hex, ticket_priority.name as name')
+			->join('ticket_priority', 'ticket_priority.id', 'ticket.priority_id')
+			->where('ticket.created_at', '>=', $dateStart)
+			->where('ticket.created_at', '<=', $dateEnd)
+			->groupBy('color_hex')
+			->groupBy('name')
+			->get();
+		return response()->json(['data'=>$tickets, 'result'=>true]);
+	}
+	
+	public function ticketCategory(Request $request) {
+		$date       = explode(' - ', $request->get('date'));
+		$dateStart  = new \DateTime(Helper::convertDateBrToMysql($date[0]));
+		$dateStart->setTime('0', '0', '0');
+		$dateEnd    = new \DateTime(Helper::convertDateBrToMysql($date[1]));
+		$dateEnd->setTime('23', '59','59');
+		
+		$tickets = Ticket::selectRaw('count(1) as total, ticket_category.color as color_hex, ticket_category.name as name')
+			->join('ticket_category', 'ticket_category.id', 'ticket.category_id')
+			->where('ticket.created_at', '>=', $dateStart)
+			->where('ticket.created_at', '<=', $dateEnd)
+			->groupBy('color')
+			->groupBy('name')
+			->get();
+		return response()->json(['data'=>$tickets, 'result'=>true]);
+	}
+	
+	public function ticketStatus(Request $request) {
+		$date       = explode(' - ', $request->get('date'));
+		$dateStart  = new \DateTime(Helper::convertDateBrToMysql($date[0]));
+		$dateStart->setTime('0', '0', '0');
+		$dateEnd    = new \DateTime(Helper::convertDateBrToMysql($date[1]));
+		$dateEnd->setTime('23', '59','59');
+		
+		$tickets = Ticket::selectRaw('count(1) as total, ticket_status.color as color_hex,  ticket_status.name as name')
+			->join('ticket_status', 'ticket_status.id', 'ticket.status_id')
+			->where('ticket.created_at', '>=', $dateStart)
+			->where('ticket.created_at', '<=', $dateEnd)
+			->groupBy('color_hex')
+			->groupBy('name')
+			->get();
+		
+		return response()->json(['data'=>$tickets, 'result'=>true]);
+	}
+	
 	public function documentNew(Request $request) {
 		$date       = explode(' - ', $request->get('date'));
 		$dateStart  = new \DateTime(Helper::convertDateBrToMysql($date[0]));

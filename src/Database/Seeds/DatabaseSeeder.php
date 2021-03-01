@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder {
 	public function run() {
 		$this->call(ResourcesTableSeed::class);
 		$this->call(DocumentTypeTableSeed::class);
-		$this->call(DocumentFolder::class);
+		$this->call(DocumentFolderTableSeed::class);
 		$this->call(StatesTableSeeder::class);
 		$this->call(CitiesTableSeeder::class);
 	}

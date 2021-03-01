@@ -67,6 +67,54 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-7">
+                            <i class="mdi mdi-file-document font-20 text-purple"></i>
+                            <p class="font-16 m-b-5">Total Tickets</p>
+                        </div>
+                        <div class="col-5">
+                            <h1 class="font-light text-right mb-0">{{$totalTickets}}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-7">
+                            <i class="mdi mdi-file-document font-20 text-purple"></i>
+                            <p class="font-16 m-b-5">Total Tickets Abertos</p>
+                        </div>
+                        <div class="col-5">
+                            <h1 class="font-light text-right mb-0">{{$totalTicketsOpen}}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-7">
+                            <i class="mdi mdi-file-document font-20 text-purple"></i>
+                            <p class="font-16 m-b-5">Total Tickets Encerrados</p>
+                        </div>
+                        <div class="col-5">
+                            <h1 class="font-light text-right mb-0">{{$totalTicketsClosed}}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -94,11 +142,52 @@
                 </div>
             </div>
         </div>
+
         <div class="col-6">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Ações em Documentos</h4>
                     <div id="document_action" class="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tickets Abertos por Usuários</h4>
+                    <div id="ticket_user" class="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tickets Abertos por Prioridade</h4>
+                    <div id="ticket_priority" class="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tickets Abertos por Categoria</h4>
+                    <div id="ticket_category" class="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tickets Abertos por status</h4>
+                    <div id="ticket_status" class="">
                     </div>
                 </div>
             </div>
@@ -121,14 +210,27 @@
             var urlBroadcast = '{{route('metrics.broadcast')}}';
             var urlDocumentNew = '{{route('metrics.document.new')}}';
             var urlDocumentAction = '{{route('metrics.document.action')}}';
+            var urlDocumentAction = '{{route('metrics.document.action')}}';
+            var urlTicketsUser = '{{route('metrics.ticket.user')}}';
+            var urlTicketsPriority = '{{route('metrics.ticket.priority')}}';
+            var urlTicketsCategory = '{{route('metrics.ticket.category')}}';
+            var urlTicketsStatus = '{{route('metrics.ticket.status')}}';
+
             function buildPieChart(element, data, fields ){
                 am4core.useTheme(am4themes_animated);
                 var chart = am4core.create(element, am4charts.PieChart);
+                for (const key in data) {
+                    if(data[key]['color_hex']){
+                        data[key]['color'] = am4core.color(data[key]['color_hex'])
+                    }
+                }
+                console.log(data)
                 chart.data = data;
                 var pieSeries = chart.series.push(new am4charts.PieSeries());
                 pieSeries.dataFields.value = fields.total;
                 pieSeries.dataFields.category = fields.name;
                 pieSeries.slices.template.stroke = am4core.color("#fff");
+                pieSeries.slices.template.propertyFields.fill = "color";
                 pieSeries.slices.template.strokeWidth = 2;
                 pieSeries.slices.template.strokeOpacity = 1;
                 pieSeries.hiddenState.properties.opacity = 1;
@@ -224,6 +326,10 @@
             var dateFilter = this.value;
             ajaxData(urlDocumentNew, {date:dateFilter}, buildPieChart, 'document_new');
             ajaxData(urlDocumentAction, {date:dateFilter}, buildPieChart, 'document_action');
+            ajaxData(urlTicketsUser, {date:dateFilter}, buildPieChart, 'ticket_user');
+            ajaxData(urlTicketsPriority, {date:dateFilter}, buildPieChart, 'ticket_priority');
+            ajaxData(urlTicketsCategory, {date:dateFilter}, buildPieChart, 'ticket_category');
+            ajaxData(urlTicketsStatus, {date:dateFilter}, buildPieChart, 'ticket_status');
         });
         $('#date').trigger('change')
     });
