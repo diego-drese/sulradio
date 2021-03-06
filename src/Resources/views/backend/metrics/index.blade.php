@@ -156,7 +156,7 @@
         <div class="col-6">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Tickets Abertos por Usuários</h4>
+                    <h4 class="card-title">Tickets por Usuários</h4>
                     <div id="ticket_user" class="">
                     </div>
                 </div>
@@ -166,7 +166,7 @@
         <div class="col-6">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Tickets Abertos por Prioridade</h4>
+                    <h4 class="card-title">Tickets por Prioridade</h4>
                     <div id="ticket_priority" class="">
                     </div>
                 </div>
@@ -176,7 +176,7 @@
         <div class="col-6">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Tickets Abertos por Categoria</h4>
+                    <h4 class="card-title">Tickets por Categoria</h4>
                     <div id="ticket_category" class="">
                     </div>
                 </div>
@@ -186,7 +186,7 @@
         <div class="col-6">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Tickets Abertos por status</h4>
+                    <h4 class="card-title">Tickets por status</h4>
                     <div id="ticket_status" class="">
                     </div>
                 </div>

@@ -78,8 +78,11 @@ class MetricsController extends SulradioController {
 			->groupBy('agent_id')
 			->get();
 		foreach ($tickets as &$ticket){
-			$user = User::getByIdStatic($ticket->agent_id);
-			$ticket->name=$user->name;
+			if($ticket->agent_id){
+				$user = User::getByIdStatic($ticket->agent_id);
+				$ticket->name=$user->name;
+			}
+			
 		}
 		return response()->json(['data'=>$tickets, 'result'=>true]);
 	}

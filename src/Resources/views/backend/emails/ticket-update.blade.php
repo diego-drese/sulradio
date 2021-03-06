@@ -13,9 +13,9 @@ O Usuário <b>{{$data['userLogged']->name}}</b> editou o ticket <b>{{$data->subj
 <li>Prioridade: <b style="color: {{$data->priority_color}}">{{$data->priority_name}}</b></li>
 <li>Categoria: <b style="color: {{$data->category_color}}">{{$data->category_name}}</b></li>
 <li>Status: <b style="color: {{$data->status_color}}">{{$data->status_name}}</b></li>
-<li>Previsão de início: <b style="color: {{$data->status_color}}">{{$data->status_name}}</b></li>
-<li>Previsão de término: <b style="color: {{$data->status_color}}">{{$data->status_name}}</b></li>
-<li>Emissora: <b>{{$data->emissora}}</b></li>
+<li>Previsão de início: <b>{{$data->start_forecast}}</b></li>
+<li>Previsão de término: <b>{{$data->end_forecast}}</b></li>
+<li>Emissora: <b>{{$data->emissora ? $data->emissora : '-----'}}</b></li>
 <li>Finalizado: {!! $data->completed_at ? '<b style="color:#238807">Sim</b>' : '<b style="color:#881407">Não</b>' !!} </li>
 </ul>
 <div class="">
