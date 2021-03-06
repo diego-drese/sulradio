@@ -46,6 +46,15 @@
                   id="description">{{$data->exists() && $data->description  ? $data->description : ''}}</textarea>
     </div>
 
+    <div class="col-md-12 form-group {{$errors->has('profile_id') ? 'has-error' : ''}} ">
+        <label for="profile_id">Perfis de uso</label>
+        <select name="profile_id[]" id="profile_id" class="form-control" multiple required>
+            @foreach($profiles as $profile)
+                <option value="{{$profile->id}}" {{in_array($profile->id, old('profile_id', count($profilesCategory) ?  $profilesCategory : [])) ? 'selected' : ''}}>{{$profile->name}}</option>
+            @endforeach
+        </select>
+    </div>
+
 </div>
 
 <div class="col-md-12 form-group">
@@ -79,6 +88,11 @@
             width: '100%',
             placeholder: 'Selecione',
             allowClear: true
+        }); $("#profile_id").select2({
+            width: '100%',
+            placeholder: 'Selecione',
+            allowClear: true,
+            tags: true,
         });
 
     </script>

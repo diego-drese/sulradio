@@ -25,6 +25,7 @@
                                 <th style="width: 120px">Ações</th>
                                 <th>Nome</th>
                                 <th>Ativo</th>
+                                <th>Perfis</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">
@@ -32,6 +33,7 @@
                                         <span class="fas fa-sync-alt"></span> <b>Limpar</b>
                                     </spa>
                                 </th>
+
                                 <th role="row">
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
                                 </th>
@@ -41,6 +43,9 @@
                                         <option value="1">Sim</option>
                                         <option value="0">Não</option>
                                     </select>
+                                </th>
+                                <th>
+                                   ---
                                 </th>
                             </tr>
                             </thead>
@@ -91,6 +96,7 @@
                 autoWidth: false,
                 orderCellsTop: true,
                 stateSave: true,
+                "order": [[ 1, "asc" ]],
                 stateLoaded: function (settings, data) {
                     setTimeout(function () {
                         var dataExtra = settings.ajax.data({});
@@ -122,12 +128,9 @@
                         }
                     },
                     {data: "name", 'name': 'name', render: function (data, display, row) {
-
                             return '<b style="color:'+row.color+'">'+data+'</b>';
                         }
-                    },
-
-                    {data: "is_active", 'name': 'is_active',
+                    },{data: "is_active", 'name': 'is_active',
                         render: function (data, display, row) {
                             if (data == "1") {
                                 return '<span class="badge badge-success mr-1 ">SIM</span>';
@@ -135,6 +138,13 @@
                                 return '<span class="badge badge-danger mr-1 ">NÃO</span>';
                             }
                             return '---';
+                        }
+                    },{data: "profiles", 'name': 'profiles', searchable: false, orderable: false,render: function (data, display, row) {
+                            var badge= '';
+                            for (var i in data){
+                                badge+='<span class="badge badge-primary mr-1 ">'+data[i]+'</span>';
+                            }
+                            return badge;
                         }
                     },
 

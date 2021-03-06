@@ -32,6 +32,7 @@ class Document extends Model {
 	const GOAL_CLIENT               = 'Cliente';
 	const GOAL_ENGINEERING          = 'Engenharia';
 	const GOAL_LEGAL                = 'Jurídico';
+	const GOAL_TICKET                = 'Ticket';
 	
 	protected $table = 'document';
 	protected $connection = 'sulradio';
@@ -135,7 +136,7 @@ class Document extends Model {
 			
 		}
 		$document = Document::create($data);
-		DocumentHistoric::create([
+		return DocumentHistoric::create([
 			'user_id'=> $user->id,
 			'document_id'=> $document->id,
 			'action'=> $action,

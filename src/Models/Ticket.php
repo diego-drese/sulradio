@@ -21,6 +21,8 @@ class Ticket extends Model {
 		'category_id',
 		'emissora_id',
 		'completed_at',
+		'start_forecast',
+		'end_forecast',
 	];
 
 	protected $table = 'ticket';
@@ -50,6 +52,12 @@ class Ticket extends Model {
 	}
 	public function scopeWithEmissora($query) {
 		return $query->leftJoin('emissora', 'emissora.emissoraID', 'ticket.emissora_id');
+	}
+	public function getStartForecastAttribute($value) {
+		return $value ? (new Carbon($value))->format('d/m/Y') : '';
+	}
+	public function getEndForecastAttribute($value) {
+		return $value ? (new Carbon($value))->format('d/m/Y') : '';
 	}
 	public static function getById($id) {
 		return self::where('id', $id)->first();

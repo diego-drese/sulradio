@@ -17,7 +17,12 @@ class CreateTicketDocumentTable extends Migration {
 			$table->increments('id');
 			$table->integer('document_id')->index();
 			$table->integer('ticket_id')->index();
-			$table->integer('ticket_comment_id')->index()->nullable();
+			$table->integer('user_id')->index();
+			$table->tinyInteger('removed')->index()->default(0);
+			$table->string('file_name', 191)->nullable();
+			$table->string('file_type', 191)->nullable();;
+			$table->string('file_preview', 191)->nullable();;
+			$table->string('file_size', 191)->nullable();;
 			$table->timestamps();
 		});
 		

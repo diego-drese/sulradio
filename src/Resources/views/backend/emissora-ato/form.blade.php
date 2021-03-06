@@ -285,6 +285,7 @@
         }).on('cancel.daterangepicker', function (ev, picker) {
             $(this).val('');
         });
+
         $(".select2").select2({
             width: '100%',
             placeholder: 'Selecione',

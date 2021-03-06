@@ -5,6 +5,7 @@ namespace Oka6\SulRadio\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Oka6\Admin\Http\Library\ResourceAdmin;
 
 class TicketCategory extends Model {
 	const TABLE = 'ticket_category';
@@ -31,5 +32,16 @@ class TicketCategory extends Model {
 				->orderBy('name', 'asc')
 				->get();
 		});
+	}
+	
+	public static function getWithProfile($user) {
+		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+		$query      = self::where('is_active', 1)->orderBy('name', 'asc');
+		if(!$hasAdmin){
+			$query->join('ticket_category_profile', 'ticket_category_profile.ticket_category_id', 'ticket_category.id')
+				->where('profile_id', $user->profile_id)
+				->where('user_id_removed', 0);
+		}
+		return $query->get();
 	}
 }

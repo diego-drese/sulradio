@@ -144,6 +144,8 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/ticket/{id}', 'Oka6\SulRadio\Http\Controllers\TicketController@update')->name('ticket.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket salva edição']);
 	Route::post('/ticket-comment/{id}', 'Oka6\SulRadio\Http\Controllers\TicketController@comment')->name('ticket.comment')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket salva comentario']);
 	Route::post('/ticket-end/{id}', 'Oka6\SulRadio\Http\Controllers\TicketController@end')->name('ticket.end')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket finaliza']);
+	Route::post('/ticket-upload/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@upload')->name('ticket.upload')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket upload']);
+	
 	
 	//Route::get('/metrics/document', 'Oka6\SulRadio\Http\Controllers\MetricsController@document')->name('metrics.document')->where(['iconAdmin' => 'mdi mdi-file-document', 'parentRouteNameAdmin' => 'metrics.index', 'nameAdmin' => 'Métricas Documentos', 'isDefaultAdmin' => '0']);
 });
@@ -152,6 +154,8 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function 
 	Route::any('/city/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchCity')->name('city.search');
 	Route::any('/broadcast/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchBroadcast')->name('broadcast.search');
 	Route::any('/document/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocument')->name('document.download');
+	Route::any('/document-ticket/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocumentTicket')->name('document.download.ticket');
+	Route::any('/document-ticket/remove/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@removeDocumentTicket')->name('document.remove.ticket');
 });
 
 

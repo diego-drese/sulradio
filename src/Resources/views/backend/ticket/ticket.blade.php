@@ -52,53 +52,85 @@
         </div>
         <div class="col-lg-4">
             <div class="card">
+
                 <div class="card-body">
                     <h4 class="card-title">Informações.</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-3 m-t-10 m-b-10 text-left">
-                            Prioridade
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Prioridade</h6>
+                            <h5 style="color:{{$data->priority_color}}">{{$data->priority_name}}</h5>
+                            <div class="progress">
+                                <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->priority_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
-                        <div class="col-3 m-t-10 m-b-10">
-                            <h4><span class="badge" style="background: {{$data->priority_color}}; color: #fff">{{$data->priority_name}}</span></h4>
-                        </div>
-                        <div class="col-3 m-t-10 m-b-10  text-left">
-                            Categoria
-                        </div>
-                        <div class="col-3 m-t-10 m-b-10">
-                            <h4><span class="badge" style="background: {{$data->category_color}}; color: #fff">{{$data->category_name}}</span></h4>
-                        </div>
-                        <div class="col-3 m-t-10 m-b-10  text-left">
-                            Status
-                        </div>
-                        <div class="col-3 m-t-10 m-b-10">
-                            <h4><span class="badge" style="background: {{$data->status_color}}; color: #fff">{{$data->status_name}}</span></h4>
-                        </div>
-                        <div class="col-3 m-t-10 m-b-10  text-left">
-                            Criado em
-                        </div>
-                        <div class="col-3 m-t-10 m-b-10">
-                            {{$data->created_at->format('d/m/Y H:i')}}
+                        <div class="col-6">
+
+                            <h6>Categoria</h6>
+                            <h5 style="color:{{$data->category_color}}">{{$data->category_name}}</h5>
+                            <div class="progress">
+                                <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->category_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
 
-                        <div class="col-3 m-t-10 m-b-10  text-left">
-                            Emissora
+                        <div class="col-6">
+                            <h6>Status</h6>
+                            <h5 style="color:{{$data->status_color}}">{{$data->status_name}}</h5>
+                            <div class="progress">
+                                <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->status_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6>Criado em</h6>
+                            <h5 class="text-info">{{$data->created_at->format('d/m/Y H:i')}}</h5>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
 
-                        <div class="col-6 m-t-10 m-b-10  text-left">
-                            {{$data->emissora}}
+                        <div class="col-6">
+                            <h6>Emissora</h6>
+                            <h5 class="text-info"> {!! $data->emissora ? $data->emissora : '-----' !!}</h5>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
-                        <div class="col-3 m-t-10 m-b-10  text-left">
-                            @if($hasAdmin || $user->id==$data->agent_id)
+                        <div class="col-6 m-t-10 m-b-10 text-left">
+                            @if($hasAdmin || $user->id==$data->agent_id || $user->id==$data->owner_id)
                                 <a href="{{route('ticket.edit', [$data->id])}}" class="btn btn-sm btn-secondary">
                                     Editar
                                 </a>
                             @endif
                         </div>
                     </div>
+
                 </div>
 
+            </div>
+            <div class="card">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">Anexos</h4>
+                            <ul  class="list-group">
+                                @foreach($documents as $document)
+                                    <li class="list-group-item text-left" id="document-{{$document->id}}">
+                                        <a target="_blank" href="{{route('document.download.ticket',[$document->id])}}" >
+                                            {{$document->file_name_original}}
+                                        </a>
+                                        @if($user->id==$document->user_id || $hasAdmin)
+                                            <span class="delete-todo todo-action cursor-pointer delete-document" id="delDoc-{{$document->id}}"><i class="ti-close"></i></span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                            <div id="dropzone">
+                                <div class="dz-message">Anexe mais arquivos</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card">
                 <div class="row">
@@ -143,13 +175,29 @@
 @endsection
 @section('style_head')
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/summernote.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/dropzone.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/sweetalert2.css')}}">
     <style>
         .note-toolbar-wrapper{height: inherit!important;}
         .note-toolbar{z-index: 5}
+        .truncate {
+            width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cursor-pointer{cursor: pointer;    padding: 0px 5px;}
+        .cursor-pointer:hover{color: #860426 }
+        h5,h6{margin: 0}
+        .progress{margin-bottom: 10px}
+
+
     </style>
 @endsection
 @section('script_footer_end')
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/summernote.js')}}></script>
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/dropzone.js')}}></script>
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/sweetalert2.js')}}></script>
     <script>
 
         $('.summernote').summernote({
@@ -167,6 +215,86 @@
             var url= '{{route('ticket.end', [$data->id])}}';
             $('#form-comment').attr('action', url).submit();
         });
+        var cancelSubscripton = function (url, text ,id) {
+            swal({
+                title: "Você têm certeza?",
+                text: text,
+                type: "error",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim!",
+                cancelButtonText: "Cancelar!",
+            }).then((isConfirm) => {
+                console.log(isConfirm);
+                if (isConfirm.dismiss==='cancel') return;
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        swal("Sucesso!", "Arquivo removido com sucesso", "success").then(() => {
+                            $('#'+id).remove();
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        swal("Erro!", xhr.responseJSON.message, "error");
+                    }
+                });
+            });
+        }
+        $('.delete-document').click(function (){
+            var url = '{{route('document.remove.ticket', [':id'])}}';
+            var id = this.id.split('-')[1];
+            cancelSubscripton(url.replace(':id', id), 'Você está prestes a remover esse documento', 'document-'+id)
+        });
+
+        $(document).ready(function () {
+            Dropzone.prototype.defaultOptions.dictDefaultMessage = "Arraste os arquivos aqui para enviar";
+            Dropzone.prototype.defaultOptions.dictFallbackMessage = "Seu navegador não suporta uploads de arquivos arrastar e soltar.";
+            Dropzone.prototype.defaultOptions.dictFallbackText = "Use o formulário substituto abaixo para enviar seus arquivos como antigamente.";
+            Dropzone.prototype.defaultOptions.dictFileTooBig = "O arquivo é muito grande (@{{filesize}} MB). Tamanho máximo do arquivo: @{{maxFilesize}} MB.";
+            Dropzone.prototype.defaultOptions.dictInvalidFileType = "você não pode fazer upload de arquivos deste tipo.";
+            Dropzone.prototype.defaultOptions.dictResponseError = "O servidor respondeu com o código @{{statusCode}}.";
+            Dropzone.prototype.defaultOptions.dictCancelUpload = "Cancelar upload";
+            Dropzone.prototype.defaultOptions.dictCancelUploadConfirmation = "Tem certeza que deseja cancelar este upload?";
+            Dropzone.prototype.defaultOptions.dictRemoveFile = "Remover";
+            Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = "Você não pode enviar mais arquivos.";
+
+            var drop = $("div#dropzone").dropzone({
+                url: '{{route('ticket.upload', [$data->id])}}',
+                uploadMultiple: true,
+                addRemoveLinks: true,
+                maxFilesize: 30,
+                parallelUploads: 1,
+                maxFiles: 10,
+                preventDuplicates: true,
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                },
+                init: function () {
+                    this.on("error", function (file, message) {
+                        toastr.error(message, "Erro", {timeOut: 6000});
+                        this.removeFile(file);
+                    });
+                    this.on("complete", function (file) {
+                        toastr.success('Arquivos carregados com sucesso, a página sera recarregada em 2 segundos', "Sucesso", {timeOut: 6000});
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+
+                    })
+                },
+                success: function (file, result) {
+
+                },
+                error: function (file, result) {
+                    toastr.error(result.message, "Erro", {timeOut: 6000});
+                }
+            })
+                .addClass('dropzone');
+        });
+
     </script>
 @endsection
 

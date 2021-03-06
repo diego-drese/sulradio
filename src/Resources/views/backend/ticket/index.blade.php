@@ -12,7 +12,6 @@
                                        value="1" data-on-color="success" data-off-color="danger"
                                        data-on-text="Ativos" data-off-text="Finalizados">
                             </div>
-
                             <div class="btn-group ">
                                 @if($hasAdd)
                                     <a href="{{route('ticket.create')}}" class="btn btn-primary">
@@ -20,8 +19,6 @@
                                     </a>
                                 @endif
                             </div>
-
-
                         </div>
                     </div>
                     <div class="table-responsive">

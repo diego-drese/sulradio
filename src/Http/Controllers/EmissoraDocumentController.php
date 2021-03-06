@@ -70,7 +70,7 @@ class EmissoraDocumentController extends SulradioController {
 			'name' => 'required',
 			'description' => 'required',
 			'document_type_id' => 'required',
-			'file' => 'required|mimes:pdf,xlsx,csv,jpg,png,jpeg,html,doc,txt,xls|max:10240',
+			'file' => 'required|mimes:pdf,xlsx,csv,jpg,png,jpeg,html,doc,txt,xls|max:30240',
 		]);
 		if(!is_dir(Document::getPathUpload())){
 			toastr()->error('Não foi encontrado a pasta para salvar seu arquivo, entre em contato com o adminstrador do sistema ', 'Erro');
@@ -80,6 +80,7 @@ class EmissoraDocumentController extends SulradioController {
 		$filesize   = $request->file('file')->getSize();
 		$fileType   = $request->file('file')->getMimeType();
 		Storage::disk('spaces')->putFileAs("", $request->file('file'), $fileName);
+		
 		$dataForm['emissora_id']    = $emissoraID;
 		$dataForm['file_name']      = $fileName;
 		$dataForm['file_type']      = $fileType;
@@ -108,7 +109,7 @@ class EmissoraDocumentController extends SulradioController {
 			'name' => 'required',
 			'description' => 'required',
 			'document_type_id' => 'required',
-			'file' => 'nullable|mimes:pdf,xlsx,csv,jpg,png,jpeg,html,doc,txt,xls|max:20240',
+			'file' => 'nullable|mimes:pdf,xlsx,csv,jpg,png,jpeg,html,doc,txt,xls|max:30240',
 		]);
 		if(!is_dir(Document::getPathUpload())){
 			toastr()->error('Não foi encontrado a pasta para salvar seu arquivo, entre em contato com o adminstrador do sistema ', 'Erro');

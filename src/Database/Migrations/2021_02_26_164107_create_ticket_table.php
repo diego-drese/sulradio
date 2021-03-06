@@ -24,6 +24,8 @@ class CreateTicketTable extends Migration {
 			$table->integer('agent_id')->index();//Responsavel
 			$table->integer('category_id')->index();
 			$table->integer('emissora_id')->index()->nullable();
+			$table->timestamp('start_forecast')->index()->nullable();
+			$table->timestamp('end_forecast')->index()->nullable();
 			$table->timestamp('completed_at')->index()->nullable();
 			$table->timestamps();
 		});
