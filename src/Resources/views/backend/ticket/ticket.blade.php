@@ -58,7 +58,7 @@
                     <div class="row">
                         <div class="col-6">
                             <h6>Prioridade</h6>
-                            <h5 style="color:{{$data->priority_color}}">{{$data->priority_name}}</h5>
+                            <h6 style="color:{{$data->priority_color}}">{{$data->priority_name}}</h6>
                             <div class="progress">
                                 <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->priority_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
@@ -66,7 +66,7 @@
                         <div class="col-6">
 
                             <h6>Categoria</h6>
-                            <h5 style="color:{{$data->category_color}}">{{$data->category_name}}</h5>
+                            <h6 style="color:{{$data->category_color}}">{{$data->category_name}}</h6>
                             <div class="progress">
                                 <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->category_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
@@ -74,14 +74,14 @@
 
                         <div class="col-6">
                             <h6>Status</h6>
-                            <h5 style="color:{{$data->status_color}}">{{$data->status_name}}</h5>
+                            <h6 style="color:{{$data->status_color}}">{{$data->status_name}}</h6>
                             <div class="progress">
                                 <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->status_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                         <div class="col-6">
                             <h6>Criado em</h6>
-                            <h5 class="text-info">{{$data->created_at->format('d/m/Y H:i')}}</h5>
+                            <h6 class="text-info">{{$data->created_at->format('d/m/Y H:i')}}</h6>
                             <div class="progress">
                                 <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
@@ -89,7 +89,21 @@
 
                         <div class="col-6">
                             <h6>Emissora</h6>
-                            <h5 class="text-info"> {!! $data->emissora ? $data->emissora : '-----' !!}</h5>
+                            <h6 class="text-info"> {!! $data->emissora ? $data->emissora : '-----' !!}</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6>Prev. Início</h6>
+                            <h6 class="text-info">{{$data->start_forecast}}</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6>Prev. Término</h6>
+                            <h6 class="text-info">{{$data->end_forecast}}</h6>
                             <div class="progress">
                                 <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
