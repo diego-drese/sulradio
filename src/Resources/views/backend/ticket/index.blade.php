@@ -32,9 +32,9 @@
                                 <th>Categoria</th>
                                 <th>Status</th>
                                 <th>Emissora</th>
-                                <th>Atualizado</th>
+                                <th>Última interação</th>
                                 <th>Responsável</th>
-                                <th>Abertura</th>
+                                <th>Solicitante</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">

@@ -42,7 +42,7 @@ class PublicController extends SulradioController {
 		foreach ($query as &$broadcast){
 			$broadcast->disabled = false;
 			$broadcast->id      = $broadcast->emissoraID;
-			$broadcast->name    = $broadcast->nome_fantasia;
+			$broadcast->name    = $broadcast->razao_social;
 			$broadcast->text    = $broadcast->desc_servico.'-'.$broadcast->razao_social."({$broadcast->desc_municipio} {$broadcast->desc_uf})";
 			if(!$ignoreClient && $broadcast->client_id!=null && $broadcast->client_id!=$clientID){
 				$broadcast->disabled = true;

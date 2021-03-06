@@ -94,7 +94,7 @@
         <div class="input-group mb-3">
             <select name="emissora_id" id="emissora_id" class="form-control">
                 @if(isset($emissora) && $emissora->emissoraID)
-                    <option selected value="{{$emissora->emissoraID}}">{{$emissora->nome_fantasia}}</option>
+                    <option selected value="{{$emissora->emissoraID}}">{{$emissora->razao_social}}</option>
                 @endif
             </select>
             <div class="input-group-append">

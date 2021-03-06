@@ -39,7 +39,7 @@ class Ticket extends Model {
 			'ticket_priority.color as priority_color',
 			'ticket_category.name as category_name',
 			'ticket_category.color as category_color',
-			'emissora.nome_fantasia as emissora');
+			'emissora.razao_social as emissora');
 	}
 	public function scopeWithStatus($query) {
 		return $query->join('ticket_status', 'ticket_status.id', 'ticket.status_id');
