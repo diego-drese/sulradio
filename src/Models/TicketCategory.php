@@ -38,7 +38,8 @@ class TicketCategory extends Model {
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 		$query      = self::where('is_active', 1)->orderBy('name', 'asc');
 		if(!$hasAdmin){
-			$query->join('ticket_category_profile', 'ticket_category_profile.ticket_category_id', 'ticket_category.id')
+			$query->select('ticket_category.*')
+				->join('ticket_category_profile', 'ticket_category_profile.ticket_category_id', 'ticket_category.id')
 				->where('profile_id', $user->profile_id)
 				->where('user_id_removed', 0);
 		}

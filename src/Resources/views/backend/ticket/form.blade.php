@@ -108,7 +108,7 @@
 
     <div class="col-md-8 form-group {{$errors->has('description') ? 'has-error' : ''}} ">
         <label for="content">Conteudo</label>
-        <textarea rows="12" name="content" class="form-control summernote" id="content">{{$data->exists() && $data->content  ? $data->content : ''}}</textarea>
+        <textarea rows="12" name="content" class="form-control summernote" id="content">{{old('content', $data->exists() && $data->content  ? $data->content : '')}}</textarea>
     </div>
     <div class="col-md-4 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
         <label for="start_forecast">Previsão de início *</label>
