@@ -206,7 +206,7 @@
                     {data: "status_name", 'name': 'ticket_status.id', render:function (data, display, row){
                             return '<b style="color:'+row.status_color+'">'+data+'</b>'
                     }},
-                    {data: "emissora", 'name': 'emissora.nome_fantasia'},
+                    {data: "emissora", 'name': 'emissora.razao_social'},
                     {data: "updated_at", 'name': 'ticket.updated_at'},
                     {data: "agent_name", 'name': 'agent_id'},
                     {data: "user_name", 'name': 'owner_id'},
