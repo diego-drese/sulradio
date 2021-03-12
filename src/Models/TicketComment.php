@@ -19,7 +19,10 @@ class TicketComment extends Model {
 	protected $connection = 'sulradio';
 	
 	public function getUpdatedAtAttribute($value) {
-		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
+		return $value ? (new Carbon($value))->setTimezone('America/Sao_Paulo')->format('d/m/Y H:i') : '';
+	}
+	public function getCreatedAtAttribute($value) {
+		return $value ? (new Carbon($value))->setTimezone('America/Sao_Paulo')->format('d/m/Y H:i') : '';
 	}
 	
 	public static function getById($id) {

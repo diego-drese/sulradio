@@ -19,8 +19,10 @@
                                 @else
                                     <img class="avatar-default m-r-15" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg" style="width: 60px;height: 60px;padding: 0;margin-top: -10px;">
                                 @endif
+                                <br>
+
                                 <div class="media-body">
-                                    <h5 class="mt-0 mb-1">{{$comment->user_name}}</h5>
+                                    <h5 class="mt-0 mb-1"><b>{{$comment->user_name}}</b> -  {{$comment->created_at}}</h5>
                                     <div>
                                         {!! $comment->html !!}
                                     </div>
