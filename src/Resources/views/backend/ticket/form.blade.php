@@ -285,8 +285,11 @@
                 },
 
                 success: function(file, result) {
-                    $('#files').append(' <input id="'+file.upload.uuid+'" type="hidden" name="files[]" value="'+btoa(JSON.stringify(result.files))+'">')
-                    console.log('result',result);
+                    var files               = result.files[0];
+                    var fileName            = files['file_name'];
+                    var fileNameOriginal    = files['file_name_original'];
+                    var valueAppend         = fileName+'[--]'+fileNameOriginal;
+                    $('#files').append(' <input id="'+file.upload.uuid+'" type="hidden" name="files[]" value="'+valueAppend+'">')
                 },
                 error: function(file, result) {
                     toastr.error(result.message, "Erro", {timeOut: 6000});

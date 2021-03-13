@@ -100,9 +100,16 @@ class TicketController extends SulradioController {
 		
 		/** Document attach */
 		if(isset($ticketForm['files']) && count($ticketForm['files'])){
-			foreach ($ticketForm['files'] as $fileBase64){
-				$fileObj    = json_decode(base64_decode($fileBase64))[0];
-				$this->uploadDocument($fileObj, $ticket, $owner);
+			foreach ($ticketForm['files'] as $names){
+				try {
+					$splitNames                     = explode('[--]', $names);
+					$fileObj                        = new \stdClass();
+					$fileObj->file_name             = $splitNames[0];
+					$fileObj->file_name_original    = $splitNames[1];
+					$this->uploadDocument($fileObj, $ticket, $owner);
+				}catch (\Exception $e){
+					toastr()->error('Ocorreu um erro em anexar seus arquivos.', 'Erro');
+				}
 			}
 		}
 		toastr()->success('Ticket criado com sucesso', 'Sucesso');
@@ -153,6 +160,8 @@ class TicketController extends SulradioController {
 		$ticketForm['html']             = $request->get('content');
 		$ticketForm['start_forecast']   = Helper::convertDateBrToMysql($ticketForm['start_forecast']);
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
+		$ticketForm['completed_at']     = null;
+		
 		$ticket->fill($ticketForm);
 		$ticket->save();
 		if($ticket->agent_id!=$agentId){

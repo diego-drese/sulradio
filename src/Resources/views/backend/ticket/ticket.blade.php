@@ -46,7 +46,7 @@
 
 
                             @if(($hasAdmin || $user->id==$data->agent_id) && !$data->completed_at)
-                                <button id="endTicket" class="m-t-20 btn waves-effect waves-light btn-danger">Encerrar ticket Rikect</button>
+                                <button id="endTicket" class="m-t-20 btn waves-effect waves-light btn-danger">Encerrar ticket</button>
                             @endif
                     </form>
                 </div>
