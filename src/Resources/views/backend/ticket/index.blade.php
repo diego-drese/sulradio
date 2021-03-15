@@ -217,7 +217,21 @@
                     }},
                     {data: "emissora", 'name': 'emissora.razao_social'},
                     {data: "updated_at", 'name': 'ticket.updated_at'},
-                    {data: "end_forecast", 'name': 'ticket.end_forecast'},
+                    {data: "end_forecast", 'name': 'ticket.end_forecast', render:function (data, display, row){
+                            if(!data){
+                                return '---';
+                            }
+                            var now = moment();
+                            var endForest = moment(data, "DD/MM/YYYY");
+                            var days = endForest.diff(now, 'days');
+                            if(days<0){
+                                return '<b class="text-danger">'+data+'</b>'
+                            }else if(days<3){
+                                return '<b class="text-warning">'+data+'</b>'
+                            }else{
+                                return '<b class="text-success">'+data+'</b>'
+                            }
+                    }},
                     {data: "agent_name", 'name': 'agent_id'},
                     {data: "user_name", 'name': 'owner_id'},
                 ]
