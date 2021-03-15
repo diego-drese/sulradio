@@ -26,13 +26,14 @@
                                aria-describedby="file_export_info">
                             <thead>
                             <tr>
-                                <th style="width: 120px">Ações</th>
+                                <th style="width: 75px">Ações</th>
                                 <th>Assunto</th>
                                 <th>Prioridade</th>
                                 <th>Categoria</th>
                                 <th>Status</th>
                                 <th>Emissora</th>
-                                <th>Última interação</th>
+                                <th>Atualizado</th>
+                                <th>Término</th>
                                 <th>Responsável</th>
                                 <th>Solicitante</th>
                             </tr>
@@ -76,6 +77,9 @@
                                     ---
                                 </th>
                                 <th role="row">
+                                    ---
+                                </th>
+                                <th role="row">
                                     <select class="form-control fieldSearch">
                                         <option value="">Todos</option>
                                         @foreach($users as $value)
@@ -108,6 +112,11 @@
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/select2.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/bootstrap-switch.css')}}">
+    <style>
+        .table td, .table th {
+            padding: 0.5em;
+        }
+    </style>
 @endsection
 @section('script_footer_end')
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
@@ -208,6 +217,7 @@
                     }},
                     {data: "emissora", 'name': 'emissora.razao_social'},
                     {data: "updated_at", 'name': 'ticket.updated_at'},
+                    {data: "end_forecast", 'name': 'ticket.end_forecast'},
                     {data: "agent_name", 'name': 'agent_id'},
                     {data: "user_name", 'name': 'owner_id'},
                 ]
