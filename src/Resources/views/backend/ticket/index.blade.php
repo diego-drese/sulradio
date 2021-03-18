@@ -232,15 +232,20 @@
                                 return '<b class="text-success">'+data+'</b>'
                             }
                     }},
-                    {data: "agent_name", 'name': 'agent_id'},
-                    {data: "user_name", 'name': 'owner_id'},
+                    {data: "agent_name", 'name': 'ticket.agent_id'},
+                    {data: "user_name", 'name': 'ticket.owner_id'},
                 ]
             });
 
             $('#table_ticket thead tr:eq(1) th').each(function (i) {
                 $('.fieldSearch', this).on('keyup change', function () {
                     if (table_ticket.column(i).search() !== this.value) {
-                        table_ticket.column(i).search(this.value, true).draw();
+                        if(Number(this.value)){
+                            table_ticket.column(i).search('"'+this.value+'"').draw();
+                        }else{
+                            table_ticket.column(i).search(this.value, true).draw();
+                        }
+
                     }
                 });
             });
