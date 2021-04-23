@@ -30,11 +30,6 @@
     </div>
     <div class="col-sm-2">
         <div class="form-group">
-            <input type="text" class="form-control" id="fax_contato" name="fax_contato[]" placeholder="Fax">
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group">
             <input type="text" class="form-control" id="cel_contato" name="cel_contato[]" placeholder="Celular">
         </div>
     </div>
@@ -89,11 +84,6 @@
                 '    </div>\n' +
                 '    <div class="col-sm-2">\n' +
                 '        <div class="form-group">\n' +
-                '            <input value="'+(fax ? fax : '' )+'" type="text" class="form-control" id="fax_contato" name="fax_contato[]" placeholder="Fax">\n' +
-                '        </div>\n' +
-                '    </div>\n' +
-                '    <div class="col-sm-2">\n' +
-                '        <div class="form-group">\n' +
                 '            <input value="'+(celular ? celular: '')+'" type="text" class="form-control" id="cel_contato" name="cel_contato[]" placeholder="Celular">\n' +
                 '        </div>\n' +
                 '    </div>\n' +
@@ -113,7 +103,7 @@
         var contacts = {!! json_encode($contatos) !!};
         for (var i=0; i<contacts.length;i++){
             var contact = contacts[i];
-            add_contact(contact.fone_contato, contact.fax_contato, contact.cel_contato,contact.email_contato)
+            add_contact(contact.fone_contato, null, contact.cel_contato,contact.email_contato)
         }
 
     </script>

@@ -27,13 +27,13 @@ class ContatoInfo extends Model {
 		$length = count($request->get('fone_contato'));
 		for ($i=0; $i<$length; $i++){
 			$telefone = $request->get('fone_contato')[$i];
-			$fax = $request->get('fax_contato')[$i];
+			//$fax = $request->get('fax_contato')[$i];
 			$cel = $request->get('cel_contato')[$i];
 			$email = $request->get('email_contato')[$i];
-			if($telefone || $fax || $cel ||$email){
+			if($telefone || $cel ||$email){
 				self::create([
 					'fone_contato'=>$telefone,
-					'fax_contato'=>$fax,
+					//'fax_contato'=>$fax,
 					'cel_contato'=>$cel,
 					'email_contato'=>$email,
 					'contatoID'=>$contactId,

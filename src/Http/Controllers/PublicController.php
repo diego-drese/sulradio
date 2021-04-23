@@ -37,7 +37,7 @@ class PublicController extends SulradioController {
 			->withLocalidade()
 			->withServico()
 			->withUf()
-			->limit(10)
+			->limit(25)
 			->get();
 		foreach ($query as &$broadcast){
 			$broadcast->disabled = false;

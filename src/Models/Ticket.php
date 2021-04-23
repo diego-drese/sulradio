@@ -39,6 +39,9 @@ class Ticket extends Model {
 			'ticket_priority.color as priority_color',
 			'ticket_category.name as category_name',
 			'ticket_category.color as category_color',
+			'servico.desc_servico as desc_servico',
+			'municipio.desc_municipio as desc_municipio',
+			'uf.desc_uf as desc_uf',
 			'emissora.razao_social as emissora');
 	}
 	public function scopeWithStatus($query) {
@@ -55,6 +58,18 @@ class Ticket extends Model {
 	}
 	public function getStartForecastAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y') : '';
+	}
+	public function scopeWithLocalidade($query) {
+		$query->leftJoin('municipio', 'municipio.municipioID', 'emissora.municipioID');
+		return $query;
+	}
+	public function scopeWithServico($query) {
+		$query->leftJoin('servico', 'servico.servicoID', 'emissora.servicoID');
+		return $query;
+	}
+	public function scopeWithUf($query) {
+		$query->leftJoin('uf', 'uf.ufID', 'municipio.ufID');
+		return $query;
 	}
 	public function getEndForecastAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y') : '';

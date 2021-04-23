@@ -183,7 +183,6 @@ class ProcessZipDou extends Command {
 					'text'=> $text,
 					'created_at'=>MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s')),
 				];
-				
 				Dou::where('id', $attributes['id'])->update($dataSave, ['upsert' => true]);
 			}catch (\Exception $e){
 				$this->error('Error parse file['.$file.'] e['.$e->getMessage().']');

@@ -215,7 +215,7 @@
                     {data: "status_name", 'name': 'ticket_status.id', render:function (data, display, row){
                             return '<b style="color:'+row.status_color+'">'+data+'</b>'
                     }},
-                    {data: "emissora", 'name': 'emissora.razao_social'},
+                    {data: "emissora_nome", 'name': 'emissora.razao_social'},
                     {data: "updated_at", 'name': 'ticket.updated_at'},
                     {data: "end_forecast", 'name': 'ticket.end_forecast', render:function (data, display, row){
                             if(!data){
@@ -241,7 +241,7 @@
                 $('.fieldSearch', this).on('keyup change', function () {
                     if (table_ticket.column(i).search() !== this.value) {
                         if(Number(this.value)){
-                            table_ticket.column(i).search('"'+this.value+'"').draw();
+                            table_ticket.column(i).search('^'+this.value+'$', true, false).draw();
                         }else{
                             table_ticket.column(i).search(this.value, true).draw();
                         }

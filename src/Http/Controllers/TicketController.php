@@ -32,7 +32,10 @@ class TicketController extends SulradioController {
 			->withStatus()
 			->WithPriority()
 			->withCategory()
-			->withEmissora();
+			->withEmissora()
+			->withServico()
+			->withLocalidade()
+			->withUf();
 			/** Filters */
 			if($request->get('active')=='1'){
 				$query->whereNull('completed_at');
@@ -51,6 +54,8 @@ class TicketController extends SulradioController {
 			return DataTables::of($query)
 				->addColumn('ticket_url', function ($row) {
 					return route('ticket.ticket', [$row->id]);
+				})->addColumn('emissora_nome', function ($row) {
+					return $row->desc_servico.'-'.$row->emissora."({$row->desc_municipio} {$row->desc_uf})";
 				})->addColumn('user_name', function ($row) use($user){
 					$userData = $user->getById($row->owner_id);
 					return $userData->name;
@@ -60,7 +65,6 @@ class TicketController extends SulradioController {
 				})->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.ticket.index', []);
-		
 	}
 	
 	public function create(Ticket $data) {
