@@ -13,9 +13,9 @@
         @endif
     </div>
     <div class="col-md-6 form-group {{$errors->has('company_name') ? 'has-error' : ''}} ">
-        <label for="company_name">Nome da empresa *</label>
+        <label for="company_name">Nome da empresa </label>
         <div class="input-group mb-3">
-            <input type="text" name="company_name" id="company_name" class="form-control" placeholder="Empresa" required
+            <input type="text" name="company_name" id="company_name" class="form-control" placeholder="Empresa"
                    value="{{old('company_name', $data->exists() ? $data->company_name : '')}}">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="fas fa-building"></i></span>
@@ -27,9 +27,9 @@
     </div>
 
     <div class="col-md-8 form-group {{$errors->has('email') ? 'has-error' : ''}} ">
-        <label for="email">Email *</label>
+        <label for="email">Email </label>
         <div class="input-group mb-3">
-            <input type="text" name="email" id="email" class="form-control" placeholder="Email" required
+            <input type="text" name="email" id="email" class="form-control" placeholder="Email"
                    value="{{old('email', $data->exists() ? $data->email : '')}}">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="mdi mdi-gmail"></i> </span>
@@ -40,9 +40,9 @@
         @endif
     </div>
     <div class="col-md-4 form-group {{$errors->has('document_type') ? 'has-error' : ''}} ">
-        <label for="document_type">Tipo de documento*</label>
+        <label for="document_type">Tipo de documento</label>
         <div class="input-group mb-3">
-            <select name="document_type" id="document_type" class="form-control" required>
+            <select name="document_type" id="document_type" class="form-control" >
                 <option value=""> Selecione </option>
                 <option value="Rg" {{old('document_type', $data->exists() ? $data->document_type : '') == "Rg" ? 'selected' : ''}}> Rg </option>
                 <option value="CPF" {{old('document_type', $data->exists() ? $data->document_type : '') == "CPF" ? 'selected' : ''}}> CPF </option>
@@ -60,9 +60,9 @@
     </div>
 
     <div class="col-md-4 form-group {{$errors->has('document') ? 'has-error' : ''}} ">
-        <label for="document">Documento *</label>
+        <label for="document">Documento </label>
         <div class="input-group mb-3">
-            <input type="text" name="document" id="document" class="form-control" placeholder="Documento" required
+            <input type="text" name="document" id="document" class="form-control" placeholder="Documento"
                    value="{{old('document', $data->exists() ? $data->document : '')}}">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="fas fa-address-card"></i></span>
@@ -76,7 +76,7 @@
     <div class="col-md-4 form-group {{$errors->has('cellphone') ? 'has-error' : ''}} ">
         <label for="cellphone">Celular</label>
         <div class="input-group mb-3">
-            <input type="text" name="cellphone" id="cellphone" class="form-control" placeholder="Celular" required
+            <input type="text" name="cellphone" id="cellphone" class="form-control" placeholder="Celular"
                    value="{{old('cellphone', $data->exists() ? $data->cellphone : '')}}">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="mdi mdi-cellphone"></i></span>
@@ -221,7 +221,7 @@
         @endif
     </div>
     <div class="col-md-12 form-group {{$errors->has('broadcast') ? 'has-error' : ''}} ">
-        <label for="broadcast">Emissoras</label>
+        <label for="broadcast">Emissoras *</label>
         <div class="input-group mb-3">
             <select name="broadcast[]" id="broadcast" class="form-control" multiple required>
                 @foreach($broadcast as $value)

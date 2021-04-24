@@ -43,11 +43,7 @@ class ClientController extends SulradioController {
 		$dataForm = $request->all();
 		$this->validate($request, [
 			'name' => 'required',
-			'company_name' => 'required',
-			'email' => 'required',
-			'document_type' => 'required',
 			'plan_id' => 'required',
-			'document' => 'required',
 			'is_active' => 'required',
 			'broadcast' => 'required',
 		]);
@@ -78,10 +74,6 @@ class ClientController extends SulradioController {
 		$dataForm = $request->all();
 		$this->validate($request, [
 			'name' => 'required',
-			'company_name' => 'required',
-			'email' => 'required',
-			'document_type' => 'required',
-			'document' => 'required',
 			'plan_id' => 'required',
 			'is_active' => 'required',
 			'broadcast' => 'required',
