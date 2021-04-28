@@ -68,7 +68,6 @@ class EmissoraDocumentController extends SulradioController {
 		$dataForm = $request->all();
 		$this->validate($request, [
 			'name' => 'required',
-			'description' => 'required',
 			'document_type_id' => 'required',
 			'file' => 'required|mimes:pdf,xlsx,csv,jpg,png,jpeg,html,doc,txt,xls|max:30240',
 		]);
@@ -107,7 +106,6 @@ class EmissoraDocumentController extends SulradioController {
 		$dataForm   = $request->all();
 		$this->validate($request, [
 			'name' => 'required',
-			'description' => 'required',
 			'document_type_id' => 'required',
 			'file' => 'nullable|mimes:pdf,xlsx,csv,jpg,png,jpeg,html,doc,txt,xls|max:30240',
 		]);

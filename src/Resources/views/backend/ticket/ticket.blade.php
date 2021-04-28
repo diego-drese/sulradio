@@ -83,7 +83,7 @@
                         </div>
                         <div class="col-6">
                             <h6>Criado em</h6>
-                            <h6 class="text-info">{{$data->created_at->format('d/m/Y H:i')}}</h6>
+                            <h6 class="text-info">{{$data->created_at->setTimezone('America/Sao_Paulo')->format('d/m/Y H:i')}}</h6>
                             <div class="progress">
                                 <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>

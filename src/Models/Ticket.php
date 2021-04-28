@@ -81,7 +81,9 @@ class Ticket extends Model {
 		$hasAdmin = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 		$query = self::where('id', $id);
 		if(!$hasAdmin){
-			$query->where('agent_id', $owner->id);
+			$query->where(function($query) use($owner){
+				$query->where('agent_id', $owner->id)->orWhere('owner_id', $owner->id);
+			});
 		}
 		return $query->first();
 	}

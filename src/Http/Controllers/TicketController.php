@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Helpers\Helper;
-use Oka6\SulRadio\Models\Document;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\Ticket;
 use Oka6\SulRadio\Models\TicketCategory;
@@ -72,7 +71,7 @@ class TicketController extends SulradioController {
 	}
 	
 	public function store(Request $request) {
-		$ticketForm   = $request->all();
+		$ticketForm = $request->all();
 		$owner      = Auth::user();
 		$this->validate($request, [
 			'subject'       => 'required',
@@ -200,6 +199,9 @@ class TicketController extends SulradioController {
 			->WithPriority()
 			->withCategory()
 			->withEmissora()
+			->withServico()
+			->withLocalidade()
+			->withUf()
 			->where('ticket.id', $id)
 			->first();
 		
