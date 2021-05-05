@@ -61,7 +61,7 @@ class EmissoraDocumentController extends SulradioController {
 	}
 	
 	public function create(Ato $data, $emissoraID) {
-		return $this->renderView('SulRadio::backend.emissora-document.create', ['data' => $data, 'emissoraID' => $emissoraID, 'id'=>0]);
+		return $this->renderView('SulRadio::backend.emissora-document.create', ['data' => $data, 'emissoraID' => $emissoraID, 'id'=>0, 'goal'=>$this->goal]);
 	}
 	
 	public function store(Request $request, $emissoraID) {
@@ -86,14 +86,14 @@ class EmissoraDocumentController extends SulradioController {
 		$dataForm['file_preview']   = '';
 		$dataForm['file_size']      = $filesize;
 		$dataForm['status']         = 1;
-		Document::createOrUpdate($dataForm, Auth::user(), $this->goal, null);
+		Document::createOrUpdate($dataForm, Auth::user(), $request->get('goal'), null);
 		toastr()->success('Documento Criado com sucesso', 'Sucesso');
 		return $this->redirect($emissoraID);
 	}
 	
 	public function edit($emissoraID, $id) {
 		$data = Document::getById($id, Auth::user());
-		return $this->renderView('SulRadio::backend.emissora-document.edit', ['data' => $data, 'emissoraID' => $emissoraID, 'id'=>$id]);
+		return $this->renderView('SulRadio::backend.emissora-document.edit', ['data' => $data, 'emissoraID' => $emissoraID, 'id'=>$id, 'goal'=>$this->goal]);
 	}
 	
 	public function timeline($emissoraID, $id) {
@@ -126,7 +126,7 @@ class EmissoraDocumentController extends SulradioController {
 			$dataForm['file_preview']   = '';
 			$dataForm['file_size']      = $filesize;
 		}
-		Document::createOrUpdate($dataForm, Auth::user(), $this->goal, $id);
+		Document::createOrUpdate($dataForm, Auth::user(), $request->get('goal'), $id);
 		toastr()->success("Documento Atualizado com sucesso", 'Sucesso');
 		return $this->redirect($emissoraID);
 	}

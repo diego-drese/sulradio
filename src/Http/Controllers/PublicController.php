@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Storage;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Models\Cities;
 use Oka6\SulRadio\Models\Document;
+use Oka6\SulRadio\Models\DocumentFolder;
 use Oka6\SulRadio\Models\DocumentHistoric;
+use Oka6\SulRadio\Models\DocumentType;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\States;
 use Oka6\SulRadio\Models\TicketDocument;
@@ -49,6 +51,12 @@ class PublicController extends SulradioController {
 			}
 		}
 		return response()->json($query, 200);
+	}
+	
+	public function getFolderAndTypeDocument($goal) {
+		$folder = DocumentFolder::getWithCache($goal);
+		$type   = DocumentType::getWithCache($goal);
+		return response()->json(['folder'=>$folder, 'type'=>$type], 200);
 	}
 	
 	public function downloadDocument($id){

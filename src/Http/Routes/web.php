@@ -151,6 +151,7 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 });
 
 Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function () {
+	Route::any('/document-folder-type/{goal}', 'Oka6\SulRadio\Http\Controllers\PublicController@getFolderAndTypeDocument')->name('document.folder.type');
 	Route::any('/city/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchCity')->name('city.search');
 	Route::any('/broadcast/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchBroadcast')->name('broadcast.search');
 	Route::any('/document/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocument')->name('document.download');

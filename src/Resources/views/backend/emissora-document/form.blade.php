@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-4 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
+    <div class="col-md-3 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
         <label for="numero_ato">Nome *</label>
         <input type="name" class="form-control" value="{{old('name',$data->exists() ? $data->name : '')}}"
                name="name"
@@ -9,27 +9,30 @@
             <span class="help-block">{{$errors->first('name')}}</span>
         @endif
     </div>
-    <div class="col-md-4 form-group {{$errors->has('document_folder_id') ? 'has-error' : ''}} ">
+    <div class="col-md-3 form-group {{$errors->has('document_type_id') ? 'has-error' : ''}} ">
+        <label for="goal">Destino *</label>
+        <select class="form-control select2" id="goal" name="goal" required>
+            @if($id>0)
+                <option value="{{\Oka6\SulRadio\Models\Document::GOAL_CLIENT}}" {{($data->goal==\Oka6\SulRadio\Models\Document::GOAL_CLIENT ? 'selected':'')}}>{{\Oka6\SulRadio\Models\Document::GOAL_CLIENT}}</option>
+                <option value="{{\Oka6\SulRadio\Models\Document::GOAL_ENGINEERING}}" {{($data->goal==\Oka6\SulRadio\Models\Document::GOAL_ENGINEERING ? 'selected':'')}}>{{\Oka6\SulRadio\Models\Document::GOAL_ENGINEERING}}</option>
+                <option value="{{\Oka6\SulRadio\Models\Document::GOAL_LEGAL}}" {{($data->goal==\Oka6\SulRadio\Models\Document::GOAL_LEGAL ? 'selected':'')}}>{{\Oka6\SulRadio\Models\Document::GOAL_LEGAL}}</option>
+            @else
+                <option value="{{$goal}}" selected>{{$goal}}</option>
+            @endif
+        </select>
+    </div>
+    <div class="col-md-3 form-group {{$errors->has('document_folder_id') ? 'has-error' : ''}} ">
         <label for="document_folder_id">Pasta *</label>
-        <select class="form-control select2" id="document_folder_id" name="document_folder_id" required>
-            <option value="">Selecione</option>
-            @foreach($documentFolder as $key=>$value)
-                <option {{isset($data->exists) && $value->id==$data->document_folder_id ? 'selected="selected"' : '' }} value="{{$value->id}}">{{$value->name}}</option>
-            @endforeach
+        <select class="form-control select2" id="document_folder_id" name="document_folder_id" required data-selectable="{{$data->document_folder_id}}">
+
         </select>
     </div>
-
-    <div class="col-md-4 form-group {{$errors->has('document_type_id') ? 'has-error' : ''}} ">
+    <div class="col-md-3 form-group {{$errors->has('document_type_id') ? 'has-error' : ''}} ">
         <label for="document_type_id">Tipo *</label>
-        <select class="form-control select2" id="document_type_id" name="document_type_id" required>
-            <option value="">Selecione</option>
-            @foreach($documentType as $key=>$value)
-                <option {{isset($data->exists) && $value->id==$data->document_type_id ? 'selected="selected"' : '' }} value="{{$value->id}}">{{$value->name}}</option>
-            @endforeach
+        <select class="form-control select2" id="document_type_id" name="document_type_id" required data-selectable="{{$data->document_type_id}}">
+
         </select>
     </div>
-
-
 
     <div class="col-md-12 form-group {{$errors->has('description') ? 'has-error' : ''}} ">
         <label for="description">Observações</label>
@@ -114,8 +117,50 @@
         $(".select2").select2({
             width: '100%',
             placeholder: 'Selecione',
-            allowClear: true
         });
+
+        $('#goal').change(function (){
+            var goal = $(this).val();
+            var url = '{{ route('document.folder.type', [':goal']) }}';
+            $.ajax({
+                url: url.replace(':goal', goal),
+                type: "get",
+                dataType: 'json',
+                data: {},
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    $('#document_folder_id').html('<option value="">Selecione</option>').trigger('change');
+                    $('#document_type_id').html('<option value="">Selecione</option>').trigger('change');
+                    var folders         = data['folder'];
+                    var folderSelected  =  $('#document_folder_id').attr('data-selectable');
+                    var folder          = null;
+                    var types           = data['type'];
+                    var type            = null;
+                    var typeSelected    =  $('#document_type_id').attr('data-selectable');
+
+                    for (var i=0;i<folders.length;i++){
+                        folder = folders[i];
+                        $('#document_folder_id').append('<option value="'+folder.id+'" '+(Number(folderSelected)==Number(folder.id) ? 'selected': '')+'>'+folder.name+'</option>').trigger('change');
+                    }
+
+                    for (var i=0;i<types.length;i++){
+                        type = types[i];
+                        $('#document_type_id').append('<option value="'+type.id+'" '+(Number(typeSelected)==Number(type.id) ? 'selected': '')+'>'+type.name+'</option>').trigger('change');
+                    }
+
+
+                    // if(data.emissora_id){
+                    //     //$('#broadcast').append('<option value="'+data.emissora_id+'">'+data.emissora_name+'</option>').trigger('change');
+                    // }
+                },
+                error: function (erro) {
+                    toastr.error(erro.responseJSON.message, 'Erro');
+                }
+            });
+        }).trigger('change');
+
         $('#ufID').change(function () {
             if (!this.value) return false;
             var municipioID = $(this).attr('data-municipioID');
