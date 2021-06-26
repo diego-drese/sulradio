@@ -77,6 +77,40 @@ class Ticket extends Model {
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
+	public static function getAllByOwnerId($id, $completed=null) {
+		$query = self::selectRaw('COUNT(1) as total, ticket_status.name as status_name, ticket_status.color as status_color')
+			->join('ticket_status', 'ticket_status.id', 'ticket.status_id')
+			->where('owner_id', $id)
+			->groupBy('status_name')
+			->groupBy('status_color');
+		if($completed){
+			$query->whereNotNull('completed_at');
+		}else{
+			$query->whereNull('completed_at');
+		}
+		return $query->get();
+		
+	}
+	public static function getAllByAgentId($id, $completed=null, $reach=null) {
+		$query = self::selectRaw('COUNT(1) as total, ticket_status.name as status_name, ticket_status.color as status_color')
+			->join('ticket_status', 'ticket_status.id', 'ticket.status_id')
+			->where('agent_id', $id)
+			->groupBy('status_name')
+			->groupBy('status_color');
+		if($completed){
+			$query->whereNotNull('completed_at');
+		}else{
+			$query->whereNull('completed_at');
+			if($reach){
+				$query->where('end_forecast', '<=', Carbon::now()->addDays(7));
+			}
+		}
+		
+		
+		return $query->get();
+		
+		
+	}
 	public static function getByIdOwner($id, $owner) {
 		$hasAdmin = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 		$query = self::where('id', $id);

@@ -35,6 +35,12 @@
                                     </p><p>
                                         Nome: {{$item->document_name}}
                                     </p>
+                                    <div>
+                                        Descrição:
+                                        <div>
+                                          <pre>{{$item->document_description}}</pre>
+                                        </div>
+                                    </div>
                                     <p>
                                         Finalidade: {{$item->goal ? $item->goal : '---'}}
                                     </p><p>

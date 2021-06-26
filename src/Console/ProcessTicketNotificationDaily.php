@@ -8,26 +8,27 @@ use Illuminate\Support\Facades\Mail;
 use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Mail\TicketComment;
 use Oka6\SulRadio\Mail\TicketCreate;
+use Oka6\SulRadio\Mail\TicketDaily;
 use Oka6\SulRadio\Mail\TicketTransfer;
 use Oka6\SulRadio\Mail\TicketUpdate;
 use Oka6\SulRadio\Models\Ticket;
 use Oka6\SulRadio\Models\TicketNotification;
 
 
-class ProcessTicketNotification extends Command {
+class ProcessTicketNotificationDaily extends Command {
 	/**
 	 * The name and signature of the console command.
 	 *
 	 * @var string
 	 */
-	protected $signature = 'Sulradio:ProcessTicketNotification';
+	protected $signature = 'Sulradio:ProcessTicketNotificationDaily';
 	
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description  = 'Process notifications from ticket';
+	protected $description  = 'Process notifications from ticket daily';
 	
 	
 	
@@ -41,23 +42,81 @@ class ProcessTicketNotification extends Command {
 	}
 	
 	public function handle() {
-		Log::info('ProcessTicketNotification, start process');
-		$notifications = TicketNotification::getToNotify();
-		foreach ($notifications as $notification){
-			if($notification->type==TicketNotification::TYPE_NEW){
-				$this->sendEmailTypeNew($notification);
-			}else if($notification->type==TicketNotification::TYPE_UPDATE){
-				$this->sendEmailTypeUpdate($notification);
-			}else if($notification->type==TicketNotification::TYPE_COMMENT){
-				$this->sendEmailTypeComment($notification);
-			}else if($notification->type==TicketNotification::TYPE_TRANSFER_AGENT){
-				$this->sendEmailTypeTransfer($notification);
-			}
-			$notification->status = TicketNotification::STATUS_PROCESSED;
-			$notification->save();
+		$now = new \DateTime();
+		$day = (int)$now->format('N');
+		$holiday = $now->format('d/m');
+		
+		if($day>5){
+			Log::info('ProcessTicketNotificationDaily, end process, weekend['.$day.']');
+			return true;
 		}
+		
+		if($holiday=='01/01'){
+			Log::info('ProcessTicketNotificationDaily, end process, Ano novo');
+			return true;
+		}
+		if($holiday=='02/02'){
+			Log::info('ProcessTicketNotificationDaily, end process, Nossa Senhora dos Navegantes');
+			return true;
+		}
+		if($holiday=='21/04'){
+			Log::info('ProcessTicketNotificationDaily, end process, Dia de Tiradentes');
+			return true;
+		}
+		if($holiday=='01/05'){
+			Log::info('ProcessTicketNotificationDaily, end process, Dia do trabalho');
+			return true;
+		}
+		if($holiday=='07/09'){
+			Log::info('ProcessTicketNotificationDaily, end process, Independência do Brasil');
+			return true;
+		}
+		if($holiday=='20/09'){
+			Log::info('ProcessTicketNotificationDaily, end process, Proc. República Rio Grandense');
+			return true;
+		}
+		if($holiday=='12/10'){
+			Log::info('ProcessTicketNotificationDaily, end process, Proc. Nossa Senhora Aparecida');
+			return true;
+		}
+		
+		if($holiday=='02/11'){
+			Log::info('ProcessTicketNotificationDaily, end process, Finados');
+			return true;
+		}
+		
+		if($holiday=='15/11'){
+			Log::info('ProcessTicketNotificationDaily, end process, Proclamação da República');
+			return true;
+		}
+		
+		if($holiday=='25/12'){
+			Log::info('ProcessTicketNotificationDaily, end process, Natal');
+			return true;
+		}
+		
+		Log::info('ProcessTicketNotificationDaily, start process');
+		$users = User::where('active', 1)->get();
+		foreach ($users as $user){
+			/** Testa somente alguns usuários */
+			if($user->id==1 || $user->id==2|| $user->id==6 || $user->id==10){
+				/** Tickets from user Not Complete*/
+				$tikets = $this->getTicket('owner_id', $user->id);
+				$daily = [
+					'user'=>$user,
+					'owner'=>Ticket::getAllByOwnerId($user->id, false),
+					'agent'=>Ticket::getAllByAgentId($user->id, false),
+					'each'=>Ticket::getAllByAgentId($user->id, false, true),
+				];
+				if(count($daily['owner']) || count($daily['agent']) || count($daily['each'])){
+					Mail::to($user->email)->send(new TicketDaily($daily));
+				}
+			}
+			
+		}
+		
 	}
-	public function getTicket($id){
+	public function getTicket($field, $id){
 		return Ticket::withSelectDataTable()
 			->withStatus()
 			->WithPriority()
@@ -66,8 +125,8 @@ class ProcessTicketNotification extends Command {
 			->withServico()
 			->withLocalidade()
 			->withUf()
-			->where('ticket.id', $id)
-			->first();
+			->where($field, $id)
+			->get();
 	}
 	public function sendEmailTypeNew($notification){
 		$currentAgent   = User::getByIdStatic($notification->agent_current_id);

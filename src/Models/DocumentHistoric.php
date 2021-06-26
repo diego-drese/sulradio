@@ -44,6 +44,7 @@ class DocumentHistoric extends Model {
 				'document_historic.*',
 				'document.document_id as document_id_version',
 				'document.name as document_name',
+				'document.description as document_description',
 				'document.goal as goal',
 				'document.file_name as file_name',
 				'document.file_type as file_type',
@@ -55,6 +56,7 @@ class DocumentHistoric extends Model {
 			->join('document', 'document.id', 'document_historic.document_id')
 			->join('document_type', 'document_type.id', 'document.document_type_id')
 			->leftJoin('document_folder', 'document_folder.id', 'document.document_folder_id')
+			->whereIn('document_historic.action', ['created','updated'])
 			->orderBy('document_historic.id', 'DESC');
 		
 		if($user->client_id){

@@ -28,6 +28,7 @@
                             <tr>
                                 <th style="width: 80px">Ações</th>
                                 <th>Nome</th>
+                                <th>Versão</th>
                                 <th>Validade</th>
                                 <th>Arquivo</th>
                                 <th>Tamanho</th>
@@ -42,6 +43,7 @@
                                     </spa>
                                 </th>
                                 <th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Nome"></th>
+                                <th> --- </th>
                                 <th> --- </th>
                                 <th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" id="data_protocolo" placeholder="Buscar tipo de arquivo"></th>
                                 <th> --- </th>
@@ -144,7 +146,7 @@
                                 edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
                             }
                             if (hasTimeLine) {
-                                edit_button += '<a href="' + data.timeline + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Tmeline</b></a>';
+                                edit_button += '<a href="' + data.timeline + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>TimeLine</b></a>';
                             }
 
 
@@ -152,6 +154,7 @@
                         }
                     },
                     {data: "name", 'name': 'document.name'},
+                    {data: "version", 'name': 'document.version'},
                     {data: "validated", 'name': 'document.validated', render: function(data){
                         if(data){
                             return data;
