@@ -246,7 +246,7 @@ class TicketController extends SulradioController {
 			'status' => TicketStatus::getWithCache(),
 			'priority' => TicketPriority::getWithCache(),
 			'category' => TicketCategory::getWithProfile($user),
-			'users' => User::all(),
+			'users' => User::whereNull('client_id')->get(),
 			'user'  => Auth::user()
 		];
 		$this->parameters = $parameters;

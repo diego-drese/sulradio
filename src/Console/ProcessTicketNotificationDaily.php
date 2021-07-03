@@ -47,51 +47,51 @@ class ProcessTicketNotificationDaily extends Command {
 		$day = (int)$now->format('N');
 		$holiday = $now->format('d/m');
 		
-//		if($day>5){
-//			Log::info('ProcessTicketNotificationDaily, end process, weekend['.$day.']');
-//			return true;
-//		}
+		if(App::environment('production') && $day>5){
+			Log::info('ProcessTicketNotificationDaily, end process, weekend['.$day.']');
+			return true;
+		}
 		
-		if($holiday=='01/01'){
+		if(App::environment('production') && $holiday=='01/01'){
 			Log::info('ProcessTicketNotificationDaily, end process, Ano novo');
 			return true;
 		}
-		if($holiday=='02/02'){
+		if(App::environment('production') && $holiday=='02/02'){
 			Log::info('ProcessTicketNotificationDaily, end process, Nossa Senhora dos Navegantes');
 			return true;
 		}
-		if($holiday=='21/04'){
+		if(App::environment('production') && $holiday=='21/04'){
 			Log::info('ProcessTicketNotificationDaily, end process, Dia de Tiradentes');
 			return true;
 		}
-		if($holiday=='01/05'){
+		if(App::environment('production') && $holiday=='01/05'){
 			Log::info('ProcessTicketNotificationDaily, end process, Dia do trabalho');
 			return true;
 		}
-		if($holiday=='07/09'){
+		if(App::environment('production') && $holiday=='07/09'){
 			Log::info('ProcessTicketNotificationDaily, end process, Independência do Brasil');
 			return true;
 		}
-		if($holiday=='20/09'){
+		if(App::environment('production') && $holiday=='20/09'){
 			Log::info('ProcessTicketNotificationDaily, end process, Proc. República Rio Grandense');
 			return true;
 		}
-		if($holiday=='12/10'){
+		if(App::environment('production') && $holiday=='12/10'){
 			Log::info('ProcessTicketNotificationDaily, end process, Proc. Nossa Senhora Aparecida');
 			return true;
 		}
 		
-		if($holiday=='02/11'){
+		if(App::environment('production') && $holiday=='02/11'){
 			Log::info('ProcessTicketNotificationDaily, end process, Finados');
 			return true;
 		}
 		
-		if($holiday=='15/11'){
+		if(App::environment('production') && $holiday=='15/11'){
 			Log::info('ProcessTicketNotificationDaily, end process, Proclamação da República');
 			return true;
 		}
 		
-		if($holiday=='25/12'){
+		if(App::environment('production') && $holiday=='25/12'){
 			Log::info('ProcessTicketNotificationDaily, end process, Natal');
 			return true;
 		}
