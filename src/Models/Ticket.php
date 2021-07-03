@@ -53,6 +53,14 @@ class Ticket extends Model {
 	public function scopeWithCategory($query) {
 		return $query->join('ticket_category', 'ticket_category.id', 'ticket.category_id');
 	}
+	public function scopeWithParticipants($query, $user, $hasAdmin) {
+		$query->join('ticket_participant', 'ticket_participant.ticket_id', 'ticket.id');
+		if(!$hasAdmin){
+			$query->where('ticket_participant.user_id', $user->id)
+				->orWhere('ticket.owner_id', $user->id);
+		}
+		return $query;
+	}
 	public function scopeWithEmissora($query) {
 		return $query->leftJoin('emissora', 'emissora.emissoraID', 'ticket.emissora_id');
 	}
@@ -94,7 +102,8 @@ class Ticket extends Model {
 	public static function getAllByAgentId($id, $completed=null, $reach=null) {
 		$query = self::selectRaw('COUNT(1) as total, ticket_status.name as status_name, ticket_status.color as status_color')
 			->join('ticket_status', 'ticket_status.id', 'ticket.status_id')
-			->where('agent_id', $id)
+			->join('ticket_participant', 'ticket_participant.ticket_id', 'ticket.id')
+			->where('ticket_participant.user_id', $id)
 			->groupBy('status_name')
 			->groupBy('status_color');
 		if($completed){
@@ -105,19 +114,17 @@ class Ticket extends Model {
 				$query->where('end_forecast', '<=', Carbon::now()->addDays(7));
 			}
 		}
-		
-		
 		return $query->get();
-		
-		
 	}
-	public static function getByIdOwner($id, $owner) {
+	public static function getByIdOwner($id, $user) {
 		$hasAdmin = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-		$query = self::where('id', $id);
+		$query = self::select('ticket.*')->where('ticket.id', $id);
 		if(!$hasAdmin){
-			$query->where(function($query) use($owner){
-				$query->where('agent_id', $owner->id)->orWhere('owner_id', $owner->id);
-			});
+			$query->join('ticket_participant', 'ticket_participant.ticket_id', 'ticket.id');
+			if(!$hasAdmin){
+				$query->where('ticket_participant.user_id', $user->id)
+					->orWhere('ticket.owner_id', $user->id);
+			}
 		}
 		return $query->first();
 	}

@@ -17,13 +17,13 @@
         @endif
     </div>
 
-    <div class="col-md-3 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
+    <div class="col-md-3 form-group hide {{$errors->has('is_active') ? 'has-error' : ''}} ">
         <label for="priority_id">Prioridade</label>
         <div class="input-group mb-3">
             <select name="priority_id" id="priority_id" class="form-control">
                 <option value="">Selecione</option>
-                @foreach($priority as $value)
-                    <option value="{{$value->id}}" {{old('priority_id', $data->exists() ? $data->priority_id : '') == $value->id ? 'selected' : ''}}> {{$value->name}} </option>
+                @foreach($priority as $key=>$value)
+                    <option value="{{$value->id}}" {{old('priority_id', $data->exists() ? $data->priority_id : '') == $value->id ? 'selected' : ($key==0 ? 'selected' : '')}}> {{$value->name}} </option>
                 @endforeach
             </select>
             <div class="input-group-append">
@@ -38,7 +38,7 @@
     <div class="col-md-3 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
         <label for="category_id">Categoria</label>
         <div class="input-group mb-3">
-            <select name="category_id" id="category_id" class="form-control">
+            <select name="category_id" id="category_id" class="form-control" required>
                 <option value="">Selecione</option>
                 @foreach($category as $value)
                     <option value="{{$value->id}}" {{old('category_id', $data->exists() ? $data->category_id : '') == $value->id ? 'selected' : ''}}> {{$value->name}} </option>
@@ -56,7 +56,7 @@
     <div class="col-md-3 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
         <label for="status_id">Status</label>
         <div class="input-group mb-3">
-            <select name="status_id" id="status_id" class="form-control">
+            <select name="status_id" id="status_id" class="form-control" required>
                 <option value="">Selecione</option>
                 @foreach($status as $value)
                     <option value="{{$value->id}}" {{old('status_id', $data->exists() ? $data->status_id : '') == $value->id ? 'selected' : ''}}> {{$value->name}} </option>
@@ -70,25 +70,6 @@
             <span class="help-block">{{$errors->first('status_id')}}</span>
         @endif
     </div>
-
-    <div class="col-md-3 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
-        <label for="agent_id">Responsavel</label>
-        <div class="input-group mb-3">
-            <select name="agent_id" id="agent_id" class="form-control">
-                <option value="">Selecione</option>
-                @foreach($users as $value)
-                    <option value="{{$value->id}}" {{old('agent_id', $data->exists() ? $data->agent_id : '') == $value->id ? 'selected' : ''}}> {{$value->name}} </option>
-                @endforeach
-            </select>
-            <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-            </div>
-        </div>
-        @if($errors->has('agent_id'))
-            <span class="help-block">{{$errors->first('agent_id')}}</span>
-        @endif
-    </div>
-
     <div class="col-md-6 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
         <label for="emissora_id">Emissora</label>
         <div class="input-group mb-3">
@@ -105,7 +86,23 @@
             <span class="help-block">{{$errors->first('emissora_id')}}</span>
         @endif
     </div>
-
+    <div class="col-md-6 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
+        <label for="participants_id">Responsáveis</label>
+        <div class="input-group mb-3">
+            <select name="participants_id[]" id="participants_id" class="form-control select2" multiple {{($hasAdmin || $data->owner_id==null || $user->id==$data->owner_id ? '' : 'disabled')}}>
+                <option value="">Selecione</option>
+                @foreach($users as $value)
+                    <option value="{{$value->id}}" {{in_array($value->id, old('participants_id', $participants))  ? 'selected' : ''}}> {{$value->name}} </option>
+                @endforeach
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+            </div>
+        </div>
+        @if($errors->has('agent_id'))
+            <span class="help-block">{{$errors->first('agent_id')}}</span>
+        @endif
+    </div>
     <div class="col-md-8 form-group {{$errors->has('description') ? 'has-error' : ''}} ">
         <label for="content">Conteudo</label>
         <textarea rows="12" name="content" class="form-control summernote" id="content">{{old('content', $data->exists() && $data->content  ? $data->content : '')}}</textarea>
@@ -143,7 +140,6 @@
             <div id="dropzone">
                 <div class="dz-message">Arraste o arquivo</div>
             </div>
-
         </div>
         @endif
 
@@ -228,13 +224,12 @@
         });
 
         $(".select2").select2({
-            width: '100%',
+            width: 'calc(100% - 38px)',
             placeholder: 'Selecione',
             allowClear: true
         });
         $('.summernote').summernote({
             height: 250,
-
         });
         $(document).ready(function () {
             Dropzone.prototype.defaultOptions.dictDefaultMessage = "Arraste os arquivos aqui para enviar";

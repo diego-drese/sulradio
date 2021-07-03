@@ -3,6 +3,7 @@
 namespace Oka6\SulRadio\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Oka6\Admin\Models\User;
@@ -46,10 +47,10 @@ class ProcessTicketNotificationDaily extends Command {
 		$day = (int)$now->format('N');
 		$holiday = $now->format('d/m');
 		
-		if($day>5){
-			Log::info('ProcessTicketNotificationDaily, end process, weekend['.$day.']');
-			return true;
-		}
+//		if($day>5){
+//			Log::info('ProcessTicketNotificationDaily, end process, weekend['.$day.']');
+//			return true;
+//		}
 		
 		if($holiday=='01/01'){
 			Log::info('ProcessTicketNotificationDaily, end process, Ano novo');
@@ -99,9 +100,8 @@ class ProcessTicketNotificationDaily extends Command {
 		$users = User::where('active', 1)->get();
 		foreach ($users as $user){
 			/** Testa somente alguns usuários */
-			if($user->id==1 || $user->id==2|| $user->id==6 || $user->id==10){
+			if(App::environment('local') || ($user->id==1 || $user->id==2|| $user->id==6 || $user->id==10)){
 				/** Tickets from user Not Complete*/
-				$tikets = $this->getTicket('owner_id', $user->id);
 				$daily = [
 					'user'=>$user,
 					'owner'=>Ticket::getAllByOwnerId($user->id, false),

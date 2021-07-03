@@ -86,17 +86,14 @@ class ProcessTicketNotification extends Command {
 			$comment->agent      = $currentAgent;
 			$comment->userLogged = $userLogged;
 			Mail::to($currentAgent->email)->send(new TicketComment($comment));
-		}
-		
-		if($notification->user_logged!=$notification->owner_id){
+		}else{
 			$owner               = User::getByIdStatic($notification->owner_id);
-			$userLogged          = $userLogged ? $userLogged : User::getByIdStatic($notification->user_logged);
+			$userLogged          = User::getByIdStatic($notification->user_logged);
 			$comment             = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
 			$comment->agent      = $owner;
 			$comment->userLogged = $userLogged;
 			Mail::to($owner->email)->send(new TicketComment($comment));
 		}
-		
 		
 	}
 	
@@ -111,13 +108,10 @@ class ProcessTicketNotification extends Command {
 		$ticket->userLogged = $userLogged;
 		if($notification->user_logged!=$notification->agent_current_id){
 			Mail::to($currentAgent->email)->send(new TicketUpdate($ticket));
-		}
-		
-		if($notification->user_logged!=$notification->owner_id){
+		}else{
 			$ticket->emailToOwner = true;
 			Mail::to($owner->email)->send(new TicketUpdate($ticket));
 		}
-		
 	}
 	
 	public function sendEmailTypeTransfer($notification){

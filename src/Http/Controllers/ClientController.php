@@ -91,10 +91,12 @@ class ClientController extends SulradioController {
 			$query = UserSulRadio::query()->client($clientId);
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) use($clientId) {
-					return route('client.user.edit', [$clientId, $row->id]);
+					return route('client.user.edit', [$clientId, $row->_id]);
 				})->addColumn('profile_name', function ($row) {
 					$profile = Profile::getById($row->profile_id);
 					return $profile->name;
+				})->addColumn('last_login_at', function ($row) {
+					return $row->last_login_at;
 				})->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.client.user.index', ['client'=>Client::getById($clientId)]);

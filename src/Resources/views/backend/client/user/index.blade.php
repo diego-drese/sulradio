@@ -27,6 +27,7 @@
                                 <th>Email</th>
                                 <th>Perfil</th>
                                 <th>Status</th>
+                                <th>Último Login</th>
                                 <th style="width: 120px">Ações</th>
                             </tr>
                             <tr>
@@ -39,12 +40,16 @@
                                 <th>
                                     ---
                                 </th>
+
                                 <th>
                                     <select class="form-control fieldSearch">
                                         <option value="">Todos</option>
                                         <option value="1">Sim</option>
                                         <option value="0">Não</option>
                                     </select>
+                                </th>
+                                <th>
+                                    ---
                                 </th>
                                 <th style="width: 60px">
                                     <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
@@ -145,6 +150,7 @@
                             return '---';
                         }
                     },
+                    {data: "last_login_at", 'name': 'last_login_at'},
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             var edit_button = "";

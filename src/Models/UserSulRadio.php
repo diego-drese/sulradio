@@ -17,6 +17,7 @@ class UserSulRadio extends User {
 		'resource_default_id',
 		'picture',
 		'type',
+		'last_login_at',
 		'client_id',
 		'description',
 	];

@@ -1,10 +1,10 @@
-# Qualita #
+# Sulradio #
 
-Pacote da clinica Qualita.
+Pacote para o sistema sead
 
 composer dumpautoload
 
-php artisan migrate --database=oka6_admin
+php artisan migrate --database=sulradio_mongo
 
 php artisan db:seed --class=Oka6\\\SulRadio\\\Database\\\Seeds\\\DatabaseStart
 

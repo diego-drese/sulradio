@@ -43,9 +43,7 @@
                                 <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
                             </a>
                             <button id="saveComment" type="button" class="m-t-20 btn waves-effect waves-light btn-success">Salvar comentário</button>
-
-
-                            @if(($hasAdmin || $user->id==$data->agent_id) && !$data->completed_at)
+                        @if(($hasAdmin || in_array($user->id, $participants->pluck('id')->toArray()) || $user->id==$data->owner_id) &&  !$data->completed_at)
                                 <button id="endTicket" class="m-t-20 btn waves-effect waves-light btn-danger">Encerrar ticket</button>
                             @endif
                     </form>
@@ -111,7 +109,7 @@
                             </div>
                         </div>
                         <div class="col-6 m-t-10 m-b-10 text-left">
-                            @if($hasAdmin || $user->id==$data->agent_id || $user->id==$data->owner_id)
+                            @if($hasAdmin || in_array($user->id, $participants->pluck('id')->toArray()) || $user->id==$data->owner_id)
                                 <a href="{{route('ticket.edit', [$data->id])}}" class="btn btn-sm btn-secondary">
                                     Editar
                                 </a>
@@ -152,18 +150,20 @@
                 <div class="row">
                     <div class="col-6 border-right">
                         <div class="card-body text-center">
-                            <h4 class="card-title">Responsável</h4>
-                            <div class="profile-pic m-b-20 m-t-20">
-                                @if($agent->picture)
-                                    <img class="avatar-default d-xs-none" src="{{$agent->picture}}" style="width: 80px;height: 80px;padding: 0">
-                                @else
-                                    <img class="avatar-default  d-xs-none" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg"  style="width: 80px;height: 80px;padding: 0">
-                                @endif
+                            <h4 class="card-title">Responsáveis</h4>
+                            @foreach($participants as $participant)
+                                <div class="profile-pic m-b-20 m-t-20">
+                                    @if($participant->picture)
+                                        <img class="avatar-default d-xs-none" src="{{$participant->picture}}" style="width: 80px;height: 80px;padding: 0">
+                                    @else
+                                        <img class="avatar-default  d-xs-none" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg"  style="width: 80px;height: 80px;padding: 0">
+                                    @endif
 
-                                <h4 class="m-t-20 m-b-0">{{$agent->name}}</h4>
-                                <h5 class="m-t-20 m-b-0">{{$agent->profile_name}}</h5>
-                                <a href="{{$agent->email}}">{{$agent->email}}</a>
-                            </div>
+                                    <h4 class="m-t-20 m-b-0">{{$participant->name}}</h4>
+                                    <h5 class="m-t-20 m-b-0">{{$participant->profile_name}}</h5>
+                                    <a href="{{$participant->email}}">{{$participant->email}}</a>
+                                </div>
+                            @endforeach
 
                         </div>
                     </div>

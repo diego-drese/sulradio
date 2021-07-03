@@ -10,7 +10,7 @@
                             <div class="btn-group bt-switch">
                                 <input id="active" name="active" type="checkbox"
                                        value="1" data-on-color="success" data-off-color="danger"
-                                       data-on-text="Ativos" data-off-text="Finalizados">
+                                       data-on-text="Ativos" data-off-text="Arquivados">
                             </div>
                             <div class="btn-group ">
                                 @if($hasAdd)
@@ -28,13 +28,12 @@
                             <tr>
                                 <th style="width: 75px">Ações</th>
                                 <th>Assunto</th>
-                                <th>Prioridade</th>
                                 <th>Categoria</th>
                                 <th>Status</th>
                                 <th>Emissora</th>
                                 <th>Atualizado</th>
                                 <th>Término</th>
-                                <th>Responsável</th>
+                                <th>Responsáveis</th>
                                 <th>Solicitante</th>
                             </tr>
                             <tr>
@@ -46,14 +45,7 @@
                                 <th role="row">
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Assunto">
                                 </th>
-                                <th role="row">
-                                    <select class="form-control fieldSearch">
-                                        <option value="">Todos</option>
-                                        @foreach($priority as $value)
-                                            <option value="{{$value->id}}" style="color: {{$value->color}}">{{$value->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </th>
+
                                 <th role="row">
                                     <select class="form-control fieldSearch">
                                         <option value="">Todos</option>
@@ -175,7 +167,13 @@
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#table_ticket thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                if(searchCols[i]['bRegex']){
+                                    var id = searchCols[i]['sSearch'].replace('^', "").replace('$','')
+                                    $('#table_ticket thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(id);
+                                }else{
+                                    $('#table_ticket thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                }
+
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
@@ -206,9 +204,9 @@
                         }
                     },
                     {data: "subject", 'name': 'subject'},
-                    {data: "priority_name", 'name': 'ticket_priority.id', render:function (data, display, row){
-                        return '<b style="color:'+row.priority_color+'">'+data+'</b>'
-                    }},
+                    // {data: "priority_name", 'name': 'ticket_priority.id', render:function (data, display, row){
+                    //     return '<b style="color:'+row.priority_color+'">'+data+'</b>'
+                    // }},
                     {data: "category_name", 'name': 'ticket_category.id', render:function (data, display, row){
                             return '<b style="color:'+row.category_color+'">'+data+'</b>'
                     }},
@@ -232,7 +230,7 @@
                                 return '<b class="text-success">'+data+'</b>'
                             }
                     }},
-                    {data: "agent_name", 'name': 'ticket.agent_id'},
+                    {data: "participants", 'name': 'ticket_participant.user_id'},
                     {data: "user_name", 'name': 'ticket.owner_id'},
                 ]
             });

@@ -16,6 +16,7 @@ use Oka6\SulRadio\Models\TicketCategory;
 use Oka6\SulRadio\Models\TicketComment;
 use Oka6\SulRadio\Models\TicketDocument;
 use Oka6\SulRadio\Models\TicketNotification;
+use Oka6\SulRadio\Models\TicketParticipant;
 use Oka6\SulRadio\Models\TicketPriority;
 use Oka6\SulRadio\Models\TicketStatus;
 use Yajra\DataTables\DataTables;
@@ -26,29 +27,25 @@ class TicketController extends SulradioController {
 	public function index(Request $request) {
 		if ($request->ajax()) {
 			$user = Auth::user();
+			$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 			$query = Ticket::query()
 			->withSelectDataTable()
 			->withStatus()
+			->withParticipants($user, $hasAdmin)
 			->WithPriority()
 			->withCategory()
 			->withEmissora()
 			->withServico()
 			->withLocalidade()
-			->withUf();
+			->withUf()
+			->groupBy('ticket.id');
 			/** Filters */
 			if($request->get('active')=='1'){
 				$query->whereNull('completed_at');
 			}else{
 				$query->whereNotNull('completed_at');
 			}
-			$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-			if(!$hasAdmin){
-				$query->where(function($query) use($user){
-					$query->where('agent_id', $user->id)
-						->orWhereNull('agent_id')
-						->orWhere('owner_id', $user->id);
-				});
-			}
+			
 			
 			return DataTables::of($query)
 				->addColumn('ticket_url', function ($row) {
@@ -58,16 +55,17 @@ class TicketController extends SulradioController {
 				})->addColumn('user_name', function ($row) use($user){
 					$userData = $user->getById($row->owner_id);
 					return $userData->name;
-				})->addColumn('agent_name', function ($row)  use($user){
-					$userData = $user->getById($row->agent_id);
-					return $userData->name;
+				})->addColumn('participants', function ($row)  use($user){
+					$participants = TicketParticipant::getUserNameByTicketId($row->id);
+					return $participants;
 				})->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.ticket.index', []);
 	}
 	
 	public function create(Ticket $data) {
-		return $this->renderView('SulRadio::backend.ticket.create', ['data' => $data]);
+		$hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+		return $this->renderView('SulRadio::backend.ticket.create', ['data' => $data, 'participants'=>[], 'hasAdmin'=>$hasAdmin]);
 	}
 	
 	public function store(Request $request) {
@@ -88,19 +86,7 @@ class TicketController extends SulradioController {
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
 		
 		$ticket                 = Ticket::create($ticketForm);
-		if($ticket->agent_id!=$owner->id){
-			TicketNotification::create([
-				'type'              =>TicketNotification::TYPE_NEW,
-				'ticket_id'         =>$ticket->id,
-				'agent_current_id'  =>$ticket->agent_id,
-				'agent_old_id'      =>$ticket->agent_id,
-				'user_logged'       =>$owner->id,
-				'owner_id'          =>$owner->id,
-				'users_comments'    =>null,
-				'status'            =>TicketNotification::STATUS_WAITING,
-			]);
-		}
-		
+		TicketParticipant::insertByController($request, $ticket, $owner, TicketNotification::TYPE_NEW);
 		/** Document attach */
 		if(isset($ticketForm['files']) && count($ticketForm['files'])){
 			foreach ($ticketForm['files'] as $names){
@@ -142,20 +128,20 @@ class TicketController extends SulradioController {
 		$user = Auth::user();
 		$data = Ticket::getByIdOwner($id, $user);
 		$emissora = Emissora::getById($data->emissora_id, $user);
-		return $this->renderView('SulRadio::backend.ticket.edit', ['data' => $data, 'emissora'=>$emissora]);
+		$participants = TicketParticipant::getUserByTicketId($id);
+		$hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+		return $this->renderView('SulRadio::backend.ticket.edit', ['data' => $data, 'emissora'=>$emissora, 'participants'=>$participants, 'hasAdmin'=>$hasAdmin]);
 	}
 	
 	public function update(Request $request, $id) {
 		$userLogged = Auth::user();
 		$ticket     = Ticket::getByIdOwner($id, $userLogged);
-		$agentId    = $ticket->agent_id;
 		$ticketForm = $request->all();
 		$this->validate($request, [
 			'subject'       => 'required',
 			'priority_id'   => 'required',
 			'category_id'   => 'required',
 			'status_id'     => 'required',
-			'agent_id'      => 'required',
 			'start_forecast'=> 'required',
 			'end_forecast'  => 'required',
 			'content'       => 'required',
@@ -167,29 +153,9 @@ class TicketController extends SulradioController {
 		
 		$ticket->fill($ticketForm);
 		$ticket->save();
-		if($ticket->agent_id!=$agentId){
-			TicketNotification::create([
-				'type'              =>TicketNotification::TYPE_TRANSFER_AGENT,
-				'ticket_id'         =>$ticket->id,
-				'agent_current_id'  =>$ticket->agent_id,
-				'agent_old_id'      =>$agentId,
-				'user_logged'       =>$userLogged->id,
-				'owner_id'          =>$ticket->owner_id,
-				'users_comments'    =>null,
-				'status'            =>TicketNotification::STATUS_WAITING,
-			]);
-		}else{
-			TicketNotification::create([
-				'type'              => TicketNotification::TYPE_UPDATE,
-				'ticket_id'         => $ticket->id,
-				'agent_current_id'  => $ticket->agent_id,
-				'agent_old_id'      => $ticket->agent_id,
-				'user_logged'       => $userLogged->id,
-				'owner_id'          => $ticket->owner_id,
-				'users_comments'    => null,
-				'status'            => TicketNotification::STATUS_WAITING,
-			]);
-		}
+		
+		$owner = User::getByIdStatic($ticket->owner_id);
+		TicketParticipant::insertByController($request, $ticket, $owner, TicketNotification::TYPE_UPDATE);
 		toastr()->success("{$ticket->subject} Atualizado com sucesso", 'Sucesso');
 		return redirect(route('ticket.ticket', [$id]));
 	}
@@ -205,15 +171,15 @@ class TicketController extends SulradioController {
 			->where('ticket.id', $id)
 			->first();
 		
-		$user       = Auth::user();
-		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-		$comments   = TicketComment::getAllByTicketId($id);
-		$emissora   = Emissora::getById($data->emissora_id, $user);
-		$documents  = TicketDocument::getAllByTicketId($id);
-		$owner      = User::getByIdStatic($data->owner_id);
-		$agent      = User::getByIdStatic($data->agent_id);
+		$user           = Auth::user();
+		$hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+		$comments       = TicketComment::getAllByTicketId($id);
+		$emissora       = Emissora::getById($data->emissora_id, $user);
+		$documents      = TicketDocument::getAllByTicketId($id);
+		$owner          = User::getByIdStatic($data->owner_id);
+		$participants   = TicketParticipant::getUserByTicketId($id, true);
 		
-		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'agent'=>$agent, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents]);
+		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents]);
 	}
 	public function comment(Request $request, $id) {
 		$userLogged = Auth::user();
@@ -225,17 +191,8 @@ class TicketController extends SulradioController {
 			'ticket_id'=>$id
 		]);
 		$ticket = Ticket::getById($id);
-		TicketNotification::create([
-			'type'              =>TicketNotification::TYPE_COMMENT,
-			'ticket_id'         =>$ticket->id,
-			'agent_current_id'  =>$ticket->agent_id,
-			'agent_old_id'      =>$ticket->agent_id,
-			'user_logged'       =>$userLogged->id,
-			'owner_id'          =>$ticket->owner_id,
-			'comment_id'        =>$comment->id,
-			'users_comments'    =>null,
-			'status'            =>TicketNotification::STATUS_WAITING,
-		]);
+		$owner = User::getByIdStatic($ticket->owner_id);
+		TicketParticipant::notifyParticipants($ticket, $owner, TicketNotification::TYPE_COMMENT, $comment->id);
 		toastr()->success("Comentário inserido com sucesso", 'Sucesso');
 		return redirect(route('ticket.ticket',[$id]));
 	}
@@ -254,18 +211,8 @@ class TicketController extends SulradioController {
 		$ticket = Ticket::getById($id);
 		$ticket->completed_at = date('Y-m-d H:i:s');
 		$ticket->save();
-		
-		TicketNotification::create([
-			'type'              => TicketNotification::TYPE_UPDATE,
-			'ticket_id'         => $ticket->id,
-			'agent_current_id'  => $ticket->agent_id,
-			'agent_old_id'      => $ticket->agent_id,
-			'user_logged'       => $userLogged->id,
-			'owner_id'          => $ticket->owner_id,
-			'users_comments'    => null,
-			'status'            => TicketNotification::STATUS_WAITING,
-		]);
-		
+		$owner = User::getByIdStatic($ticket->owner_id);
+		TicketParticipant::notifyParticipants($ticket, $owner, TicketNotification::TYPE_UPDATE);
 		toastr()->success("Ticket encerrado com sucesso", 'Sucesso');
 		return redirect(route('ticket.index'));
 	}
