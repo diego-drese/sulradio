@@ -5,10 +5,14 @@ namespace Oka6\SulRadio\Http\Controllers;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 use Oka6\Admin\Http\Library\ResourceAdmin;
+use Oka6\Admin\Library\MongoUtils;
+use Oka6\Admin\Models\PasswordReset;
 use Oka6\Admin\Models\Profile;
 use Oka6\Admin\Models\Sequence;
 use Oka6\Admin\Models\User;
+use Oka6\Admin\Notifications\ResetPasswordNotification;
 use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\Plan;
@@ -92,11 +96,15 @@ class ClientController extends SulradioController {
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) use($clientId) {
 					return route('client.user.edit', [$clientId, $row->_id]);
+				})->addColumn('notify_url', function ($row) use($clientId) {
+					return route('client.user.notify', [$clientId, $row->id]);
 				})->addColumn('profile_name', function ($row) {
 					$profile = Profile::getById($row->profile_id);
 					return $profile->name;
 				})->addColumn('last_login_at', function ($row) {
 					return $row->last_login_at;
+				})->addColumn('last_notification_at', function ($row) {
+					return $row->last_notification_at;
 				})->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.client.user.index', ['client'=>Client::getById($clientId)]);
@@ -109,8 +117,6 @@ class ClientController extends SulradioController {
 		$this->validate($request, [
 			'name' => 'required',
 			'profile_id' => 'required|integer',
-			'password' => 'required|min:6|confirmed',
-			'password_confirmation' => 'required|min:6|',
 			'email' => ['required', function ($attribute, $value, $fail) {
 				$result = User::where('email', $value)->first();
 				if ($result) {
@@ -119,13 +125,50 @@ class ClientController extends SulradioController {
 			},]
 		
 		], ['required' => 'Campo obrigatório', 'unique' => 'Email já cadastrado']);
-		$dataForm['id']         = Sequence::getSequence('users');
-		$dataForm['client_id']  = $clientId;
-		$dataForm['password']   = bcrypt($request->get('password_confirmation'));
+		
+		$dataForm['id']                     = Sequence::getSequence('users');
+		$dataForm['client_id']              = $clientId;
+		$dataForm['receive_notification']   = isset($dataForm['receive_notification']) && $dataForm['receive_notification'] ? 1 : 0;
+		$dataForm['password']               = bcrypt(Str::random(10));
+		$dataForm['remember_token']         = Str::random(60);
 		UserSulRadio::create($dataForm);
+		$this->notifyUser($clientId, $dataForm['id']);
 		toastr()->success('Usuário criado com sucesso', 'Sucesso');
 		return redirect(route('client.user', [$clientId]));
 	}
+	
+	public function notifyUser($clientId, $idUser){
+		$user = UserSulRadio::where('id', (int)$idUser)->first();
+		if($user->last_notification_at!='---'){
+			$now = new \DateTime();
+			$lastNotified = MongoUtils::convertDateMongoToPhpDateTime($user->getAttributes()['last_notification_at']);
+			$diff = $now->diff($lastNotified);
+			if($diff->i<10){
+				toastr()->error('Aguarde no minimo 10 minutos para reenviar o email', 'Atenção');
+				return redirect(route('client.user', [$clientId]));
+			}
+		}
+		if(!$user->remember_token){
+			$user->remember_token = Str::random(60);
+			$user->save();
+		}
+		if($user->last_login_at=='---'){
+			$passwordReset = PasswordReset::create(['email' => $user->email, 'token' => $user->remember_token, 'new_account' => true]);
+		}else{
+			$passwordReset = PasswordReset::create(['email' => $user->email, 'token' => $user->remember_token, 'new_account' => false]);
+		}
+		
+		try {
+			$user->notify(new ResetPasswordNotification($passwordReset));
+			$user->last_notification_at = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+			$user->save();
+			toastr()->success('Email enviado com sucesso', 'Sucesso');
+		}catch (\Exception $e){
+			toastr()->error('Não foi possivel enviar o email '.$e->getMessage().'', 'Atenção');
+		}
+		return redirect(route('client.user', [$clientId]));
+	}
+	
 	public function userEdit($clientId, $userId) {
 		$data = UserSulRadio::getBy_Id($userId);
 		return $this->renderView('SulRadio::backend.client.user.edit', ['data' => $data, 'client'=>Client::getById($clientId), 'profiles' => Profile::getProfilesByTypes(Config::get('sulradio.profile_type'))]);
@@ -135,8 +178,6 @@ class ClientController extends SulradioController {
 		$this->validate($request, [
 			'name' => 'required',
 			'profile_id' => 'required|integer',
-			'password' => 'nullable|min:6|confirmed',
-			'password_confirmation' => 'nullable|min:6',
 			'email' => ['required', function ($attribute, $value, $fail) use($userId) {
 				$result = User::where('email', $value)->where('_id', '!=', new \MongoDB\BSON\ObjectId($userId))->first();
 				if ($result) {
@@ -145,9 +186,6 @@ class ClientController extends SulradioController {
 			},]
 		], ['required' => 'Campo obrigatório', 'unique' => 'Email já cadastrado']);
 		$user                   = UserSulRadio::getBy_Id($userId);
-		if ($request->get('password_confirmation')) {
-			$dataForm['password'] = bcrypt($request->get('password_confirmation'));
-		}
 		$user->update($dataForm);
 		toastr()->success('Usuário Atualizado com sucesso', 'Sucesso');
 		return redirect(route('client.user', [$clientId]));
@@ -157,6 +195,7 @@ class ClientController extends SulradioController {
 			'plans'             => Plan::getAll(),
 			'hasAdd'            => ResourceAdmin::hasResourceByRouteName('client.create'),
 			'hasEdit'           => ResourceAdmin::hasResourceByRouteName('client.edit', [1]),
+			
 			'hasStore'          => ResourceAdmin::hasResourceByRouteName('client.store'),
 			'hasUpdate'         => ResourceAdmin::hasResourceByRouteName('client.update', [1]),
 			
@@ -167,6 +206,7 @@ class ClientController extends SulradioController {
 			'hasUserStore'      => ResourceAdmin::hasResourceByRouteName('client.user.store', [1]),
 			'hasUserEdit'       => ResourceAdmin::hasResourceByRouteName('client.user.edit', [1, 1]),
 			'hasUserUpdate'     => ResourceAdmin::hasResourceByRouteName('client.user.update', [1, 1]),
+			'hasUserNotify'     => ResourceAdmin::hasResourceByRouteName('client.user.notify', [1,1]),
 			
 			'hasBroadcast'      => ResourceAdmin::hasResourceByRouteName('client.broadcast', [1]),
 			'hasBroadcastStore' => ResourceAdmin::hasResourceByRouteName('client.broadcast.store', [1]),

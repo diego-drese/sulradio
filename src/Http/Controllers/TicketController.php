@@ -2,7 +2,6 @@
 
 namespace Oka6\SulRadio\Http\Controllers;
 
-
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,7 +44,6 @@ class TicketController extends SulradioController {
 			}else{
 				$query->whereNotNull('completed_at');
 			}
-			
 			
 			return DataTables::of($query)
 				->addColumn('ticket_url', function ($row) {

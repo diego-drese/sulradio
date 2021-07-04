@@ -105,6 +105,7 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/client/{id}/user/store', 'Oka6\SulRadio\Http\Controllers\ClientController@userStore')->name('client.user.store')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, salva usuário']);
 	Route::get('/client/{id}/user/{idUser}', 'Oka6\SulRadio\Http\Controllers\ClientController@userEdit')->name('client.user.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, edita usuário']);
 	Route::post('/client/{id}/user/{idUser}/update', 'Oka6\SulRadio\Http\Controllers\ClientController@userUpdate')->name('client.user.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, atualiza usuário']);
+	Route::get('/client/{id}/user/{idUser}/notify', 'Oka6\SulRadio\Http\Controllers\ClientController@notifyUser')->name('client.user.notify')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'client.user', 'nameAdmin' => 'Clientes, notifica por emailo usuário']);
 	
 	Route::get('/client/{id}/broadcast', 'Oka6\SulRadio\Http\Controllers\ClientController@broadcast')->name('client.broadcast')->where(['iconAdmin' => 'mdi mdi-radio', 'parentRouteNameAdmin' => 'client.index', 'nameAdmin' => 'Clientes, emissoras']);
 	

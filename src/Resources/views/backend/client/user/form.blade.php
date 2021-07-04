@@ -100,11 +100,11 @@
         @endif
     </div>
     <div class="col-md-4 form-group {{$errors->has('is_active') ? 'text-danger' : ''}} ">
-        <label for="is_active">Recebe notificações </label>
+        <label for="receive_notification">Recebe notificações automáticas</label>
         <div class="input-group mb-3">
-            <select name="is_active" id="is_active" class="form-control">
-                <option value="1" {{old('is_active', $data->exists() ? $data->is_active : '') == "1" ? 'selected' : ''}}> SIM </option>
-                <option value="0" {{old('is_active', $data->exists() ? $data->is_active : '') == "0" ? 'selected' : ''}}> NÃO </option>
+            <select name="receive_notification" id="receive_notification" class="form-control">
+                <option value="1" {{old('receive_notification', $data->exists() ? (int)$data->receive_notification : '') == 1 ? 'selected' : ''}}> SIM </option>
+                <option value="0" {{old('receive_notification', $data->exists() ? (int)$data->receive_notification : '') == 0 ? 'selected' : ''}}> NÃO </option>
             </select>
             <div class="input-group-append">
                 <span class="input-group-text"><i class="fas fa-adjust"></i></span>
@@ -115,33 +115,7 @@
         @endif
     </div>
 
-    <div class="col-md-6 form-group {{$errors->has('password') ? 'text-danger' : ''}} ">
-        <label for="password">Senha *</label>
-        <div class="input-group mb-3">
-            <input type="password" name="password" id="password" class="form-control" autocomplete="off" placeholder="Senha" {{!$data->_id ? 'required' : ''}}
-                   value="">
-            <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-address-book"></i></span>
-            </div>
-        </div>
-        @if($errors->has('password'))
-            <span class="help-block">{{$errors->first('password')}}</span>
-        @endif
-    </div>
 
-    <div class="col-md-6 form-group {{$errors->has('password_confirmation') ? 'text-danger' : ''}} ">
-        <label for="password_confirmation">Confirmar Senha *</label>
-        <div class="input-group mb-3">
-            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" autocomplete="off" placeholder="Confirmação de senha" {{!$data->_id ? 'required' : ''}}
-                   value="">
-            <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-address-book"></i></span>
-            </div>
-        </div>
-        @if($errors->has('password_confirmation'))
-            <span class="help-block">{{$errors->first('password_confirmation')}}</span>
-        @endif
-    </div>
     <div class="col-md-12 form-group {{$errors->has('description') ? 'text-danger' : ''}} ">
         <label for="description">Observações</label>
         <textarea rows="7" name="description" class="form-control"

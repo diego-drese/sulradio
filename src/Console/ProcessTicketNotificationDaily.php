@@ -112,9 +112,7 @@ class ProcessTicketNotificationDaily extends Command {
 					Mail::to($user->email)->send(new TicketDaily($daily));
 				}
 			}
-			
 		}
-		
 	}
 	public function getTicket($field, $id){
 		return Ticket::withSelectDataTable()

@@ -2,6 +2,7 @@
 
 namespace Oka6\SulRadio\Models;
 use Illuminate\Support\Facades\Cache;
+use Oka6\Admin\Library\MongoUtils;
 use Oka6\Admin\Models\User;
 
 class UserSulRadio extends User {
@@ -18,7 +19,9 @@ class UserSulRadio extends User {
 		'picture',
 		'type',
 		'last_login_at',
+		'last_notification_at',
 		'client_id',
+		'remember_token',
 		'description',
 	];
 	public function scopeClient($query, $clientId){
@@ -27,6 +30,10 @@ class UserSulRadio extends User {
 	
 	public static function getBy_Id($userId){
 		return self::where('_id',  new \MongoDB\BSON\ObjectId($userId))->first();
+	}
+	
+	public function getLastNotificationAtAttribute($value) {
+		return $value && !empty($value) ? MongoUtils::convertDateMongoToPhpDateTime($value)->format('d/m/Y H:i') : '---';
 	}
 	
 	public function getWithCache() {

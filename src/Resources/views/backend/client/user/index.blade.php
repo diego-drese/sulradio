@@ -28,6 +28,8 @@
                                 <th>Perfil</th>
                                 <th>Status</th>
                                 <th>Último Login</th>
+                                <th>Último Email</th>
+                                <th>Reenviar Email</th>
                                 <th style="width: 120px">Ações</th>
                             </tr>
                             <tr>
@@ -47,6 +49,12 @@
                                         <option value="1">Sim</option>
                                         <option value="0">Não</option>
                                     </select>
+                                </th>
+                                <th>
+                                    ---
+                                </th>
+                                <th>
+                                    ---
                                 </th>
                                 <th>
                                     ---
@@ -151,6 +159,19 @@
                         }
                     },
                     {data: "last_login_at", 'name': 'last_login_at'},
+                    {data: "last_notification_at", 'name': 'last_notification_at'},
+                    {data: null, searchable: false, orderable: false, render: function (data) {
+                            var edit_button = "";
+                            @if($hasUserNotify)
+                            if(data.last_login_at=='---'){
+                                edit_button += '<a href="' + data.notify_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Nova conta</b></a>';
+                            }else {
+                                edit_button += '<a href="' + data.notify_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Reset Senha</b></a>';
+                            }
+                            @endif
+                           return edit_button
+                        }
+                    },
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             var edit_button = "";
