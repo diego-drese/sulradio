@@ -2,7 +2,7 @@
     <div class="col-md-6 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
         <label for="name">Nome *</label>
         <div class="input-group mb-3">
-            <input type="text" name="name" id="name" class="form-control" placeholder="Nome do plano" required
+            <input type="text" name="name" id="name" class="form-control" placeholder="Nome do status" required
             value="{{old('name', $data->exists() ? $data->name : '')}}">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="mdi mdi-file-document"></i></span>
@@ -38,6 +38,25 @@
         </div>
         @if($errors->has('is_active'))
             <span class="help-block">{{$errors->first('is_active')}}</span>
+        @endif
+    </div>
+    <div class="col-md-3 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
+        <label for="update_completed_at">
+            Finaliza Automaticamente<br/>
+            <span style="font-size: 10px;font-weight: 300;">Somente um status terá essa função</span>
+        </label>
+        <div class="input-group mb-3">
+            <select name="update_completed_at" id="update_completed_at" class="form-control">
+                <option value="0" {{old('update_completed_at', $data->exists() ? $data->update_completed_at : '') == "0" ? 'selected' : ''}}> NÃO </option>
+                <option value="1" {{old('update_completed_at', $data->exists() ? $data->update_completed_at : '') == "1" ? 'selected' : ''}}> SIM </option>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-adjust"></i></span>
+            </div>
+        </div>
+
+        @if($errors->has('update_completed_at'))
+            <span class="help-block">{{$errors->first('update_completed_at')}}</span>
         @endif
     </div>
     <div class="col-md-12 form-group {{$errors->has('description') ? 'has-error' : ''}} ">

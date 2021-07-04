@@ -10,7 +10,7 @@
                             <div class="btn-group bt-switch">
                                 <input id="active" name="active" type="checkbox"
                                        value="1" data-on-color="success" data-off-color="danger"
-                                       data-on-text="Ativos" data-off-text="Arquivados">
+                                       data-on-text="Ativos" data-off-text="{{$statusFinished ? $statusFinished->name.'(s)' : 'Arquivados'}}">
                             </div>
                             <div class="btn-group ">
                                 @if($hasAdd)

@@ -12,6 +12,7 @@ class TicketStatus extends Model {
 		'name',
 		'description',
 		'is_active',
+		'update_completed_at',
 		'color',
 	];
 	protected $table = 'ticket_status';
@@ -24,9 +25,17 @@ class TicketStatus extends Model {
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
+	public static function statusFinished($id= null) {
+		return Cache::tags(['sulradio'])->remember('ticket_status_finished-'.$id, 120, function () use($id) {
+			if($id){
+				return self::where('id', $id)->where('update_completed_at', 1)->first();
+			}
+			return self::where('update_completed_at', 1)->first();
+		});
+	}
 	
 	public static function getWithCache() {
-		return Cache::tags(['sulradio'])->remember('ticket_status-', 120, function ()  {
+		return Cache::tags(['sulradio'])->remember('ticket_status', 120, function ()  {
 			return self::where('is_active', 1)
 				->orderBy('name', 'asc')
 				->get();

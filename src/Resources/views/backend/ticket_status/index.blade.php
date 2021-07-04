@@ -25,6 +25,7 @@
                                 <th style="width: 120px">Ações</th>
                                 <th>Nome</th>
                                 <th>Ativo</th>
+                                <th>Finaliza Automaticamente</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">
@@ -34,6 +35,13 @@
                                 </th>
                                 <th role="row">
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
+                                </th>
+                                <th>
+                                    <select class="form-control fieldSearch">
+                                        <option value="">Todos</option>
+                                        <option value="1">Sim</option>
+                                        <option value="0">Não</option>
+                                    </select>
                                 </th>
                                 <th>
                                     <select class="form-control fieldSearch">
@@ -126,8 +134,17 @@
                             return '<b style="color:'+row.color+'">'+data+'</b>';
                         }
                     },
-
                     {data: "is_active", 'name': 'is_active',
+                        render: function (data, display, row) {
+                            if (data == "1") {
+                                return '<span class="badge badge-success mr-1 ">SIM</span>';
+                            } else if (data == '0') {
+                                return '<span class="badge badge-danger mr-1 ">NÃO</span>';
+                            }
+                            return '---';
+                        }
+                    },
+                    {data: "update_completed_at", 'name': 'update_completed_at',
                         render: function (data, display, row) {
                             if (data == "1") {
                                 return '<span class="badge badge-success mr-1 ">SIM</span>';

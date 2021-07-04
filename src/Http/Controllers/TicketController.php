@@ -68,7 +68,7 @@ class TicketController extends SulradioController {
 	
 	public function store(Request $request) {
 		$ticketForm = $request->all();
-		$owner      = Auth::user();
+		$userLogged      = Auth::user();
 		$this->validate($request, [
 			'subject'       => 'required',
 			'priority_id'   => 'required',
@@ -78,13 +78,16 @@ class TicketController extends SulradioController {
 			'end_forecast'  => 'required',
 			'content'       => 'required',
 		]);
-		$ticketForm['owner_id']         = $owner->id;
+		$ticketForm['owner_id']         = $userLogged->id;
 		$ticketForm['html']             = $request->get('content');
 		$ticketForm['start_forecast']   = Helper::convertDateBrToMysql($ticketForm['start_forecast']);
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
 		
-		$ticket                 = Ticket::create($ticketForm);
-		TicketParticipant::insertByController($request, $ticket, $owner, TicketNotification::TYPE_NEW);
+		$ticket = Ticket::create($ticketForm);
+		if(TicketStatus::statusFinished($request->get('status_id'))){
+			$ticketForm['completed_at'] = date('Y-m-d H:i:s');
+		}
+		TicketParticipant::insertByController($request, $ticket, $userLogged, TicketNotification::TYPE_NEW);
 		/** Document attach */
 		if(isset($ticketForm['files']) && count($ticketForm['files'])){
 			foreach ($ticketForm['files'] as $names){
@@ -93,7 +96,7 @@ class TicketController extends SulradioController {
 					$fileObj                        = new \stdClass();
 					$fileObj->file_name             = $splitNames[0];
 					$fileObj->file_name_original    = $splitNames[1];
-					$this->uploadDocument($fileObj, $ticket, $owner);
+					$this->uploadDocument($fileObj, $ticket, $userLogged);
 				}catch (\Exception $e){
 					toastr()->error('Ocorreu um erro em anexar seus arquivos.', 'Erro');
 				}
@@ -148,12 +151,13 @@ class TicketController extends SulradioController {
 		$ticketForm['start_forecast']   = Helper::convertDateBrToMysql($ticketForm['start_forecast']);
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
 		$ticketForm['completed_at']     = null;
-		
+		if(TicketStatus::statusFinished($request->get('status_id'))){
+			$ticketForm['completed_at'] = date('Y-m-d H:i:s');
+		}
 		$ticket->fill($ticketForm);
 		$ticket->save();
 		
-		$owner = User::getByIdStatic($ticket->owner_id);
-		TicketParticipant::insertByController($request, $ticket, $owner, TicketNotification::TYPE_UPDATE);
+		TicketParticipant::insertByController($request, $ticket, $userLogged, TicketNotification::TYPE_UPDATE);
 		toastr()->success("{$ticket->subject} Atualizado com sucesso", 'Sucesso');
 		return redirect(route('ticket.ticket', [$id]));
 	}
@@ -189,8 +193,7 @@ class TicketController extends SulradioController {
 			'ticket_id'=>$id
 		]);
 		$ticket = Ticket::getById($id);
-		$owner = User::getByIdStatic($ticket->owner_id);
-		TicketParticipant::notifyParticipants($ticket, $owner, TicketNotification::TYPE_COMMENT, $comment->id);
+		TicketParticipant::notifyParticipants($ticket, $userLogged, TicketNotification::TYPE_COMMENT, $comment->id);
 		toastr()->success("Comentário inserido com sucesso", 'Sucesso');
 		return redirect(route('ticket.ticket',[$id]));
 	}
@@ -206,11 +209,11 @@ class TicketController extends SulradioController {
 				'ticket_id'=>$id
 			]);
 		}
+		
 		$ticket = Ticket::getById($id);
 		$ticket->completed_at = date('Y-m-d H:i:s');
 		$ticket->save();
-		$owner = User::getByIdStatic($ticket->owner_id);
-		TicketParticipant::notifyParticipants($ticket, $owner, TicketNotification::TYPE_UPDATE);
+		TicketParticipant::notifyParticipants($ticket, $userLogged, TicketNotification::TYPE_UPDATE);
 		toastr()->success("Ticket encerrado com sucesso", 'Sucesso');
 		return redirect(route('ticket.index'));
 	}
@@ -242,6 +245,7 @@ class TicketController extends SulradioController {
 			'hasStore' => ResourceAdmin::hasResourceByRouteName('ticket.store'),
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('ticket.update', [1]),
 			'status' => TicketStatus::getWithCache(),
+			'statusFinished' => TicketStatus::statusFinished(),
 			'priority' => TicketPriority::getWithCache(),
 			'category' => TicketCategory::getWithProfile($user),
 			'users' => User::whereNull('client_id')->get(),

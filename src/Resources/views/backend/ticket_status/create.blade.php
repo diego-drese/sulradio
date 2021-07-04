@@ -8,7 +8,7 @@
                     <form id="form-profile" method="post" action="{{route('ticket.status.store')}}"
                           enctype="multipart/form-data">
                         {{ csrf_field() }}
-                        @include('SulRadio::backend.ticket_priority.form')
+                        @include('SulRadio::backend.ticket_status.form')
                     </form>
                 </div>
             </div>

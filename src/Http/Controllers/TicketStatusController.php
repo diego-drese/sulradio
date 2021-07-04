@@ -35,7 +35,12 @@ class TicketStatusController extends SulradioController {
 			'name' => 'required',
 			'is_active' => 'required',
 		]);
-		TicketStatus::create($dataForm);
+		$status = TicketStatus::create($dataForm);
+		
+		if($request->get('update_completed_at') == 1){
+			TicketStatus::where('id', '!=', $status->id)
+				->update(['update_completed_at'=>0]);
+		}
 		Cache::tags('sulradio')->flush();
 		toastr()->success('Status Criado com sucesso', 'Sucesso');
 		return redirect(route('ticket.status.index'));
@@ -56,6 +61,10 @@ class TicketStatusController extends SulradioController {
 		]);
 		$data->fill($dataForm);
 		$data->save();
+		if($request->get('update_completed_at') == 1){
+			TicketStatus::where('id', '!=', $id)->update(['update_completed_at'=>0]);
+		}
+		
 		Cache::tags('sulradio')->flush();
 		toastr()->success("{$data->name} Atualizado com sucesso", 'Sucesso');
 		return redirect(route('ticket.status.index'));

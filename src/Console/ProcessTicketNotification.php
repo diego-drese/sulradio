@@ -71,30 +71,20 @@ class ProcessTicketNotification extends Command {
 	}
 	public function sendEmailTypeNew($notification){
 		$currentAgent   = User::getByIdStatic($notification->agent_current_id);
-		$owner          = User::getByIdStatic($notification->owner_id);
+		$owner          = User::getByIdStatic($notification->user_logged);
 		$ticket         = $this->getTicket($notification->ticket_id);
 		$ticket->owner  = $owner;
 		$ticket->agent  = $currentAgent;
 		Mail::to($currentAgent->email)->send(new TicketCreate($ticket));
 	}
+	
 	public function sendEmailTypeComment($notification){
-		$userLogged =null;
-		if($notification->user_logged!=$notification->agent_current_id){
-			$currentAgent       = User::getByIdStatic($notification->agent_current_id);
-			$userLogged         = User::getByIdStatic($notification->user_logged);
-			$comment             = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
-			$comment->agent      = $currentAgent;
-			$comment->userLogged = $userLogged;
-			Mail::to($currentAgent->email)->send(new TicketComment($comment));
-		}else{
-			$owner               = User::getByIdStatic($notification->owner_id);
-			$userLogged          = User::getByIdStatic($notification->user_logged);
-			$comment             = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
-			$comment->agent      = $owner;
-			$comment->userLogged = $userLogged;
-			Mail::to($owner->email)->send(new TicketComment($comment));
-		}
-		
+		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
+		$userLogged         = User::getByIdStatic($notification->user_logged);
+		$comment             = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
+		$comment->agent      = $currentAgent;
+		$comment->userLogged = $userLogged;
+		Mail::to($currentAgent->email)->send(new TicketComment($comment));
 	}
 	
 	public function sendEmailTypeUpdate($notification){
@@ -106,12 +96,7 @@ class ProcessTicketNotification extends Command {
 		$ticket->owner      = $owner;
 		$ticket->agent      = $currentAgent;
 		$ticket->userLogged = $userLogged;
-		if($notification->user_logged!=$notification->agent_current_id){
-			Mail::to($currentAgent->email)->send(new TicketUpdate($ticket));
-		}else{
-			$ticket->emailToOwner = true;
-			Mail::to($owner->email)->send(new TicketUpdate($ticket));
-		}
+		Mail::to($currentAgent->email)->send(new TicketUpdate($ticket));
 	}
 	
 	public function sendEmailTypeTransfer($notification){

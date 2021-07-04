@@ -5,10 +5,7 @@ namespace Oka6\SulRadio\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Oka6\Admin\Models\User;
-use Oka6\SulRadio\Helpers\Helper;
 
 class TicketParticipant extends Model {
 	const TABLE = 'ticket_participant';
@@ -22,12 +19,12 @@ class TicketParticipant extends Model {
 	public function getUpdatedAtAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
 	}
-	public static function insertByController(Request $request, Ticket $ticket, $owner, $typeNotification) {
+	public static function insertByController(Request $request, Ticket $ticket, $userLogged, $typeNotification) {
 		$participants = $request->get('participants_id', []);
 		if($participants && is_array($participants)){
 			TicketParticipant::removeByTicket($ticket->id);
 			foreach ($participants as $participant){
-				if($participant!=$owner->id){
+				if($participant!=$ticket->owner_id){
 					/**Adiciona o participante ao ticket */
 					TicketParticipant::create([
 						'user_id'=>$participant,
@@ -36,25 +33,33 @@ class TicketParticipant extends Model {
 				}
 			}
 		}
-		self::notifyParticipants($ticket, $owner, $typeNotification);
+		self::notifyParticipants($ticket, $userLogged, $typeNotification);
 	}
-	public static function notifyParticipants(Ticket $ticket, $owner, $typeNotification, $commentId=null) {
+	public static function notifyParticipants(Ticket $ticket, $userLogged, $typeNotification, $commentId=null) {
 		$participants = TicketParticipant::getUserByTicketId($ticket->id);
+		$insert = [
+			'type'              => $typeNotification,
+			'ticket_id'         => $ticket->id,
+			'user_logged'       => $userLogged->id,
+			'comment_id'        => $commentId,
+			'owner_id'          => $ticket->owner_id,
+			'users_comments'    => null,
+			'status'            => TicketNotification::STATUS_WAITING,
+		];
 		foreach ($participants as $participant){
 			/** Checks if there is a notification of the same ticket for the user  */
-			$insert = [
-				'type'              => $typeNotification,
-				'ticket_id'         => $ticket->id,
-				'agent_current_id'  => $participant,
-				'agent_old_id'      => $participant,
-				'user_logged'       => $owner->id,
-				'comment_id'        => $commentId,
-				'owner_id'          => $owner->id,
-				'users_comments'    => null,
-				'status'            => TicketNotification::STATUS_WAITING,
-			];
+			$insert['agent_current_id'] = $participant;
+			$insert['agent_old_id']     = $participant;
+			if($userLogged->id!=$participant){
+				TicketNotification::create($insert);
+			}
+		}
+		if($userLogged->id!=$ticket->owner_id){
+			$insert['agent_current_id'] = $ticket->owner_id;
+			$insert['agent_old_id']     = $ticket->owner_id;
 			TicketNotification::create($insert);
 		}
+		
 	}
 	public static function getById($id) {
 		return self::where('id', $id)->first();
