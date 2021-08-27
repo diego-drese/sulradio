@@ -138,13 +138,13 @@
                                 edit_button += '<a href="' + data.endereco + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Endereços</b></a>';
                             @endif
                             @if($hasDocument)
-                                edit_button += '<a href="' + data.documents + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos Cliente</b></a>';
+                                edit_button += '<a href="' + data.documents + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos</b></a>';
                             @endif
                             @if($hasDocumentLegal)
-                                edit_button += '<a href="' + data.documents_legal + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos Jurídico</b></a>';
+                                edit_button += '<a href="' + data.documents_legal + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Jur.</b></a>';
                             @endif
                             @if($hasDocumentEngineering)
-                                edit_button += '<a href="' + data.documents_engineering + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos Engenharia</b></a>';
+                                edit_button += '<a href="' + data.documents_engineering + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Eng.</b></a>';
                             @endif
                                 return edit_button
                         }
