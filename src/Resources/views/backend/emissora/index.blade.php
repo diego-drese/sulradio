@@ -1,4 +1,4 @@
-@extends('Admin::layouts.backend.main')
+@extends('SulRadio::backend.layout.main')
 @section('title', 'Emissoras')
 @section('content')
     <div class="row">
@@ -145,6 +145,9 @@
                             @endif
                             @if($hasDocumentEngineering)
                                 edit_button += '<a href="' + data.documents_engineering + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Eng.</b></a>';
+                            @endif
+                            @if($hasDocumentAdmin)
+                                edit_button += '<a href="' + data.documents_admin + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Admin.</b></a>';
                             @endif
                                 return edit_button
                         }

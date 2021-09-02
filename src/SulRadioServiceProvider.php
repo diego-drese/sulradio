@@ -29,7 +29,10 @@ class SulRadioServiceProvider extends ServiceProvider {
 		$this->mergeConfigFrom(
 			__DIR__ . '/Config/profile_type.php', 'sulradio.profile_type'
 		);
-		
+
+		if (file_exists($file = __DIR__.'/Helpers/helper_function.php')) {
+			require $file;
+		}
 		if (php_sapi_name() != 'cli') {
 			$this->setObservers();
 		}

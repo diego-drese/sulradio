@@ -38,6 +38,9 @@ class TicketNotification extends Model {
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
+	public static function getLastNotifications($id) {
+		return self::where('id', $id)->paginate(15);
+	}
 	
 	public static function getToNotify() {
 		$notifications = self::where('status', self::STATUS_WAITING)

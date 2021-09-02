@@ -1,4 +1,4 @@
-@extends('Admin::layouts.backend.main')
+@extends('SulRadio::backend.layout.main')
 @section('title', 'Documentos - '.$goal)
 @section('content')
     <div class="row">
@@ -146,7 +146,7 @@
                                 edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
                             }
                             if (hasTimeLine) {
-                                edit_button += '<a href="' + data.timeline + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>TimeLine</b></a>';
+                                edit_button += '<a href="' + data.timeline + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Histórico</b></a>';
                             }
 
 

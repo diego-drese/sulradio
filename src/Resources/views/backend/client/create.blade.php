@@ -1,4 +1,4 @@
-@extends('Admin::layouts.backend.main')
+@extends('SulRadio::backend.layout.main')
 @section('title', 'Criar cliente')
 @section('content')
     <div class="row">

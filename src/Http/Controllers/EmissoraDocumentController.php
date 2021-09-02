@@ -172,6 +172,12 @@ class EmissoraDocumentController extends SulradioController {
 			$parameters['update_url'] = route('emissora.document.engineering.update', [$extraParameter['emissoraID'], $extraParameter['id']]);
 			$parameters['datatable_url'] = route('emissora.document.engineering.index', [$extraParameter['emissoraID']]);
 			$parameters['back_url'] = route('emissora.document.engineering.index', [$extraParameter['emissoraID']]);
+		}else if($this->goal==Document::GOAL_ADMIN){
+			$parameters['save_url'] = route('emissora.document.admin.store', [$extraParameter['emissoraID']]);
+			$parameters['add_url'] = route('emissora.document.admin.create', [$extraParameter['emissoraID']]);
+			$parameters['update_url'] = route('emissora.document.admin.update', [$extraParameter['emissoraID'], $extraParameter['id']]);
+			$parameters['datatable_url'] = route('emissora.document.admin.index', [$extraParameter['emissoraID']]);
+			$parameters['back_url'] = route('emissora.document.admin.index', [$extraParameter['emissoraID']]);
 		}
 		
 		$this->parameters = $parameters;

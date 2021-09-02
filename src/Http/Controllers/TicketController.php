@@ -10,6 +10,7 @@ use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Models\Emissora;
+use Oka6\SulRadio\Models\SystemLog;
 use Oka6\SulRadio\Models\Ticket;
 use Oka6\SulRadio\Models\TicketCategory;
 use Oka6\SulRadio\Models\TicketComment;
@@ -24,8 +25,8 @@ class TicketController extends SulradioController {
 	use ValidatesRequests;
 	protected $tempFolder = 'temp';
 	public function index(Request $request) {
+		$user = Auth::user();
 		if ($request->ajax()) {
-			$user = Auth::user();
 			$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 			$query = Ticket::query()
 			->withSelectDataTable()
@@ -44,7 +45,9 @@ class TicketController extends SulradioController {
 			}else{
 				$query->whereNotNull('completed_at');
 			}
-			
+			$contentLog = 'Visualização dos tickets';
+			SystemLog::insertLogTicket(SystemLog::TYPE_VIEW, $contentLog, null, $user->id);
+
 			return DataTables::of($query)
 				->addColumn('ticket_url', function ($row) {
 					return route('ticket.ticket', [$row->id]);
@@ -58,7 +61,8 @@ class TicketController extends SulradioController {
 					return $participants;
 				})->toJson(true);
 		}
-		return $this->renderView('SulRadio::backend.ticket.index', []);
+
+		return $this->renderView('SulRadio::backend.ticket.index');
 	}
 	
 	public function create(Ticket $data) {
@@ -180,7 +184,9 @@ class TicketController extends SulradioController {
 		$documents      = TicketDocument::getAllByTicketId($id);
 		$owner          = User::getByIdStatic($data->owner_id);
 		$participants   = TicketParticipant::getUserByTicketId($id, true);
-		
+
+		$contentLog     = 'Usuário '.$user->name. ' visualizou o ticket '. $id;
+		SystemLog::insertLogTicket(SystemLog::TYPE_VIEW, $contentLog, $id, $user->id);
 		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents]);
 	}
 	public function comment(Request $request, $id) {

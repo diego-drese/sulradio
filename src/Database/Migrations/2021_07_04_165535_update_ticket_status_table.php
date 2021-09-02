@@ -27,7 +27,7 @@ class UpdateTicketStatusTable extends Migration {
 	 */
 	public function down() {
 		Schema::connection($this->connection)->table('ticket_status', function (Blueprint $table) {
-			$table->dropColumn('document_folder_id');
+			$table->dropColumn('update_completed_at');
 		});
 	}
 	

@@ -67,7 +67,14 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::get('/emissora-document-engineering/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentEngineeringController@edit')->name('emissora.document.engineering.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.engineering.index', 'nameAdmin' => 'Documentos emissoras engenharia, editar']);
 	Route::post('/emissora-document-engineering/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentEngineeringController@update')->name('emissora.document.engineering.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.engineering.index', 'nameAdmin' => 'Documentos emissoras engenharia, salva edição']);
 	Route::get('/emissora-document-engineering/{emissoraID}/timeline/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentEngineeringController@timeline')->name('emissora.document.engineering.timeline')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.index', 'nameAdmin' => 'Documentos emissoras engenharia, timeline']);
-	
+
+	Route::get('/emissora-document-admin/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentAdmController@index')->name('emissora.document.admin.index')->where(['iconAdmin' => 'fas fa-file-alt', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Documentos emissoras adminstrativo']);
+	Route::get('/emissora-document-admin/{emissoraID}/create', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentAdmController@create')->name('emissora.document.admin.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'emissora.document.engineering.index', 'nameAdmin' => 'Documentos emissoras adminstrativo, adicionar',]);
+	Route::post('/emissora-document-admin/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentAdmController@store')->name('emissora.document.admin.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Documentos emissoras adminstrativo , salva novo']);
+	Route::get('/emissora-document-admin/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentAdmController@edit')->name('emissora.document.admin.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.admin.index', 'nameAdmin' => 'Documentos emissoras adminstrativo, editar']);
+	Route::post('/emissora-document-admin/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentAdmController@update')->name('emissora.document.admin.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.admin.index', 'nameAdmin' => 'Documentos emissoras adminstrativo, salva edição']);
+	Route::get('/emissora-document-admin/{emissoraID}/timeline/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraDocumentAdmController@timeline')->name('emissora.document.admin.timeline')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.document.index', 'nameAdmin' => 'Documentos emissoras adminstrativo, timeline']);
+
 	Route::get('/anatel/emissoras', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoras')->name('anatel.emissoras')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'menuAdmin' => "Emissoras2", 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissoras']);
 	Route::get('/anatel/emissora/modal/{_id}', 'Oka6\SulRadio\Http\Controllers\AnatelController@emissoraModal')->name('anatel.emissora.modal')->where(['iconAdmin' => 'mdi mdi-radio-tower', 'parentRouteNameAdmin' => 'anatel.emissoras', 'nameAdmin' => 'Emissora modal']);
 	
@@ -155,6 +162,8 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function 
 	Route::any('/document-folder-type/{goal}', 'Oka6\SulRadio\Http\Controllers\PublicController@getFolderAndTypeDocument')->name('document.folder.type');
 	Route::any('/city/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchCity')->name('city.search');
 	Route::any('/broadcast/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchBroadcast')->name('broadcast.search');
+	Route::any('/notification-ticket/read', 'Oka6\SulRadio\Http\Controllers\PublicController@markToReadNotificationsTicket')->name('notification.ticket.mark.read');
+	Route::any('/notifications/ticket', 'Oka6\SulRadio\Http\Controllers\PublicController@notificationsTicket')->name('notifications.ticket');
 	Route::any('/document/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocument')->name('document.download');
 	Route::any('/document-ticket/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocumentTicket')->name('document.download.ticket');
 	Route::any('/document-ticket/remove/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@removeDocumentTicket')->name('document.remove.ticket');

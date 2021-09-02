@@ -1,27 +1,24 @@
-@extends('Admin::layouts.backend.main')
+@extends('SulRadio::backend.layout.main')
 @section('title', 'Tickets')
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex no-block align-items-center m-b-10">
-                        <div class="ml-auto">
-                            <div class="btn-group bt-switch">
-                                <input id="active" name="active" type="checkbox"
-                                       value="1" data-on-color="success" data-off-color="danger"
-                                       data-on-text="Ativos" data-off-text="{{$statusFinished ? $statusFinished->name.'(s)' : 'Arquivados'}}">
-                            </div>
-                            <div class="btn-group ">
-                                @if($hasAdd)
-                                    <a href="{{route('ticket.create')}}" class="btn btn-primary">
-                                        <span class="fa fa-plus"></span> <b>Adicionar</b>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
+                    <div class="btn-group bt-switch mr-2" title="Ativos">
+                        <input id="active" name="active" type="checkbox" title="Ativos"
+                               value="1" data-on-color="success" data-off-color="danger"
+                               data-on-text='<i class="fas fa-check-circle"></i>'
+                               data-off-text='<i class="fas fa-times-circle"></i>'>
                     </div>
-                    <div class="table-responsive">
+                    <div class="btn-group ">
+                        @if($hasAdd)
+                            <a href="{{route('ticket.create')}}" class="btn btn-primary">
+                                <span class="fa fa-plus"></span> <b>Adicionar</b>
+                            </a>
+                        @endif
+                    </div>
+                    <div class="table-responsive mt-2" >
                         <table id="table_ticket" class="table table-striped table-bordered" role="grid"
                                aria-describedby="file_export_info">
                             <thead>
@@ -139,11 +136,11 @@
                     "sInfoFiltered": "(Filtrados de _MAX_ registros)",
                     "sInfoPostFix": "",
                     "sInfoThousands": ".",
-                    "sLengthMenu": "_MENU_ resultados por página",
+                    "sLengthMenu": "_MENU_ por página",
                     "sLoadingRecords": "Carregando...",
                     "sProcessing": "Processando...",
                     "sZeroRecords": "Nenhum registro encontrado",
-                    "sSearch": "Pesquisar",
+                    "sSearch": "Busca",
                     "oPaginate": {
                         "sNext": "Próximo",
                         "sPrevious": "Anterior",
@@ -160,7 +157,7 @@
                 autoWidth: false,
                 orderCellsTop: true,
                 stateSave: true,
-                searching: true,
+                searching: false,
                 stateLoaded: function (settings, data) {
                     setTimeout(function () {
                         var dataExtra = settings.ajax.data({});
@@ -243,7 +240,6 @@
                         }else{
                             table_ticket.column(i).search(this.value, true).draw();
                         }
-
                     }
                 });
             });
@@ -252,13 +248,12 @@
                 table_ticket.state.clear();
                 window.location.reload();
             });
+
             $(".select2").select2({
                 width: '100%',
                 placeholder: 'Selecione',
                 allowClear: true
             });
-
-
         });
     </script>
 

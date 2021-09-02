@@ -58,6 +58,8 @@ class EmissoraController extends SulradioController {
 					return route('emissora.document.legal.index', [$row->emissoraID]);
 				})->addColumn('documents_engineering', function ($row) {
 					return route('emissora.document.engineering.index', [$row->emissoraID]);
+				})->addColumn('documents_admin', function ($row) {
+					return route('emissora.document.admin.index', [$row->emissoraID]);
 				})->addColumn('client', function ($row) {
 					if($row->client_id){
 						return route('client.edit', [$row->client_id]);
@@ -143,6 +145,7 @@ class EmissoraController extends SulradioController {
 			'hasDocument' => ResourceAdmin::hasResourceByRouteName('emissora.document.index', [1]),
 			'hasDocumentLegal' => ResourceAdmin::hasResourceByRouteName('emissora.document.legal.index', [1]),
 			'hasDocumentEngineering' => ResourceAdmin::hasResourceByRouteName('emissora.document.engineering.index', [1]),
+			'hasDocumentAdmin' => ResourceAdmin::hasResourceByRouteName('emissora.document.admin.index', [1]),
 			'hasEditClient' => ResourceAdmin::hasResourceByRouteName('client.edit', [1]),
 			
 			'statusSead' => StatusSead::getWithCache(),

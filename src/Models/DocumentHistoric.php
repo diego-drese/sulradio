@@ -16,9 +16,15 @@ class DocumentHistoric extends Model {
 		'action',
 		'goal',
 	];
+
+	protected $dates = [
+		'created_at',
+		'updated_at',
+		'validated',
+		'date_document'
+	];
 	protected $table = 'document_historic';
 	protected $connection = 'sulradio';
-	
 	const ACTION_CREATED = 'created';
 	const ACTION_UPDATED = 'updated';
 	const ACTION_DOWNLOADED = 'downloaded';
@@ -37,11 +43,14 @@ class DocumentHistoric extends Model {
 	public function getUpdatedAtAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
 	}
+
 	public static function getTimeLineById($id, $user, $adjustUserName = true) {
 		$document = new Document();
 		$query = self::where('document.id', $id)
 			->select(
 				'document_historic.*',
+				'document.validated as validated',
+				'document.date_document as date_document',
 				'document.document_id as document_id_version',
 				'document.name as document_name',
 				'document.description as document_description',
@@ -75,14 +84,17 @@ class DocumentHistoric extends Model {
 				}
 			}
 		}
-		
+
 		if($adjustUserName){
 			foreach ($timeline as &$item){
 				$user               = User::where('id', (int)$item->user_id)->first();
 				$item->user_picture = $user->picture;
 				$item->user_name    = $user->name;
 				$item->action       = DocumentHistoric::ACTION_TRANSLATE[$item->action];
-				$item->date         = $item->created_at->format('d/m/Y H:i');
+				$item->create       = $item->created_at->format('d/m/Y');
+				$item->date        = $item->date_document->format('d/m/Y');
+				$item->valid        = $item->validated->format('d/m/Y');
+
 				$item->file_size    = $document->getFileSizeAttribute($item->file_size);
 				$item->download     = route('document.download', [$item->document_id]);
 			}

@@ -11,7 +11,7 @@ class UpdateDocumentFolderTable extends Migration {
 	public function up() {
 		Schema::connection($this->connection)
 			->table('document_folder', function(Blueprint $table) {
-				$table->enum('goal', ['Cliente', 'Engenharia', 'Jurídico'])->default('Cliente')->index();
+				$table->enum('goal', ['Cliente', 'Engenharia', 'Jurídico', 'Administrativo'])->default('Cliente')->index();
 			});
 	}
 	

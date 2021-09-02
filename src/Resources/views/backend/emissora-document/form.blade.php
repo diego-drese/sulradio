@@ -39,7 +39,7 @@
         <textarea rows="7" name="description" class="form-control" id="description">{{$data->exists() && $data->description  ? $data->description : ''}}</textarea>
     </div>
 
-    <div class="col-md-8 form-group {{$errors->has('document_type_id') ? 'has-error' : ''}} ">
+    <div class="col-md-6 form-group {{$errors->has('document_type_id') ? 'has-error' : ''}} ">
         <label for="document_type_id">Arquivo *</label>
         <input type="file" name="file" class="form-control" {{!$data->id ? 'required' : ''}}>
         @if($data->id)
@@ -47,10 +47,23 @@
         @endif
     </div>
 
-    <div class="col-md-4 form-group {{$errors->has('validated') ? 'has-error' : ''}} ">
+    <div class="col-md-3 form-group {{$errors->has('date_document') ? 'has-error' : ''}} ">
+        <label for="numero_ato">Data do documento</label>
+        <input type="text" class="form-control" value="{{old('date_document',$data->exists() ? $data->date_document : '')}}"
+               name="date_document"
+               autocomplete="off"
+               id="date_document"
+               required>
+        @if($errors->has('date_document'))
+            <span class="help-block">{{$errors->first('date_document')}}</span>
+        @endif
+    </div>
+
+    <div class="col-md-3 form-group {{$errors->has('validated') ? 'has-error' : ''}} ">
         <label for="numero_ato">Validade</label>
-        <input type="validated" class="form-control" value="{{old('validated',$data->exists() ? $data->validated : '')}}"
+        <input type="text" class="form-control" value="{{old('validated',$data->exists() ? $data->validated : '')}}"
                name="validated"
+               autocomplete="off"
                id="validated">
         @if($errors->has('validated'))
             <span class="help-block">{{$errors->first('validated')}}</span>
@@ -90,7 +103,7 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/daterangepicker.js')}}></script>
     <script>
-        $('#validated').daterangepicker({
+        $('#validated, #date_document').daterangepicker({
             singleDatePicker: true,
             autoUpdateInput: false,
             locale: {
@@ -114,6 +127,7 @@
         }).on('cancel.daterangepicker', function (ev, picker) {
             $(this).val('');
         });
+
         $(".select2").select2({
             width: '100%',
             placeholder: 'Selecione',

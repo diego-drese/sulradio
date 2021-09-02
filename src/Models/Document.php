@@ -25,14 +25,22 @@ class Document extends Model {
 		'historic',
 		'status',
 		'validated',
+		'date_document',
 		'goal',
+	];
+	protected $dates = [
+		'created_at',
+		'updated_at',
+		'validated',
+		'date_document'
 	];
 	const STATUS_CURRENT_VERSION    = 1;
 	const STATUS_OLD_VERSION        = 0;
 	const GOAL_CLIENT               = 'Cliente';
 	const GOAL_ENGINEERING          = 'Engenharia';
 	const GOAL_LEGAL                = 'Jurídico';
-	const GOAL_TICKET                = 'Ticket';
+	const GOAL_ADMIN                = 'Administrativo';
+	const GOAL_TICKET               = 'Ticket';
 	
 	protected $table = 'document';
 	protected $connection = 'sulradio';
@@ -64,7 +72,7 @@ class Document extends Model {
 		$query->join('emissora', 'emissora.emissoraID', 'document.emissora_id');
 		return $query;
 	}
-	
+
 	public function getValidatedAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y') : '';
 	}
@@ -72,7 +80,15 @@ class Document extends Model {
 	public function setValidatedAttribute($value) {
 		$this->attributes['validated'] = Helper::convertDateBrToMysql($value);
 	}
-	
+
+	public function getDateDocumentAttribute($value) {
+		return $value ? (new Carbon($value))->format('d/m/Y') : '';
+	}
+
+	public function setDateDocumentAttribute($value) {
+		$this->attributes['date_document'] = Helper::convertDateBrToMysql($value);
+	}
+
 	public static function getById($id, $user) {
 		return self::where('id', $id)
 			->select('document.*', 'document.file_type as file_type_origin', 'document.file_size as file_size_origin')

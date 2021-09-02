@@ -99,18 +99,14 @@ class ProcessTicketNotificationDaily extends Command {
 		Log::info('ProcessTicketNotificationDaily, start process');
 		$users = User::where('active', 1)->get();
 		foreach ($users as $user){
-			/** Testa somente alguns usuários */
-			if(App::environment('local') || ($user->id==1 || $user->id==2|| $user->id==6 || $user->id==10)){
-				/** Tickets from user Not Complete*/
-				$daily = [
-					'user'=>$user,
-					'owner'=>Ticket::getAllByOwnerId($user->id, false),
-					'agent'=>Ticket::getAllByAgentId($user->id, false),
-					'each'=>Ticket::getAllByAgentId($user->id, false, true),
-				];
-				if(count($daily['owner']) || count($daily['agent']) || count($daily['each'])){
-					Mail::to($user->email)->send(new TicketDaily($daily));
-				}
+			$daily = [
+				'user'=>$user,
+				'owner'=>Ticket::getAllByOwnerId($user->id, false),
+				'agent'=>Ticket::getAllByAgentId($user->id, false),
+				'each'=>Ticket::getAllByAgentId($user->id, false, true),
+			];
+			if(count($daily['owner']) || count($daily['agent']) || count($daily['each'])){
+				Mail::to($user->email)->send(new TicketDaily($daily));
 			}
 		}
 	}

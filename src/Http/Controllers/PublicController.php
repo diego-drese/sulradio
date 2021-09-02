@@ -14,7 +14,9 @@ use Oka6\SulRadio\Models\DocumentHistoric;
 use Oka6\SulRadio\Models\DocumentType;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\States;
+use Oka6\SulRadio\Models\SystemLog;
 use Oka6\SulRadio\Models\TicketDocument;
+use Yajra\DataTables\DataTables;
 
 class PublicController extends SulradioController {
 	use ValidatesRequests;
@@ -92,7 +94,31 @@ class PublicController extends SulradioController {
 		}else{
 			return response()->json(['message'=>'Erro ao remover o arquivo, somente admin e o propio usuário que subio o arquivo podem remover. '], 500);
 		}
-		
+	}
+
+	public function markToReadNotificationsTicket() {
+		$user = Auth::user();
+		SystemLog::updateToRead($user->id, SystemLog::ZONE_TICKET);
+		return response()->json(['message'=>'success'], 200);
+	}
+
+	public function notificationsTicket(Request $request) {
+		$user = Auth::user();
+		if ($request->ajax()) {
+			$query      = SystemLog::getNotificationsTicket($user->id);
+			return DataTables::of($query)
+				->addColumn('status_name', function ($row) {
+					return SystemLog::getStatusText($row->status);
+				})->addColumn('status_class', function ($row) {
+					return $row->status==SystemLog::STATUS_NEW ? 'text-info' :'text-success';
+				})->addColumn('created', function ($row) {
+					return $row->created_at->timezone('America/Sao_Paulo')->format('d/m/Y H:i');
+				})->addColumn('updated', function ($row) {
+					return $row->updated_at->timezone('America/Sao_Paulo')->format('d/m/Y H:i');
+				})->toJson(true);
+		}
+		SystemLog::updateToRead($user->id, SystemLog::ZONE_TICKET);
+		return $this->renderView('SulRadio::backend.system_log.index');
 	}
 	
 }

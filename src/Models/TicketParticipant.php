@@ -24,7 +24,7 @@ class TicketParticipant extends Model {
 		if($participants && is_array($participants)){
 			TicketParticipant::removeByTicket($ticket->id);
 			foreach ($participants as $participant){
-				if($participant!=$ticket->owner_id){
+				if(count($participants)==1 || $participant!=$ticket->owner_id ){
 					/**Adiciona o participante ao ticket */
 					TicketParticipant::create([
 						'user_id'=>$participant,
@@ -53,7 +53,20 @@ class TicketParticipant extends Model {
 			if($userLogged->id!=$participant){
 				TicketNotification::create($insert);
 			}
+
+			if($typeNotification==TicketNotification::TYPE_NEW){
+				$contentLog = 'Usuário '.$userLogged->name. ' criou o ticket '. $ticket->id;
+				SystemLog::insertLogTicket(SystemLog::TYPE_NEW, $contentLog, $ticket->id, $participant);
+			}else if($typeNotification==TicketNotification::TYPE_UPDATE){
+				$contentLog = 'Usuário '.$userLogged->name. ' atualizou o ticket '. $ticket->id;
+				SystemLog::insertLogTicket(SystemLog::TYPE_UPDATE, $contentLog, $ticket->id, $participant);
+			}else{
+				$contentLog = 'Usuário '.$userLogged->name. ' adicionou um comentário ao ticket '. $ticket->id;
+				SystemLog::insertLogTicket(SystemLog::TYPE_COMMENT, $contentLog, $ticket->id, $participant);
+			}
+
 		}
+
 		if($userLogged->id!=$ticket->owner_id){
 			$insert['agent_current_id'] = $ticket->owner_id;
 			$insert['agent_old_id']     = $ticket->owner_id;

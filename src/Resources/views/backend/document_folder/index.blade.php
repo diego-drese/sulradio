@@ -1,4 +1,4 @@
-@extends('Admin::layouts.backend.main')
+@extends('SulRadio::backend.layout.main')
 @section('title', 'Pastas de documentos')
 @section('content')
     <div class="row">
@@ -46,9 +46,10 @@
                                 <th role="row">
                                     <select class="form-control fieldSearch">
                                         <option value="">Todos</option>
+                                        <option value="Administrativo">Administrativo</option>
                                         <option value="Cliente">Cliente</option>
-                                        <option value="Jurídico">Jurídico</option>
                                         <option value="Engenharia">Engenharia</option>
+                                        <option value="Jurídico">Jurídico</option>
                                     </select>
                                 </th>
 
