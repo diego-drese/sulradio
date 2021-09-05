@@ -62,8 +62,18 @@
                     <option value="{{$value->id}}" {{old('status_id', $data->exists() ? $data->status_id : '') == $value->id ? 'selected' : ''}}> {{$value->name}} </option>
                 @endforeach
             </select>
-            <div class="input-group-append">
-                <span class="input-group-text"><i class="mdi mdi-alert-box"></i></span>
+            <div class="input-group-append" style="cursor: pointer"  data-container="body" title="Descrição dos status"
+                 data-toggle="popover"
+                 data-placement="left"
+                 data-html="true"
+                 data-content="@foreach($status as $value) {!! '<div class=\'\'>
+                <span class=\'side-stick\'></span>
+                <h5 class=\'note-title  mb-0\'> '.$value->name.'</h5>
+                <div class=\'note-content\'>
+                   <p class=\'note-inner-content text-muted\'>'.$value->description.'</p>
+                </div>
+            </div>'  !!} @endforeach">
+                <span class="input-group-text "><i class="mdi mdi-alert-box"></i></span>
             </div>
         </div>
         @if($errors->has('status_id'))

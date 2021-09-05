@@ -55,7 +55,7 @@ class EmissoraEnderecoController extends SulradioController {
 		
 		EmissoraEndereco::create($dataForm);
 		toastr()->success('Enrdeço Criado com sucesso', 'Sucesso');
-		return redirect(route('emissora.endereco.index', $emissoraID));
+		return redirect(route('emissora.edit', $emissoraID));
 		
 	}
 	
@@ -82,7 +82,7 @@ class EmissoraEnderecoController extends SulradioController {
 		$data->save();
 		
 		toastr()->success("{$data->name} Atualizado com sucesso", 'Sucesso');
-		return redirect(route('emissora.endereco.index', [$emissoraID]));
+		return redirect(route('emissora.edit', $emissoraID));
 	}
 	
 	protected function makeParameters($extraParameter = null) {

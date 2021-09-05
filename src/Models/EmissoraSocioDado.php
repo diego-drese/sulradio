@@ -11,6 +11,7 @@ class EmissoraSocioDado extends Model {
 	const TABLE = 'emissora_socio_dado';
 	protected $fillable = [
 		'socioID',
+		'nome',
 		'emissoraID',
 		'cpf',
 		'cotas',

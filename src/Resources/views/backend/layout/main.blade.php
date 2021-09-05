@@ -31,7 +31,6 @@
                                                                    <i class="fas fa-comment"></i>
                                                                 </span>
 									@elseif($item->type==\Oka6\SulRadio\Models\SystemLog::TYPE_NEW)
-
 										<span class="btn btn-warning btn-circle">
                                                                    <i class="mdi mdi-ticket"></i>
                                                                 </span>

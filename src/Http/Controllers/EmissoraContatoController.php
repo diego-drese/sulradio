@@ -51,7 +51,7 @@ class EmissoraContatoController extends SulradioController {
 		$contato = Contato::create($dataForm);
 		ContatoInfo::insertOrupdateContacts($request, $contato->contatoID);
 		toastr()->success('Contato Criado com sucesso', 'Sucesso');
-		return redirect(route('emissora.contato.index', $emissoraID));
+		return redirect(route('emissora.edit', $emissoraID));
 		
 	}
 	
@@ -72,7 +72,7 @@ class EmissoraContatoController extends SulradioController {
 		$data->save();
 		ContatoInfo::insertOrupdateContacts($request, $data->contatoID);
 		toastr()->success("{$data->name} Atualizado com sucesso", 'Sucesso');
-		return redirect(route('emissora.contato.index', [$emissoraID]));
+		return redirect(route('emissora.edit', $emissoraID));
 	}
 	
 	protected function makeParameters($extraParameter = null) {

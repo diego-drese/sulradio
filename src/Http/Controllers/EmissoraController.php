@@ -87,9 +87,9 @@ class EmissoraController extends SulradioController {
 			'tipo_emissoraID' => 'required',
 			'municipioID' => 'required',
 		]);
-		Emissora::create($dataForm);
+		$create = Emissora::create($dataForm);
 		toastr()->success('Emissora Criado com sucesso', 'Sucesso');
-		return redirect(route('emissora.index'));
+		return redirect(route('emissora.edit',[$create->emissoraID]));
 		
 	}
 	

@@ -5,7 +5,7 @@
                 <div class="d-flex  align-items-center m-b-10">
                    <div class="ml-auto">
                         <div class="btn-group">
-                            <a href="{{route('emissora.socio.index', [$emissoraID])}}" class="btn btn-primary m-r-5">
+                            <a href="{{route('emissora.edit', [$emissoraID])}}" class="btn btn-primary m-r-5">
                                 <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
                             </a>
                             @if($hasStore || $hasUpdate)

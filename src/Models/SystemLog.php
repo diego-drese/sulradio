@@ -4,6 +4,7 @@ namespace Oka6\SulRadio\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Oka6\SulRadio\Helpers\Helper;
 
 class SystemLog extends Model {
 	const TABLE = 'system_log';
@@ -70,6 +71,23 @@ class SystemLog extends Model {
 
 	public static function getNotificationsTicket( $id ) {
 		return self::makeQueryLastNotifications($id, self::ZONE_TICKET, false);
+	}
+	public static function getNotifications($request) {
+		$query = self::query();
+		if($request->user_id){
+			$query->where('user_id', $request->user_id);
+		}if($request->status){
+			$query->where('status', $request->status);
+		}if($request->type){
+			$query->where('type', $request->type);
+		}if($request->zone){
+			$query->where('zone', $request->zone);
+		}if($request->period){
+			$split = explode('-', $request->period);
+			$query->where('created_at', '>=', Helper::convertDateBrToMysql(trim($split[0]).' 00:00:00', true));
+			$query->where('created_at', '<=', Helper::convertDateBrToMysql(trim($split[1]).' 23:59:59', true));
+		}
+		return $query;
 	}
 
 	public static function insertLogTicket($type, $content, $ticketId = null, $userId = null){

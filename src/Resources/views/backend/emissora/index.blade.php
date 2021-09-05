@@ -18,7 +18,7 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="table_emissoras" class="table table-striped table-bordered" role="grid"
+                        <table id="tableEmissoras" class="table table-striped table-bordered" role="grid"
                                aria-describedby="file_export_info">
                             <thead>
                             <tr>
@@ -55,15 +55,16 @@
 
 @section('style_head')
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
+    <style>
+        .dataTables_filter{display: none}
+    </style>
 @endsection
 @section('script_footer_end')
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
     <script>
         var hasEdit = '{{$hasEdit}}';
         var hasEditClient = '{{$hasEditClient}}';
-        $(document).ready(function () {
-            var table_emissoras = $('#table_emissoras').DataTable({
-                language: {
+        var languageDatatable = {
                     "sEmptyTable": "Nenhum registro encontrado",
                     "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
                     "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
@@ -85,19 +86,23 @@
                         "sSortAscending": ": Ordenar colunas de forma ascendente",
                         "sSortDescending": ": Ordenar colunas de forma descendente"
                     }
-                },
+                };
+        $(document).ready(function () {
+            var tableEmissoras = $('#tableEmissoras').DataTable({
+                language: languageDatatable,
                 serverSide: true,
                 processing: true,
                 autoWidth: false,
                 orderCellsTop: true,
                 stateSave: true,
+                searching: true,
                 stateLoaded: function (settings, data) {
                     setTimeout(function () {
                         var dataExtra = settings.ajax.data({});
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#table_emissoras thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                $('#tableEmissoras thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
@@ -117,26 +122,16 @@
                             var edit_button = "";
 
                             @if($hasEdit)
-                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Dados Estação</b></a>';
                             @endif
                             @if($hasAtosOficiais)
                                 edit_button += '<a href="' + data.atos_oficiais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos Oficiais</b></a>';
                             @endif
-                            @if($hasProcessos)
-                                edit_button += '<a href="' + data.processos + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Processos</b></a>';
-                            @endif
-                            @if($hasSocios)
-                                edit_button += '<a href="' + data.socios + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Societários</b></a>';
-                            @endif
-{{--                        @if($hasAtosJunta)--}}
-{{--                            edit_button += '<a href="' + data.atos_comerciais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos junta comercial</b></a>';--}}
-{{--                        @endif--}}
-                            @if($hasContato)
-                                edit_button += '<a href="' + data.contatos + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Contatos</b></a>';
-                            @endif
-                            @if($hasEndereco)
-                                edit_button += '<a href="' + data.endereco + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Endereços</b></a>';
-                            @endif
+{{--                            @if($hasProcessos)--}}
+{{--                                edit_button += '<a href="' + data.processos + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Processos</b></a>';--}}
+{{--                            @endif--}}
+
+
                             @if($hasDocument)
                                 edit_button += '<a href="' + data.documents + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos</b></a>';
                             @endif
@@ -184,17 +179,21 @@
                 ]
             });
 
-            $('#table_emissoras thead tr:eq(1) th').each(function (i) {
+            $('#tableEmissoras thead tr:eq(1) th').each(function (i) {
                 $('.fieldSearch', this).on('keyup change', function () {
-                    if (table_emissoras.column(i).search() !== this.value) {
-                        table_emissoras.column(i).search(this.value, true).draw();
+                    if (tableEmissoras.column(i).search() !== this.value) {
+                        console.log('okk')
+                        tableEmissoras.column(i).search(this.value, true).draw();
                     }
                 });
             });
 
+
             $('#clearFilter').click(function () {
-                table_emissoras.state.clear();
-                window.location.reload();
+                tableEmissoras.state.clear();
+                $('#tableEmissoras .fieldSearch').val('');
+                tableEmissoras.search('').columns().search('').draw();
+
             })
         });
     </script>

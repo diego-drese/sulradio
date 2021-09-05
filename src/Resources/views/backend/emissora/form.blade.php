@@ -272,6 +272,7 @@
         .select2-container .select2-selection--single {
             height: 32px;
         }
+         .dataTables_filter{display: none}
     </style>
 @endsection
 @section('script_footer_end')
@@ -310,6 +311,214 @@
             }
 
         });
-        $('#sedufID').trigger('change')
+        $('#sedufID').trigger('change');
+        @if($data->emissoraID)
+            var languageDatatable = {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            };
+            var hasEditSocio = '{{$hasSocios}}';
+            var hasEditEndereco = '{{$hasEndereco}}';
+            var hasEditContato = '{{$hasContato}}';
+            var tableSocio = $('#tableSocio').DataTable({
+                language: languageDatatable,
+                serverSide: true,
+                processing: true,
+                autoWidth: false,
+                orderCellsTop: true,
+                stateSave: true,
+                searching: true,
+                stateLoaded: function (settings, data) {
+                    setTimeout(function () {
+                        var dataExtra = settings.ajax.data({});
+                        var searchCols = settings.aoPreSearchCols;
+                        if (searchCols && searchCols.length) {
+                            for (var i = 0; i < searchCols.length; i++) {
+                                $('#tableSocio thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                            }
+                        }
+                        console.log(settings.aoPreSearchCols, data);
+                    }, 50);
+                },
+                ajax: {
+                    url: '{{ route('emissora.socio.index', $data->emissoraID) }}',
+                    type: 'GET',
+                    data: function (d) {
+                        d._token = $("input[name='_token']").val();
+                        return d;
+                    }
+                },
+                columns: [
+                    {
+                        data: null, searchable: false, orderable: false, render: function (data) {
+                            if (!hasEditSocio) return '---';
+                            var edit_button = "";
+                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            return edit_button
+                        }
+                    },
+                    {data: "nome", 'name': 'nome'},
+                    {data: "desc_categoria", 'name': 'emissora_socio_categoria.desc_categoria'},
+
+                ]
+            });
+
+            $('#tableSocio thead tr:eq(1) th').each(function (i) {
+                $('.fieldSearch', this).on('keyup change', function () {
+                    if (tableSocio.column(i).search() !== this.value) {
+                        tableSocio.column(i).search(this.value).draw();
+                    }
+                });
+            });
+
+            $('#clearFilterSocios').click(function () {
+                tableSocio.state.clear();
+                $('#tableSocio .fieldSearch').val('');
+                tableSocio.search('').columns().search('').draw();
+
+            });
+
+            var tableEndereco = $('#tableEndereco').DataTable({
+                language: languageDatatable,
+                serverSide: true,
+                processing: true,
+                autoWidth: false,
+                orderCellsTop: true,
+                stateSave: true,
+                searching: true,
+                stateLoaded: function (settings, data) {
+                    setTimeout(function () {
+                        var dataExtra = settings.ajax.data({});
+                        var searchCols = settings.aoPreSearchCols;
+                        if (searchCols && searchCols.length) {
+                            for (var i = 0; i < searchCols.length; i++) {
+                                $('#tableEndereco thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                            }
+                        }
+                        console.log(settings.aoPreSearchCols, data);
+                    }, 50);
+                },
+                ajax: {
+                    url: '{{ route('emissora.endereco.index', $data->emissoraID) }}',
+                    type: 'GET',
+                    data: function (d) {
+                        d._token = $("input[name='_token']").val();
+                        return d;
+                    }
+                },
+                columns: [
+                    {
+                        data: null, searchable: false, orderable: false, render: function (data) {
+                            if (!hasEditEndereco) return '---';
+                            var edit_button = "";
+                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            return edit_button
+                        }
+                    },
+                    {data: "desc_tipo_endereco", 'name': 'emissora_tipo_endereco.desc_tipo_endereco'},
+                    {data: "desc_uf", 'name': 'uf.desc_uf'},
+                    {data: "desc_municipio", 'name': 'municipio.desc_municipio'},
+                    {data: "logradouro", 'name': 'logradouro', render:function (data, display , row){
+                            var endereco = row.logradouro+'<br/>';
+                            endereco+='Numero: '+row.numero+' Complemento: '+row.complemento+'<br/>';
+                            endereco+='Bairro: '+row.bairro+' Cep: '+row.cep+'<br/>';
+
+                            return endereco;
+                        }},
+
+                ]
+            });
+
+            $('#tableEndereco thead tr:eq(1) th').each(function (i) {
+                $('.fieldSearch', this).on('keyup change', function () {
+                    if (tableEndereco.column(i).search() !== this.value) {
+                        tableEndereco.column(i).search(this.value).draw();
+                    }
+                });
+            });
+
+            $('#clearFilterEnd').click(function () {
+                tableEndereco.state.clear();
+                $('#tableEndereco .fieldSearch').val('');
+                tableEndereco.search('').columns().search('').draw();
+            })
+
+            var tableContato = $('#tableContato').DataTable({
+                language: languageDatatable,
+                serverSide: true,
+                processing: true,
+                autoWidth: false,
+                orderCellsTop: true,
+                stateSave: true,
+                searching: true,
+                stateLoaded: function (settings, data) {
+                    setTimeout(function () {
+                        var dataExtra = settings.ajax.data({});
+                        var searchCols = settings.aoPreSearchCols;
+                        if (searchCols && searchCols.length) {
+                            for (var i = 0; i < searchCols.length; i++) {
+                                $('#tableProcessos thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                            }
+                        }
+                        console.log(settings.aoPreSearchCols, data);
+                    }, 50);
+                },
+                ajax: {
+                    url: '{{ route('emissora.contato.index', $data->emissoraID) }}',
+                    type: 'GET',
+                    data: function (d) {
+                        d._token = $("input[name='_token']").val();
+                        return d;
+                    }
+                },
+                columns: [
+                    {
+                        data: null, searchable: false, orderable: false, render: function (data) {
+                            if (!hasEditContato) return '---';
+                            var edit_button = "";
+                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            return edit_button
+                        }
+                    },
+
+                    {data: "nome_contato", 'name': 'nome_contato'},
+                    {data: "desc_funcao", 'name': 'funcao.desc_funcao'},
+
+                ]
+            });
+
+            $('#tableContato thead tr:eq(1) th').each(function (i) {
+                $('.fieldSearch', this).on('keyup change', function () {
+                    if (tableContato.column(i).search() !== this.value) {
+                        tableContato.column(i).search(this.value).draw();
+                    }
+                });
+            });
+
+            $('#clearFilterContato').click(function () {
+                tableContato.state.clear();
+                $('#tableEndereco .fieldSearch').val('');
+                tableContato.search('').columns().search('').draw();
+            })
+        @endif
     </script>
 @endsection

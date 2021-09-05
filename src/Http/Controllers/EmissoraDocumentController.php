@@ -96,9 +96,9 @@ class EmissoraDocumentController extends SulradioController {
 		return $this->renderView('SulRadio::backend.emissora-document.edit', ['data' => $data, 'emissoraID' => $emissoraID, 'id'=>$id, 'goal'=>$this->goal]);
 	}
 	
-	public function timeline($emissoraID, $id) {
-		$timeline = DocumentHistoric::getTimeLineById($id, Auth::user());
-		return $this->renderView('SulRadio::backend.emissora-document.timeline', ['timeline' => $timeline, 'emissoraID' => $emissoraID, 'id'=>$id]);
+	public function timeline($emissoraID, $id, $order='created_at') {
+		$timeline = DocumentHistoric::getTimeLineById($id, Auth::user(), true, $order);
+		return $this->renderView('SulRadio::backend.emissora-document.timeline', ['timeline' => $timeline, 'emissoraID' => $emissoraID, 'id'=>$id, 'order'=>$order]);
 		
 	}
 	

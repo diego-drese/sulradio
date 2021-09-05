@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Oka6\Admin\Http\Library\ResourceAdmin;
+use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Models\Cities;
 use Oka6\SulRadio\Models\Document;
 use Oka6\SulRadio\Models\DocumentFolder;
@@ -104,11 +105,21 @@ class PublicController extends SulradioController {
 
 	public function notificationsTicket(Request $request) {
 		$user = Auth::user();
+		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 		if ($request->ajax()) {
-			$query      = SystemLog::getNotificationsTicket($user->id);
+			if($hasAdmin){
+				$query      = SystemLog::getNotifications($request);
+			}else{
+				$query      = SystemLog::getNotificationsTicket($user->id);
+			}
+
 			return DataTables::of($query)
 				->addColumn('status_name', function ($row) {
 					return SystemLog::getStatusText($row->status);
+				})->addColumn('type_name', function ($row) {
+					return SystemLog::getTypeText($row->type);
+				})->addColumn('zone_name', function ($row) {
+					return SystemLog::getZoneText($row->zone);
 				})->addColumn('status_class', function ($row) {
 					return $row->status==SystemLog::STATUS_NEW ? 'text-info' :'text-success';
 				})->addColumn('created', function ($row) {
@@ -118,7 +129,18 @@ class PublicController extends SulradioController {
 				})->toJson(true);
 		}
 		SystemLog::updateToRead($user->id, SystemLog::ZONE_TICKET);
-		return $this->renderView('SulRadio::backend.system_log.index');
+
+		$users      = null;
+		$status     = SystemLog::STATUS_TEXT;
+		$types      = SystemLog::TYPE_TEXT;
+		$zones      = SystemLog::ZONE_TEXT;
+
+		if($hasAdmin){
+			$users= User::all();
+		}
+
+		return $this->renderView('SulRadio::backend.system_log.index',
+			['hasAdmin'=>$hasAdmin, 'status'=>$status, 'types'=>$types,'zones'=>$zones, 'users'=>$users, 'user'=>$user]);
 	}
 	
 }

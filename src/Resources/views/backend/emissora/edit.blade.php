@@ -8,7 +8,7 @@
                     <form id="form-profile" method="post" action="{{route('emissora.update',$data->emissoraID)}}"
                           enctype="multipart/form-data">
                         {{ csrf_field() }}
-                        @include('SulRadio::backend.emissora.form')
+                        @include('SulRadio::backend.emissora.tabs')
                     </form>
                 </div>
             </div>

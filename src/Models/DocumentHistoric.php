@@ -44,11 +44,13 @@ class DocumentHistoric extends Model {
 		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
 	}
 
-	public static function getTimeLineById($id, $user, $adjustUserName = true) {
+	public static function getTimeLineById($id, $user, $adjustUserName = true, $order=null) {
 		$document = new Document();
 		$query = self::where('document.id', $id)
 			->select(
-				'document_historic.*',
+				'document.*',
+				'document_historic.action',
+				'document_historic.user_id',
 				'document.validated as validated',
 				'document.date_document as date_document',
 				'document.document_id as document_id_version',
@@ -65,13 +67,13 @@ class DocumentHistoric extends Model {
 			->join('document', 'document.id', 'document_historic.document_id')
 			->join('document_type', 'document_type.id', 'document.document_type_id')
 			->leftJoin('document_folder', 'document_folder.id', 'document.document_folder_id')
-			->whereIn('document_historic.action', ['created','updated'])
-			->orderBy('document_historic.id', 'DESC');
-		
+			->whereIn('document_historic.action', ['created', 'updated']);
+
 		if($user->client_id){
 			$client = Client::getById($user->client_id);
 			$query->whereIn('document.emissora_id', json_decode($client->broadcast));
 		}
+
 		$timeline           = $query->get();
 		$totalTimeLine      = count($timeline);
 		$documentHasInclude = [];
@@ -98,7 +100,22 @@ class DocumentHistoric extends Model {
 				$item->file_size    = $document->getFileSizeAttribute($item->file_size);
 				$item->download     = route('document.download', [$item->document_id]);
 			}
+			if($order=='created_at'){
+				$key = 'create';
+			}else if ($order=='date_document'){
+				$key = 'date';
+			}else{
+				$key = 'valid';
+			}
+			$timeline = $timeline->sort(function($a, $b) use ($order,$key) {
+				if($a->$key == $b->$key) {
+					return 0;
+				}
+				return ($a->$key > $b->$key) ? -1 : 1;
+			});
+
 		}
+
 		return $timeline;
 	}
 	

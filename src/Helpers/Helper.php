@@ -154,7 +154,7 @@ class Helper {
 			}elseif(count($times)==1){
 				$format .= ' H';
 			}
-		
+
 		}
 		$dateBr = \DateTime::createFromFormat($format, $date);
 		return $dateBr->format('Y-m-d H:i:s');

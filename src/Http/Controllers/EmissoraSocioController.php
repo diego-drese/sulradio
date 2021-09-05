@@ -57,7 +57,7 @@ class EmissoraSocioController extends SulradioController {
 		$dataForm['emissoraID'] = $emissoraID;
 		EmissoraSocioDado::create($dataForm);
 		toastr()->success('Sócio Criado com sucesso', 'Sucesso');
-		return redirect(route('emissora.socio.index', $emissoraID));
+		return redirect(route('emissora.edit', $emissoraID));
 		
 	}
 	
@@ -84,7 +84,7 @@ class EmissoraSocioController extends SulradioController {
 		$data->save();
 		
 		toastr()->success("{$data->name} Atualizado com sucesso", 'Sucesso');
-		return redirect(route('emissora.socio.index', [$emissoraID]));
+		return redirect(route('emissora.edit', $emissoraID));
 	}
 	
 	protected function makeParameters($extraParameter = null) {
