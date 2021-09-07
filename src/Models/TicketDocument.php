@@ -71,7 +71,10 @@ class TicketDocument extends Model {
 		if(!$hasAdmin){
 			$query->where('user_id', $user->id);
 		}
-		return $query->update(['removed'=>1]);
+		$document = $query->first();
+		$document->removed=1;
+		$document->save();
+		return $document;
 	}
 	
 	public static function getWithCache() {

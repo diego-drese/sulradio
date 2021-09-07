@@ -89,8 +89,11 @@ class PublicController extends SulradioController {
 	}
 	public function removeDocumentTicket(Request $request, $id=null) {
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-		$update = TicketDocument::removeById($id, Auth::user(), $hasAdmin);
+		$update     = TicketDocument::removeById($id, Auth::user(), $hasAdmin);
 		if($update){
+			$userLogged = Auth::user();
+			$contentLog = 'Usuário '.$userLogged->name. ' removeu um arquivo ao ticket '. $update->ticket_id. ' arquivo['.$update->file_name.']';
+			SystemLog::insertLogTicket(SystemLog::TYPE_DELETE_UPLOAD, $contentLog, $id, $userLogged->id);
 			return response()->json(['message'=>'success'], 200);
 		}else{
 			return response()->json(['message'=>'Erro ao remover o arquivo, somente admin e o propio usuário que subio o arquivo podem remover. '], 500);
@@ -116,6 +119,8 @@ class PublicController extends SulradioController {
 			return DataTables::of($query)
 				->addColumn('status_name', function ($row) {
 					return SystemLog::getStatusText($row->status);
+				})->addColumn('user_name', function ($row) {
+					return User::getByIdStatic($row->user_id)->name;
 				})->addColumn('type_name', function ($row) {
 					return SystemLog::getTypeText($row->type);
 				})->addColumn('zone_name', function ($row) {

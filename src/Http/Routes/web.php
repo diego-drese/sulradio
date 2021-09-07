@@ -153,7 +153,9 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/ticket-comment/{id}', 'Oka6\SulRadio\Http\Controllers\TicketController@comment')->name('ticket.comment')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket salva comentario']);
 	Route::post('/ticket-end/{id}', 'Oka6\SulRadio\Http\Controllers\TicketController@end')->name('ticket.end')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket finaliza']);
 	Route::post('/ticket-upload/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@upload')->name('ticket.upload')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket upload']);
-	
+	Route::post('/ticket-tracker-url/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@saveTrackerUrl')->name('ticket.save.tracker.url')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket salva tracker url']);
+	Route::get('/delete-ticket-tracker-url/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@deleteTrackerUrl')->name('ticket.delete.tracker.url')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket delete tracker url']);
+
 	
 	//Route::get('/metrics/document', 'Oka6\SulRadio\Http\Controllers\MetricsController@document')->name('metrics.document')->where(['iconAdmin' => 'mdi mdi-file-document', 'parentRouteNameAdmin' => 'metrics.index', 'nameAdmin' => 'Métricas Documentos', 'isDefaultAdmin' => '0']);
 });

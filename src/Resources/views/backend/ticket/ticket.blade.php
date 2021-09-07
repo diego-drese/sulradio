@@ -148,6 +148,60 @@
             </div>
             <div class="card">
                 <div class="row">
+                    <div class="col-12">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">Rastreamento de processos</h4>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="name_tracker" name="name_tracker" placeholder="Nome">
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="description_tracker" name="description_tracker" placeholder="Descrição">
+                                    </div>
+                                </div>
+                                <div class="col-md-11">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="url_tracker" name="url_tracker" placeholder="Url">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <button class="btn btn-success" type="button" onclick="add_tracker();"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="list-group text-justify">
+                                @foreach($trackerUrl as $url)
+                                    <div class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">{{$url->name}}</h5>
+                                            <small class="text-purple" title="Última data de modificação">{{$url->last_modify ? $url->last_modify->diffForHumans() : '... '}} <i class="fas fa-window-close text-danger" style="cursor: pointer" title="Remover" onclick="delete_tracker({{$url->id}});"></i></small>
+                                        </div>
+                                        <p class="mb-1">
+                                            {{$url->description}}
+                                        </p>
+
+                                        <small class="text-info" title="Ultima verificação">
+                                            Última busca - {{$url->last_tracker ? $url->last_tracker->diffForHumans() : '...'}} <br/>
+                                            <a href="{{$url->url}}" target="_blank">Link</a>
+
+                                        </small>
+                                    </div>
+                                @endforeach
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="row">
                     <div class="col-6 border-right">
                         <div class="card-body text-center">
                             <h4 class="card-title">Responsáveis</h4>
@@ -310,7 +364,60 @@
             })
                 .addClass('dropzone');
         });
+        function add_tracker(){
+            var data = {
+                _token:$('input[name="_token"]').val(),
+                name:$('#name_tracker').val(),
+                description:$('#description_tracker').val(),
+                url:$('#url_tracker').val(),
+                ticket_id:{{$data->id}},
+            };
+            var url = '{{route('ticket.save.tracker.url', [$data->id])}}'
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    swal("Sucesso!", "Url adcionada com sucesso", "success").then(() => {
+                        document.location.reload(true);
+                    });
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    swal("Erro!", xhr.responseJSON.message, "error");
+                }
+            });
 
+        }
+        function delete_tracker(id){
+            swal({
+                title: "Você têm certeza?",
+                text: 'Essa url nao será mais rastreada',
+                type: "error",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim!",
+                cancelButtonText: "Cancelar!",
+            }).then((isConfirm) => {
+                console.log(isConfirm);
+                if (isConfirm.dismiss==='cancel') return;
+                var url = '{{route('ticket.delete.tracker.url', [':id'])}}';
+                $.ajax({
+                    url: url.replace(':id', id),
+                    type: "GET",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        swal("Sucesso!", "Url removida com sucesso", "success").then(() => {
+                            document.location.reload(true);
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        swal("Erro!", xhr.responseJSON.message, "error");
+                    }
+                });
+            });
+        }
     </script>
 @endsection
 

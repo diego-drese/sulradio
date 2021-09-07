@@ -35,6 +35,7 @@ class TicketParticipant extends Model {
 		}
 		self::notifyParticipants($ticket, $userLogged, $typeNotification);
 	}
+
 	public static function notifyParticipants(Ticket $ticket, $userLogged, $typeNotification, $commentId=null) {
 		$participants = TicketParticipant::getUserByTicketId($ticket->id);
 		$insert = [

@@ -168,6 +168,7 @@
 				autoWidth: false,
 				orderCellsTop: true,
 				searching: false,
+				"order": [[ 2, "desc" ]],
 				ajax: {
 					url: '{{ route('notifications.ticket') }}',
 					type: 'GET',
@@ -189,26 +190,26 @@
 				},
 				columns: [
 					{
-						data: "subject", 'name': 'subject', render: function (data, display, row) {
+						data: "subject", 'name': 'system_log.subject', render: function (data, display, row) {
 							return data;
 						}
 					}, {
-						data: "content", 'name': 'content', render: function (data, display, row) {
+						data: "content", 'name': 'system_log.content', render: function (data, display, row) {
 							return data;
 						}
 					}, {
-						data: "created", 'name': 'created', render: function (data, display, row) {
+						data: "created", 'name': 'system_log.created_at', render: function (data, display, row) {
 							return data;
 						}
 					}, {
-						data: "updated", 'name': 'updated', render: function (data, display, row) {
+						data: "updated", 'name': 'system_log.updated_at', render: function (data, display, row) {
 
 							return data;
 						}
 					}
 					@if($hasAdmin)
 					,{
-						data: "updated", 'name': 'updated', render: function (data, display, row) {
+						data: "user_name", 'name': 'user_name', render: function (data, display, row) {
 
 							return data;
 						}

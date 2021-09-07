@@ -19,6 +19,7 @@ use Oka6\SulRadio\Models\TicketNotification;
 use Oka6\SulRadio\Models\TicketParticipant;
 use Oka6\SulRadio\Models\TicketPriority;
 use Oka6\SulRadio\Models\TicketStatus;
+use Oka6\SulRadio\Models\TicketUrlTracker;
 use Yajra\DataTables\DataTables;
 
 class TicketController extends SulradioController {
@@ -182,12 +183,13 @@ class TicketController extends SulradioController {
 		$comments       = TicketComment::getAllByTicketId($id);
 		$emissora       = Emissora::getById($data->emissora_id, $user);
 		$documents      = TicketDocument::getAllByTicketId($id);
+		$trackerUrl     = TicketUrlTracker::active()->where('ticket_id', $id)->get();
 		$owner          = User::getByIdStatic($data->owner_id);
 		$participants   = TicketParticipant::getUserByTicketId($id, true);
 
 		$contentLog     = 'Usuário '.$user->name. ' visualizou o ticket '. $id;
 		SystemLog::insertLogTicket(SystemLog::TYPE_VIEW, $contentLog, $id, $user->id);
-		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents]);
+		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents, 'trackerUrl'=>$trackerUrl]);
 	}
 	public function comment(Request $request, $id) {
 		$userLogged = Auth::user();
@@ -226,6 +228,7 @@ class TicketController extends SulradioController {
 	public function upload(Request $request, $id=null) {
 		$files      = $request->file('file');
 		$filesName  = [];
+		$userLogged = Auth::user();
 		foreach ($files as $file){
 			$fineName = date('YmdHis').'-'.$file->getClientOriginalName();
 			$file->storeAs(
@@ -239,8 +242,43 @@ class TicketController extends SulradioController {
 				$this->uploadDocument($fileObj, $ticket, Auth::user());
 			}
 			$filesName[]= ['file_name'=>$fineName, 'file_name_original'=>$file->getClientOriginalName()];
+			$contentLog = 'Usuário '.$userLogged->name. ' anexou um arquivo ao ticket '. $ticket->id. ' arquivo['.$fineName.']';
+			SystemLog::insertLogTicket(SystemLog::TYPE_SAVE_UPLOAD, $contentLog, $id, $userLogged->id);
 		}
 		return response()->json(['message'=>'success', 'files'=>$filesName], 200);
+	}
+
+	public function saveTrackerUrl(Request $request, $id=null) {
+		$name=$request->name;
+		$url=$request->url;
+		if(!$name || empty($name)){
+			return response()->json(['message'=>'Preencha o nome'], 500);
+		}
+		if(!$url || empty($url) || !filter_var($url, FILTER_VALIDATE_URL)){
+			return response()->json(['message'=>'Verifique a url digitada, a url deve conter http ou https.'], 500);
+		}
+		$parse = parse_url($url);
+		$domain = $parse['host'];
+		$domains = ['sei.anatel.gov.br', 'sei.mctic.gov.br'];
+		if(!in_array($domain, $domains)){
+			return response()->json(['message'=>'Somente os domínios [<b>'.implode(' , ', $domains).'</b>] são permitidos'], 500);
+		}
+
+		TicketUrlTracker::create($request->all());
+		$userLogged = Auth::user();
+		$contentLog = 'Usuário '.$userLogged->name. ' anexou uma url de rastreamento ao ticket '. $id. ' url['.$request->url.']';
+		SystemLog::insertLogTicket(SystemLog::TYPE_SAVE_TRACKER_URL, $contentLog, $id, $userLogged->id);
+		return response()->json(['message'=>'success'], 200);
+	}
+
+	public function deleteTrackerUrl(Request $request, $id=null) {
+		$ticketUrlTracker = TicketUrlTracker::getById($id);
+		$ticketUrlTracker->status = 0;
+		$ticketUrlTracker->save();
+		$userLogged = Auth::user();
+		$contentLog = 'Usuário '.$userLogged->name. ' removeu uma url de rastreamento do ticket '. $id. ' url['.$ticketUrlTracker->url.'] id['.$ticketUrlTracker->id.']';
+		SystemLog::insertLogTicket(SystemLog::TYPE_DELETE_TRACKER_URL, $contentLog, $ticketUrlTracker->ticket_id, $userLogged->id);
+		return response()->json(['message'=>'success'], 200);
 	}
 	
 	protected function makeParameters($extraParameter = null) {

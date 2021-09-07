@@ -19,13 +19,29 @@ class SystemLog extends Model {
 	const TYPE_TRANSFER_AGENT = 4;
 	const TYPE_VIEW = 5;
 	const TYPE_SEND_EMAIL_NOTIFICATION = 6;
+	const TYPE_SAVE_UPLOAD = 7;
+	const TYPE_DELETE_UPLOAD = 8;
+	const TYPE_SAVE_TRACKER_URL = 9;
+	const TYPE_DELETE_TRACKER_URL = 10;
 	const TYPE_UNDEFINED = 99;
 
 	const ZONE_TICKET = 1;
 	const ZONE_SEAD= 2;
 	const ZONE_UNDEFINED= 99;
 
-	const TYPE_TEXT = [self::TYPE_NEW => 'Novo', self::TYPE_UPDATE => 'Atualização', self::TYPE_COMMENT => 'Comentário', self::TYPE_TRANSFER_AGENT => 'Tranferência', self::TYPE_VIEW => 'Visualização', self::TYPE_SEND_EMAIL_NOTIFICATION => 'Notificação Email', self::TYPE_UNDEFINED => 'Indefinido',];
+	const TYPE_TEXT = [
+		self::TYPE_NEW => 'Novo',
+		self::TYPE_UPDATE => 'Atualização',
+		self::TYPE_COMMENT => 'Comentário',
+		self::TYPE_TRANSFER_AGENT => 'Tranferência',
+		self::TYPE_VIEW => 'Visualização',
+		self::TYPE_SAVE_UPLOAD => 'Upload',
+		self::TYPE_DELETE_UPLOAD => 'Deletou arquivo',
+		self::TYPE_SAVE_TRACKER_URL => 'Nova rastreador',
+		self::TYPE_DELETE_TRACKER_URL => 'Deleta rastreador',
+		self::TYPE_SEND_EMAIL_NOTIFICATION => 'Notificação Email',
+		self::TYPE_UNDEFINED => 'Indefinido',
+		];
 	const ZONE_TEXT = [self::ZONE_TICKET => 'Ticket', self::ZONE_SEAD => 'SEAD', self::ZONE_UNDEFINED=> 'Indefinido',];
 	const STATUS_TEXT = [self::STATUS_NEW => 'Novo', self::STATUS_READ => 'Lido', self::STATUS_UNDEFINED=> 'Indefinido',];
 
@@ -118,6 +134,10 @@ class SystemLog extends Model {
 				$data['content'] = $content;
 			break;
 			case self::TYPE_SEND_EMAIL_NOTIFICATION:
+			case self::TYPE_SAVE_UPLOAD:
+			case self::TYPE_DELETE_UPLOAD:
+			case self::TYPE_SAVE_TRACKER_URL:
+			case self::TYPE_DELETE_TRACKER_URL:
 			case self::TYPE_VIEW:
 				$data['content'] = $content;
 				$data['only_root'] = 1;
