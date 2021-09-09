@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\Admin\Models\Resource;
+use function GuzzleHttp\json_decode;
 
 class Ticket extends Model {
 	const TABLE = 'ticket';
@@ -23,6 +24,7 @@ class Ticket extends Model {
 		'completed_at',
 		'start_forecast',
 		'end_forecast',
+		'show_client',
 	];
 
 	protected $table = 'ticket';
@@ -61,6 +63,15 @@ class Ticket extends Model {
 		}
 		return $query;
 	}
+
+	public function scopeFilterClient($query, $user) {
+		if($user->client_id){
+			$client = Client::getById($user->client_id);
+			$query->whereIn('emissora_id', json_decode($client->broadcast));
+		}
+		return $query;
+	}
+
 	public function scopeWithEmissora($query) {
 		return $query->leftJoin('emissora', 'emissora.emissoraID', 'ticket.emissora_id');
 	}
@@ -85,6 +96,7 @@ class Ticket extends Model {
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
+
 	public static function getAllByOwnerId($id, $completed=null) {
 		$query = self::selectRaw('COUNT(1) as total, ticket_status.name as status_name, ticket_status.color as status_color')
 			->join('ticket_status', 'ticket_status.id', 'ticket.status_id')

@@ -1,8 +1,6 @@
 <div class="row">
     <div id="files">
-
     </div>
-
     <div class="col-md-6 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
         <label for="name">Assunto *</label>
         <div class="input-group mb-3">
@@ -140,6 +138,18 @@
         @if($errors->has('end_forecast'))
             <span class="help-block">{{$errors->first('end_forecast')}}</span>
         @endif
+        <label for="show_client" title="Somente com emissora selecionada">Exibe para o cliente</label>
+        <div class="input-group mb-3 bt-switch ">
+            @if($hasAdmin)
+                <input id="show_client" name="show_client" type="checkbox" title="Exibe esse ticket para o cliente assoaciado a essa emissora"
+                       {{old('show_client', $data->exists() ? $data->show_client : '') == 1 ? 'checked' : ''}}
+                       value="1" data-on-color="success" data-off-color="danger"
+                       data-on-text='<i class="fas fa-check-circle"></i>'
+                       data-off-text='<i class="fas fa-times-circle"></i>'>
+            @else
+                {!! $data->exists() && $data->show_client  ? '<b class="text-success">Sim</b>' : '<b class="text-danger">Não</b>'  !!}
+            @endif
+        </div>
     </div>
 
 
@@ -177,6 +187,7 @@
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/summernote.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/dropzone.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/daterangepicker.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/bootstrap-switch.css')}}">
 
     <style>
         .select2-container--default .select2-selection--single {
@@ -198,8 +209,10 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/summernote.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/dropzone.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/daterangepicker.js')}}></script>
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/bootstrap-switch.js')}}></script>
 
     <script>
+        $(".bt-switch input[type='checkbox']").bootstrapSwitch();
         $('#start_forecast, #end_forecast').daterangepicker({
             singleDatePicker: true,
             autoUpdateInput: false,

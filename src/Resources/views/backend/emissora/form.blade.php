@@ -9,7 +9,6 @@
         </select>
     </div>
     <div class="col-md-8 form-group text-right">
-        <label for="">&nbsp;</label><br/>
         <a  href="{{route('emissora.index')}}" class="btn btn-primary m-r-5">
             <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
         </a>

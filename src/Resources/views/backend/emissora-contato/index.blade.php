@@ -3,10 +3,15 @@
 		<h4 class="card-title">&nbsp;</h4>
 		<div class="ml-auto">
 			<div class="btn-group">
-				<a href="{{route('emissora.contato.create', $data->emissoraID)}}"
-				   class="btn btn-primary">
-					<span class="fa fa-plus"></span> <b>Adicionar</b>
+				<a  href="{{route('emissora.index')}}" class="btn btn-primary m-r-5">
+					<span class=" fas fa-arrow-left"></span> <b>Voltar</b>
 				</a>
+				@if($hasAddContato)
+					<a href="{{route('emissora.contato.create', $data->emissoraID)}}"
+					   class="btn btn-primary">
+						<span class="fa fa-plus"></span> <b>Adicionar</b>
+					</a>
+				@endif
 			</div>
 		</div>
 	</div>

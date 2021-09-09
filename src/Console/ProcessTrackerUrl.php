@@ -44,8 +44,19 @@ class ProcessTrackerUrl extends Command {
 			foreach ($urls as $url){
 				$url->last_modify = date('Y-m-d H:i:s');
 				$url->last_tracker = date('Y-m-d H:i:s');
-				$url->hash = md5($this->parseDomain($url->url));
+				$html = $this->parseDomain($url->url);
+				$hash =  md5($html);
+				$url->hash = $hash;
 				$url->save();
+				$user   = User::getByIdStatic(-1);
+				$commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>'.$html;
+				$comment = TicketComment::create([
+					'content'=>$commentText,
+					'html'=>$commentText,
+					'user_id'=>$user->id,
+					'ticket_id'=>$url->ticket_id
+				]);
+
 			}
 			$urls = TicketUrlTracker::getToCheck();
 			foreach ($urls as $url){

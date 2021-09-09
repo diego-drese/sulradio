@@ -127,11 +127,6 @@
                             @if($hasAtosOficiais)
                                 edit_button += '<a href="' + data.atos_oficiais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos Oficiais</b></a>';
                             @endif
-{{--                            @if($hasProcessos)--}}
-{{--                                edit_button += '<a href="' + data.processos + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Processos</b></a>';--}}
-{{--                            @endif--}}
-
-
                             @if($hasDocument)
                                 edit_button += '<a href="' + data.documents + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos</b></a>';
                             @endif
@@ -143,6 +138,9 @@
                             @endif
                             @if($hasDocumentAdmin)
                                 edit_button += '<a href="' + data.documents_admin + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Admin.</b></a>';
+                            @endif
+                            @if($hasTicket)
+                                edit_button += '<a href="' + data.ticket + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos.</b></a>';
                             @endif
                                 return edit_button
                         }

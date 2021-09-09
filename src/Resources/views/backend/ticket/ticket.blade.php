@@ -12,22 +12,23 @@
                 <div class="card-body">
                     <h4 class="card-title">Comentários</h4>
                     @foreach($comments as $comment)
-                        <ul class="list-unstyled m-t-40 border-bottom">
-                            <li class="media">
+                        <ul class="list-unstyled m-t-40 border-bottom comment-content">
+                            <li class="media comment">
                                 @if($comment->user_picture)
-                                    <img class="avatar-default m-r-15" src="{{$comment->user_picture}}" style="width: 60px;height: 60px;padding: 0;margin-top: -10px;">
+                                    <img class="avatar-default m-r-15" src="{{$comment->user_picture}}" style="width: 60px;height: 60px;padding: 0;">
                                 @else
-                                    <img class="avatar-default m-r-15" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg" style="width: 60px;height: 60px;padding: 0;margin-top: -10px;">
+                                    <img class="avatar-default m-r-15" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg" style="width: 60px;height: 60px;padding: 0;">
                                 @endif
                                 <br>
-
-                                <div class="media-body">
+                                <div class="media-body collapse"  id="command-{{$comment->id}}" aria-expanded="false">
                                     <h5 class="mt-0 mb-1"><b>{{$comment->user_name}}</b> -  {{$comment->created_at}}</h5>
                                     <div>
                                         {!! $comment->html !!}
                                     </div>
                                 </div>
+
                             </li>
+                            <a role="button" class="collapsed" data-toggle="collapse" href="#command-{{$comment->id}}" aria-expanded="false" aria-controls="command-{{$comment->id}}"> </a>
                         </ul>
                     @endforeach
 
@@ -55,66 +56,63 @@
 
                 <div class="card-body">
                     <h4 class="card-title">Informações.</h4>
+
+
                     <div class="row">
                         <div class="col-6">
-                            <h6>Prioridade</h6>
-                            <h6 style="color:{{$data->priority_color}}">{{$data->priority_name}}</h6>
-                            <div class="progress">
-                                <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->priority_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col-6">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <h6>Prioridade</h6>
+                                    <h6 style="color:{{$data->priority_color}}">{{$data->priority_name}}</h6>
+                                </li>
+                                <li class="list-group-item">
+                                    <h6>Categoria</h6>
+                                    <h6 style="color:{{$data->category_color}}">{{$data->category_name}}</h6>
+                                </li>
+                                <li class="list-group-item">
+                                    <h6>Status</h6>
+                                    <h6 style="color:{{$data->status_color}}">{{$data->status_name}}</h6>
+                                </li>
+                                <li class="list-group-item">
+                                    <h6>Criado em</h6>
+                                    <h6 class="text-info">{{$data->created_at->setTimezone('America/Sao_Paulo')->format('d/m/Y H:i')}}</h6>
+                                </li>
+                            </ul>
 
-                            <h6>Categoria</h6>
-                            <h6 style="color:{{$data->category_color}}">{{$data->category_name}}</h6>
-                            <div class="progress">
-                                <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->category_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
 
-                        <div class="col-6">
-                            <h6>Status</h6>
-                            <h6 style="color:{{$data->status_color}}">{{$data->status_name}}</h6>
-                            <div class="progress">
-                                <div class="progress-bar " role="progressbar" style="width: 100%; height: 6px; background: {{$data->status_color}}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
                         </div>
                         <div class="col-6">
-                            <h6>Criado em</h6>
-                            <h6 class="text-info">{{$data->created_at->setTimezone('America/Sao_Paulo')->format('d/m/Y H:i')}}</h6>
-                            <div class="progress">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <h6>Emissora</h6>
+                                    <h6 class="text-info"> {!! $data->emissora ? $data->emissora : '-----' !!}</h6>
+                                </li>
+                                <li class="list-group-item">
+                                    <h6>Prev. Início</h6>
+                                    <h6 class="text-info">{{$data->start_forecast}}</h6>
+                                </li>
+                                <li class="list-group-item">
+                                    <h6>Prev. Término</h6>
+                                    <h6 class="text-info">{{$data->end_forecast}}</h6>
+                                </li>
+                                <li class="list-group-item">
+                                    <h6>Exibe para o cliente</h6>
+                                    <h6 class="text-info">{!! $data->show_client? '<b class="text-success">Sim</b>': '<b class="text-danger">Não</b>' !!}</h6>
+                                </li>
+                            </ul>
                         </div>
-
-                        <div class="col-6">
-                            <h6>Emissora</h6>
-                            <h6 class="text-info"> {!! $data->emissora ? $data->emissora : '-----' !!}</h6>
-                            <div class="progress">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <h6>Prev. Início</h6>
-                            <h6 class="text-info">{{$data->start_forecast}}</h6>
-                            <div class="progress">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <h6>Prev. Término</h6>
-                            <h6 class="text-info">{{$data->end_forecast}}</h6>
-                            <div class="progress">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 100%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col-6 m-t-10 m-b-10 text-left">
+                        <div class="col-12">
                             @if($hasAdmin || in_array($user->id, $participants->pluck('id')->toArray()) || $user->id==$data->owner_id)
-                                <a href="{{route('ticket.edit', [$data->id])}}" class="btn btn-sm btn-secondary">
-                                    Editar
-                                </a>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                    <a href="{{route('ticket.edit', [$data->id])}}" class="btn btn-sm btn-secondary">
+                                        Editar
+                                    </a>
+                                    </li>
+                                </ul>
                             @endif
                         </div>
+
                     </div>
 
                 </div>
@@ -261,6 +259,30 @@
         h5,h6{margin: 0}
         .progress{margin-bottom: 10px}
 
+
+        .comment {
+            overflow: auto;
+        }
+
+        .comment-content  a.collapsed:after {
+            content: '+ Mostrar mais';
+        }
+
+        .comment-content  a:not(.collapsed):after {
+            content: '- Mostrar menos';
+        }
+
+        .comment .collapse:not(.show) {
+            display: block;
+            /* height = lineheight * no of lines to display */
+            max-height: 14em;
+            max-height: 8em;
+            overflow: hidden;
+        }
+
+        .comment.collapsing {
+            height: 8em;
+        }
 
     </style>
 @endsection

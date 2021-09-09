@@ -31,9 +31,9 @@ class TicketController extends SulradioController {
 			$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 			$query = Ticket::query()
 			->withSelectDataTable()
-			->withStatus()
 			->withParticipants($user, $hasAdmin)
-			->WithPriority()
+			->withStatus()
+			->withPriority()
 			->withCategory()
 			->withEmissora()
 			->withServico()
@@ -142,6 +142,7 @@ class TicketController extends SulradioController {
 	public function update(Request $request, $id) {
 		$userLogged = Auth::user();
 		$ticket     = Ticket::getByIdOwner($id, $userLogged);
+		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 		$ticketForm = $request->all();
 		$this->validate($request, [
 			'subject'       => 'required',
@@ -156,6 +157,10 @@ class TicketController extends SulradioController {
 		$ticketForm['start_forecast']   = Helper::convertDateBrToMysql($ticketForm['start_forecast']);
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
 		$ticketForm['completed_at']     = null;
+		if($hasAdmin){
+			$ticketForm['show_client']      = isset($ticketForm['show_client']) ?? 0;
+		}
+
 		if(TicketStatus::statusFinished($request->get('status_id'))){
 			$ticketForm['completed_at'] = date('Y-m-d H:i:s');
 		}
@@ -219,7 +224,11 @@ class TicketController extends SulradioController {
 		}
 		
 		$ticket = Ticket::getById($id);
+		$status = TicketStatus::statusFinished();
 		$ticket->completed_at = date('Y-m-d H:i:s');
+		if($status){
+			$ticket->status_id = $status->id;
+		}
 		$ticket->save();
 		TicketParticipant::notifyParticipants($ticket, $userLogged, TicketNotification::TYPE_UPDATE);
 		toastr()->success("Ticket encerrado com sucesso", 'Sucesso');

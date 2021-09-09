@@ -10,7 +10,8 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/emissora', 'Oka6\SulRadio\Http\Controllers\EmissoraController@store')->name('emissora.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Emissoras , salva novo']);
 	Route::get('/emissora/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraController@edit')->name('emissora.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Emissoras editar']);
 	Route::post('/emissora/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraController@update')->name('emissora.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Emissoras, salva edição']);
-	
+	Route::get('/emissora-ticket/{emissoraID}/{id?}', 'Oka6\SulRadio\Http\Controllers\EmissoraController@tickets')->name('emissora.tickets')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Emissoras, tickets']);
+
 	Route::get('/emissora-atos-oficiais/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraAtosOficiaisController@index')->name('emissora.atos.oficiais.index')->where(['iconAdmin' => 'fas fa-file', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Atos oficiais emissoras']);
 	Route::get('/emissora-atos-oficiais/{emissoraID}/create', 'Oka6\SulRadio\Http\Controllers\EmissoraAtosOficiaisController@create')->name('emissora.atos.oficiais.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'emissora.atos.oficiais.index', 'nameAdmin' => 'Atos oficiais emissoras, adicionar',]);
 	Route::post('/emissora-atos-oficiais/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraAtosOficiaisController@store')->name('emissora.atos.oficiais.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Atos oficiais emissoras , salva novo']);

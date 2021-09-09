@@ -109,6 +109,7 @@ class PublicController extends SulradioController {
 	public function notificationsTicket(Request $request) {
 		$user = Auth::user();
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+
 		if ($request->ajax()) {
 			if($hasAdmin){
 				$query      = SystemLog::getNotifications($request);
