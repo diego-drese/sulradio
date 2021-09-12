@@ -355,7 +355,6 @@
                                 $('#tableSocio thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
-                        console.log(settings.aoPreSearchCols, data);
                     }, 50);
                 },
                 ajax: {
@@ -413,7 +412,6 @@
                                 $('#tableEndereco thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
-                        console.log(settings.aoPreSearchCols, data);
                     }, 50);
                 },
                 ajax: {
@@ -475,7 +473,7 @@
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#tableProcessos thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                $('#tableContato thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);

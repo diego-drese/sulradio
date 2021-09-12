@@ -105,6 +105,9 @@
         .table td, .table th {
             padding: 0.5em;
         }
+        #table_ticket_filter{
+            display: none;
+        }
     </style>
 @endsection
 @section('script_footer_end')
@@ -157,7 +160,7 @@
                 autoWidth: false,
                 orderCellsTop: true,
                 stateSave: true,
-                searching: false,
+                searching: true,
                 stateLoaded: function (settings, data) {
                     setTimeout(function () {
                         var dataExtra = settings.ajax.data({});

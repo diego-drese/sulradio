@@ -38,7 +38,7 @@
                                     ---
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
+                                    ---
                                 </th>
                                 <th role="row">
                                     ---

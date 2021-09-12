@@ -28,7 +28,10 @@
                                 </div>
 
                             </li>
-                            <a role="button" class="collapsed" data-toggle="collapse" href="#command-{{$comment->id}}" aria-expanded="false" aria-controls="command-{{$comment->id}}"> </a>
+                            <div class="openComment">
+                                <a role="button" class="collapsed" data-toggle="collapse" href="#command-{{$comment->id}}" aria-expanded="false" aria-controls="command-{{$comment->id}}"> </a>
+                            </div>
+
                         </ul>
                     @endforeach
 
@@ -262,25 +265,24 @@
 
         .comment {
             overflow: auto;
+            min-height: 8em;
         }
 
-        .comment-content  a.collapsed:after {
+        .openComment a.collapsed:after {
             content: '+ Mostrar mais';
         }
 
-        .comment-content  a:not(.collapsed):after {
+        .openComment a:not(.collapsed):after {
             content: '- Mostrar menos';
         }
 
         .comment .collapse:not(.show) {
             display: block;
-            /* height = lineheight * no of lines to display */
-            max-height: 14em;
             max-height: 8em;
             overflow: hidden;
         }
 
-        .comment.collapsing {
+        .comment-content .collapsing {
             height: 8em;
         }
 
