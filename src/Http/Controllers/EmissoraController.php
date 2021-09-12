@@ -184,6 +184,7 @@ class EmissoraController extends SulradioController {
 	
 	protected function makeParameters($extraParameter = null) {
 		$parameters = [
+			'hasAdmin' => ResourceAdmin::hasResourceByRouteName('ticket.admin'),
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('emissora.create'),
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('emissora.edit', [1]),
 			'hasStore' => ResourceAdmin::hasResourceByRouteName('emissora.store'),
