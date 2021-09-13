@@ -56,10 +56,12 @@ class Ticket extends Model {
 		return $query->join('ticket_category', 'ticket_category.id', 'ticket.category_id');
 	}
 	public function scopeWithParticipants($query, $user, $hasAdmin) {
-		$query->join('ticket_participant', 'ticket_participant.ticket_id', 'ticket.id');
 		if(!$hasAdmin){
-			$query->where('ticket_participant.user_id', $user->id)
-				->orWhere('ticket.owner_id', $user->id);
+			$query->join('ticket_participant', 'ticket_participant.ticket_id', 'ticket.id');
+			$query->where(function ($orWhere) use($user){
+				$orWhere->where('ticket_participant.user_id', $user->id)
+					->orWhere('ticket.owner_id', $user->id);
+			});
 		}
 		return $query;
 	}
@@ -127,17 +129,5 @@ class Ticket extends Model {
 			}
 		}
 		return $query->get();
-	}
-	public static function getByIdOwner($id, $user) {
-		$hasAdmin = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-		$query = self::select('ticket.*')->where('ticket.id', $id);
-		if(!$hasAdmin){
-			$query->join('ticket_participant', 'ticket_participant.ticket_id', 'ticket.id');
-			if(!$hasAdmin){
-				$query->where('ticket_participant.user_id', $user->id)
-					->orWhere('ticket.owner_id', $user->id);
-			}
-		}
-		return $query->first();
 	}
 }

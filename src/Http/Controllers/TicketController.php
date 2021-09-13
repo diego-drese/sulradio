@@ -131,18 +131,38 @@ class TicketController extends SulradioController {
 		Storage::delete($path);
 	}
 	public function edit($id) {
-		$user = Auth::user();
-		$data = Ticket::getByIdOwner($id, $user);
+		$user       = Auth::user();
+		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+		$data       = Ticket::withSelectDataTable()
+			->withParticipants($user, $hasAdmin)
+			->withStatus()
+			->WithPriority()
+			->withCategory()
+			->withEmissora()
+			->withServico()
+			->withLocalidade()
+			->withUf()
+			->where('ticket.id', $id)
+			->first();
+		if(!$data){
+			return redirect(route('admin.page403get'));
+		}
 		$emissora = Emissora::getById($data->emissora_id, $user);
 		$participants = TicketParticipant::getUserByTicketId($id);
-		$hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+
 		return $this->renderView('SulRadio::backend.ticket.edit', ['data' => $data, 'emissora'=>$emissora, 'participants'=>$participants, 'hasAdmin'=>$hasAdmin]);
 	}
 	
 	public function update(Request $request, $id) {
 		$userLogged = Auth::user();
-		$ticket     = Ticket::getByIdOwner($id, $userLogged);
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+		$ticket     = Ticket::select('ticket.*')
+			->withParticipants($userLogged, $hasAdmin)
+			->where('ticket.id', $id)
+			->first();
+		if(!$ticket){
+			return redirect(route('admin.page403get'));
+		}
 		$ticketForm = $request->all();
 		$this->validate($request, [
 			'subject'       => 'required',
@@ -172,7 +192,10 @@ class TicketController extends SulradioController {
 		return redirect(route('ticket.ticket', [$id]));
 	}
 	public function ticket($id) {
+		$user           = Auth::user();
+		$hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 		$data  = Ticket::withSelectDataTable()
+			->withParticipants($user, $hasAdmin)
 			->withStatus()
 			->WithPriority()
 			->withCategory()
@@ -182,9 +205,9 @@ class TicketController extends SulradioController {
 			->withUf()
 			->where('ticket.id', $id)
 			->first();
-		
-		$user           = Auth::user();
-		$hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+		if(!$data){
+			return redirect(route('admin.page403get'));
+		}
 		$comments       = TicketComment::getAllByTicketId($id);
 		$emissora       = Emissora::getById($data->emissora_id, $user);
 		$documents      = TicketDocument::getAllByTicketId($id);

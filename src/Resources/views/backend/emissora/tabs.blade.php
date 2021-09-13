@@ -2,7 +2,7 @@
     <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#data" role="tab"><span class="hidden-sm-up"><i class="mdi mdi-radio"></i></span> <span class="hidden-xs-down">Dados cadastrais</span></a> </li>
     @if($data->emissoraID)
         @if($hasSocios)
-            <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#partners" role="tab"><span class="hidden-sm-up"><i class="fas fa-users"></i></span> <span class="hidden-xs-down text-dark">Quadro Societrário</span></a> </li>
+            <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#partners" role="tab"><span class="hidden-sm-up"><i class="fas fa-users"></i></span> <span class="hidden-xs-down text-dark">Quadro Societário</span></a> </li>
         @endif
         @if($hasEndereco)
                 <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#official_addresses" role="tab"><span class="hidden-sm-up"><i class="mdi mdi-map"></i></span> <span class="hidden-xs-down text-dark">Endereços oficiais</span></a> </li>
