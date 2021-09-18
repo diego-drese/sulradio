@@ -157,14 +157,19 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/ticket-tracker-url/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@saveTrackerUrl')->name('ticket.save.tracker.url')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket salva tracker url']);
 	Route::get('/delete-ticket-tracker-url/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@deleteTrackerUrl')->name('ticket.delete.tracker.url')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket delete tracker url']);
 
-	
-	//Route::get('/metrics/document', 'Oka6\SulRadio\Http\Controllers\MetricsController@document')->name('metrics.document')->where(['iconAdmin' => 'mdi mdi-file-document', 'parentRouteNameAdmin' => 'metrics.index', 'nameAdmin' => 'Métricas Documentos', 'isDefaultAdmin' => '0']);
+	Route::get('/sulradio-users', 'Oka6\SulRadio\Http\Controllers\UsersController@index')->name('sulradio.user.index')->where(['iconAdmin' => 'fas fa-users', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Usuários sulradio", 'nameAdmin' => 'Usuários sead', 'isDefaultAdmin' => '1']);
+	Route::get('/sulradio-users/create', 'Oka6\SulRadio\Http\Controllers\UsersController@create')->name('sulradio.user.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'sulradio.user.index', 'nameAdmin' => 'Usuários sead novo',]);
+	Route::post('/sulradio-users', 'Oka6\SulRadio\Http\Controllers\UsersController@store')->name('sulradio.user.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Usuários sead, salva novo']);
+	Route::get('/sulradio-users/{id}', 'Oka6\SulRadio\Http\Controllers\UsersController@edit')->name('sulradio.user.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'sulradio.user.index', 'nameAdmin' => 'Usuários sead editar']);
+	Route::post('/sulradio-users/{id}', 'Oka6\SulRadio\Http\Controllers\UsersController@update')->name('sulradio.user.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Usuários sead, salva edição']);
+
 });
 
 Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function () {
 	Route::any('/document-folder-type/{goal}', 'Oka6\SulRadio\Http\Controllers\PublicController@getFolderAndTypeDocument')->name('document.folder.type');
 	Route::any('/city/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchCity')->name('city.search');
 	Route::any('/broadcast/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchBroadcast')->name('broadcast.search');
+	Route::any('/clients/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchClient')->name('client.search');
 	Route::any('/notification-ticket/read', 'Oka6\SulRadio\Http\Controllers\PublicController@markToReadNotificationsTicket')->name('notification.ticket.mark.read');
 	Route::any('/notifications/ticket', 'Oka6\SulRadio\Http\Controllers\PublicController@notificationsTicket')->name('notifications.ticket');
 	Route::any('/document/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocument')->name('document.download');

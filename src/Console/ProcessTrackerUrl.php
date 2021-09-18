@@ -36,50 +36,42 @@ class ProcessTrackerUrl extends Command {
 	public function __construct() {
 		parent::__construct();
 	}
-	
-	public function handle() {
-		Log::info('ProcessTrackerUrl, start process');
-		try {
-			$urls = TicketUrlTracker::getNew();
-			foreach ($urls as $url){
-				$url->last_modify = date('Y-m-d H:i:s');
-				$url->last_tracker = date('Y-m-d H:i:s');
-				$html = $this->parseDomain($url->url);
-				$hash =  md5($html);
-				$url->hash = $hash;
+	public function processUrls($urls, $notify=true){
+		foreach ($urls as $url){
+			$url->last_tracker = date('Y-m-d H:i:s');
+			$html = $this->parseDomain($url->url);
+			if(!$html){
 				$url->save();
+				continue;
+			}
+			$hash = md5($html);
+			if($hash!=$url->hash){
+				$url->hash = $hash;
+				$url->last_modify = date('Y-m-d H:i:s');
 				$user   = User::getByIdStatic(-1);
 				$commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>'.$html;
 				$comment = TicketComment::create([
-					'content'=>$commentText,
 					'html'=>$commentText,
 					'user_id'=>$user->id,
 					'ticket_id'=>$url->ticket_id
 				]);
-
-			}
-			$urls = TicketUrlTracker::getToCheck();
-			foreach ($urls as $url){
-				$html = $this->parseDomain($url->url);
-				$hash =  md5($html);
-				$url->last_tracker = date('Y-m-d H:i:s');
-				if($hash!=$url->hash){
-					$url->hash = $hash;
-					$url->last_modify = date('Y-m-d H:i:s');
-					$ticket = Ticket::getById($url->ticket_id);
-					$user   = User::getByIdStatic(-1);
-					$commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>'.$html;
-					$comment = TicketComment::create([
-						'content'=>$commentText,
-						'html'=>$commentText,
-						'user_id'=>$user->id,
-						'ticket_id'=>$url->ticket_id
-					]);
+				if($notify){
 					/** Notifica todos os participantes */
+					$ticket = Ticket::getById($url->ticket_id);
 					TicketParticipant::notifyParticipants($ticket, $user,TicketNotification::TYPE_COMMENT, $comment->id);
 				}
-				$url->save();
 			}
+			$url->save();
+		}
+	}
+	public function handle() {
+		Log::info('ProcessTrackerUrl, start process');
+		try {
+			$urls = TicketUrlTracker::getNew();
+			$this->processUrls($urls ,false);
+
+			$urls = TicketUrlTracker::getToCheck();
+			$this->processUrls($urls);
 		}catch (\Exception $e){
 			Mail::raw('Erro o executar command, File['.$e->getFile().'] Line['.$e->getLine().'] Exception['.$e->getMessage().']', function($message) {
 				$message->subject('Sulradio:ProcessTrackerUrl');
@@ -102,7 +94,12 @@ class ProcessTrackerUrl extends Command {
 		switch ($domain){
 			case 'sei.anatel.gov.br':
 			case 'sei.mctic.gov.br':
-				return $dom->saveXML($dom->getElementById('tblHistorico'));
+				$tblHistorico = $dom->saveXML($dom->getElementById('tblHistorico'));
+				if (str_contains($tblHistorico, 'table id="tblHistorico"')) {
+					return $tblHistorico;
+				}
+				Log::info('ProcessTrackerUrl parseDomain, identify not found', ['url'=>$url]);
+				return null;
 			break;
 			default;
 				return $dom->saveXML($dom->getElementsByTagName('body'));

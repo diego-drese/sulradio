@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateTicketCommentTable extends Migration {
+class CreateUserHasClientTable extends Migration {
 	
 	/**
 	 * Run the migrations.
@@ -13,11 +13,12 @@ class CreateTicketCommentTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)->create('ticket_comment', function (Blueprint $table) {
+		Schema::connection($this->connection)->create('user_has_client', function (Blueprint $table) {
 			$table->increments('id');
-			$table->longText('html');
 			$table->integer('user_id')->index();
-			$table->integer('ticket_id')->index();
+			$table->integer('client_id')->index();
+			$table->integer('create_user_id')->index();
+			$table->integer('update_user_id')->nullable()->index();
 			$table->timestamps();
 		});
 		
@@ -29,7 +30,7 @@ class CreateTicketCommentTable extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		Schema::connection($this->connection)->dropIfExists('ticket_comment');
+		Schema::connection($this->connection)->dropIfExists('user_has_client');
 	}
 	
 }

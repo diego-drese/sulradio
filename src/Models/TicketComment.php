@@ -10,7 +10,6 @@ use Oka6\Admin\Models\User;
 class TicketComment extends Model {
 	const TABLE = 'ticket_comment';
 	protected $fillable = [
-		'content',
 		'html',
 		'user_id',
 		'ticket_id',

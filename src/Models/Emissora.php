@@ -88,6 +88,11 @@ class Emissora extends Model {
 			$client = Client::getById($user->client_id);
 			$query->whereIn('emissoraID', json_decode($client->broadcast));
 		}
+		$userHasClient = UserHasClient::getEmissorasWithCache($user->id);
+
+		if(count($userHasClient)){
+			$query->whereIn('emissoraID', $userHasClient);
+		}
 		return $query;
 	}
 	

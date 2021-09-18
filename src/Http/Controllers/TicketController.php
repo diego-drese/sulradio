@@ -214,7 +214,6 @@ class TicketController extends SulradioController {
 		$trackerUrl     = TicketUrlTracker::active()->where('ticket_id', $id)->get();
 		$owner          = User::getByIdStatic($data->owner_id);
 		$participants   = TicketParticipant::getUserByTicketId($id, true);
-
 		$contentLog     = 'Usuário '.$user->name. ' visualizou o ticket '. $id;
 		SystemLog::insertLogTicket(SystemLog::TYPE_VIEW, $contentLog, $id, $user->id);
 		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents, 'trackerUrl'=>$trackerUrl]);
@@ -223,7 +222,6 @@ class TicketController extends SulradioController {
 		$userLogged = Auth::user();
 		$comment = $request->get('content');
 		$comment = TicketComment::create([
-			'content'=>$comment,
 			'html'=>$comment,
 			'user_id'=>$userLogged->id,
 			'ticket_id'=>$id
@@ -239,7 +237,6 @@ class TicketController extends SulradioController {
 		$comment = $request->get('content');
 		if($comment){
 			TicketComment::create([
-				'content'=>$comment,
 				'html'=>$comment,
 				'user_id'=>$userLogged->id,
 				'ticket_id'=>$id

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Models\Cities;
+use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Document;
 use Oka6\SulRadio\Models\DocumentFolder;
 use Oka6\SulRadio\Models\DocumentHistoric;
@@ -31,6 +32,18 @@ class PublicController extends SulradioController {
 			$city->state_name = $state->title;
 			$city->state_letter = $state->letter;
 			$city->text = $city->title." ({$state->letter})";
+		}
+		return response()->json($query, 200);
+	}
+
+	public function searchClient(Request $request) {
+		$search = $request->get('search');
+		$query = Client::where('name', 'like', '%'.$search.'%')
+			->orWhere('company_name', 'like', '%'.$search.'%')
+			->limit(10)
+			->get();
+		foreach ($query as &$client){
+			$client->text = $client->name." ({$client->company_name})";
 		}
 		return response()->json($query, 200);
 	}
