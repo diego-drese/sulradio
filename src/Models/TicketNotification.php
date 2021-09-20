@@ -27,7 +27,8 @@ class TicketNotification extends Model {
 	const TYPE_UPDATE = 2;
 	const TYPE_COMMENT = 3;
 	const TYPE_TRANSFER_AGENT = 4;
-	
+	const TYPE_UNDEFINED = 99;
+
 	protected $table = 'ticket_notification';
 	protected $connection = 'sulradio';
 	

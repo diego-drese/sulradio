@@ -263,16 +263,16 @@ class TicketController extends SulradioController {
 			$file->storeAs(
 				$this->tempFolder, $fineName
 			);
+			$filesName[]= ['file_name'=>$fineName, 'file_name_original'=>$file->getClientOriginalName()];
 			if($id){
 				$ticket = Ticket::getById($id);
 				$fileObj = new \stdClass();
 				$fileObj->file_name = $fineName;
 				$fileObj->file_name_original = $file->getClientOriginalName();
 				$this->uploadDocument($fileObj, $ticket, Auth::user());
+				$contentLog = 'Usuário '.$userLogged->name. ' anexou um arquivo ao ticket '. $ticket->id. ' arquivo['.$fineName.']';
+				SystemLog::insertLogTicket(SystemLog::TYPE_SAVE_UPLOAD, $contentLog, $id, $userLogged->id);
 			}
-			$filesName[]= ['file_name'=>$fineName, 'file_name_original'=>$file->getClientOriginalName()];
-			$contentLog = 'Usuário '.$userLogged->name. ' anexou um arquivo ao ticket '. $ticket->id. ' arquivo['.$fineName.']';
-			SystemLog::insertLogTicket(SystemLog::TYPE_SAVE_UPLOAD, $contentLog, $id, $userLogged->id);
 		}
 		return response()->json(['message'=>'success', 'files'=>$filesName], 200);
 	}

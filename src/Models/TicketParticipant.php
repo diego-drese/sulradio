@@ -38,7 +38,6 @@ class TicketParticipant extends Model {
 	}
 
 	public static function notifyParticipants(Ticket $ticket, $userLogged, $typeNotification, $commentId=null) {
-
 		$participants = TicketParticipant::getUserByTicketId($ticket->id);
 		$insert = [
 			'type'              => $typeNotification,
@@ -49,6 +48,20 @@ class TicketParticipant extends Model {
 			'users_comments'    => null,
 			'status'            => TicketNotification::STATUS_WAITING,
 		];
+		$contentLog='Não definido,['.$typeNotification.']';
+		$logType=SystemLog::TYPE_UNDEFINED;
+
+		if($typeNotification==TicketNotification::TYPE_NEW){
+			$contentLog = 'Usuário '.$userLogged->name. ' criou o ticket '. $ticket->id;
+			$logType = SystemLog::TYPE_NEW;
+		}else if($typeNotification==TicketNotification::TYPE_UPDATE){
+			$contentLog = 'Usuário '.$userLogged->name. ' atualizou o ticket '. $ticket->id;
+			$logType = SystemLog::TYPE_UPDATE;
+		}else{
+			$contentLog = 'Usuário '.$userLogged->name. ' adicionou um comentário ao ticket '. $ticket->id;
+			$logType = SystemLog::TYPE_COMMENT;
+		}
+
 		foreach ($participants as $participant){
 			/** Checks if there is a notification of the same ticket for the user  */
 			$insert['agent_current_id'] = $participant;
@@ -56,20 +69,9 @@ class TicketParticipant extends Model {
 			if($userLogged->id!=$participant){
 				TicketNotification::create($insert);
 			}
-
-			if($typeNotification==TicketNotification::TYPE_NEW){
-				$contentLog = 'Usuário '.$userLogged->name. ' criou o ticket '. $ticket->id;
-				SystemLog::insertLogTicket(SystemLog::TYPE_NEW, $contentLog, $ticket->id, $participant);
-			}else if($typeNotification==TicketNotification::TYPE_UPDATE){
-				$contentLog = 'Usuário '.$userLogged->name. ' atualizou o ticket '. $ticket->id;
-				SystemLog::insertLogTicket(SystemLog::TYPE_UPDATE, $contentLog, $ticket->id, $participant);
-			}else{
-				$contentLog = 'Usuário '.$userLogged->name. ' adicionou um comentário ao ticket '. $ticket->id;
-				SystemLog::insertLogTicket(SystemLog::TYPE_COMMENT, $contentLog, $ticket->id, $participant);
-			}
-
+			SystemLog::insertLogTicket($logType, $contentLog, $ticket->id, $participant);
 		}
-
+		SystemLog::insertLogTicket($logType, $contentLog, $ticket->id, $ticket->owner_id);
 		if($userLogged->id!=$ticket->owner_id){
 			$insert['agent_current_id'] = $ticket->owner_id;
 			$insert['agent_old_id']     = $ticket->owner_id;
