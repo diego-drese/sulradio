@@ -23,6 +23,7 @@ class SystemLog extends Model {
 	const TYPE_DELETE_UPLOAD = 8;
 	const TYPE_SAVE_TRACKER_URL = 9;
 	const TYPE_DELETE_TRACKER_URL = 10;
+	const TYPE_SEND_EMAIL_CLIENT = 11;
 	const TYPE_UNDEFINED = 99;
 
 	const ZONE_TICKET = 1;
@@ -39,7 +40,8 @@ class SystemLog extends Model {
 		self::TYPE_DELETE_UPLOAD => 'Deletou arquivo',
 		self::TYPE_SAVE_TRACKER_URL => 'Nova rastreador',
 		self::TYPE_DELETE_TRACKER_URL => 'Deleta rastreador',
-		self::TYPE_SEND_EMAIL_NOTIFICATION => 'Notificação Email',
+		self::TYPE_SEND_EMAIL_CLIENT => 'Notificação Email',
+		self::TYPE_SEND_EMAIL_NOTIFICATION => 'Comentário enviado por email',
 		self::TYPE_UNDEFINED => 'Indefinido',
 		];
 	const ZONE_TEXT = [self::ZONE_TICKET => 'Ticket', self::ZONE_SEAD => 'SEAD', self::ZONE_UNDEFINED=> 'Indefinido',];
@@ -130,6 +132,7 @@ class SystemLog extends Model {
 			case self::TYPE_NEW:
 			case self::TYPE_UPDATE:
 			case self::TYPE_COMMENT:
+			case self::TYPE_SEND_EMAIL_CLIENT:
 			case self::TYPE_TRANSFER_AGENT:
 				$data['content'] = $content;
 			break;

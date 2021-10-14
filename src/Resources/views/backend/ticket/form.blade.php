@@ -4,7 +4,7 @@
     <div class="col-md-6 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
         <label for="name">Assunto *</label>
         <div class="input-group mb-3">
-            <input type="text" name="subject" id="subject" class="form-control" placeholder="Assunto" required
+            <input type="text" name="subject" id="subject" class="form-control text-uppercase" placeholder="Assunto" required
             value="{{old('subject', $data->exists() ? $data->subject : '')}}">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="mdi mdi-file-document"></i></span>
@@ -94,23 +94,64 @@
             <span class="help-block">{{$errors->first('emissora_id')}}</span>
         @endif
     </div>
-    <div class="col-md-6 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
-        <label for="participants_id">Responsáveis</label>
-        <div class="input-group mb-3">
-            <select name="participants_id[]" id="participants_id" class="form-control select2" multiple {{($hasAdmin || $data->owner_id==null || $user->id==$data->owner_id ? '' : 'disabled')}}>
-                <option value="">Selecione</option>
-                @foreach($users as $value)
-                    <option value="{{$value->id}}" {{in_array($value->id, old('participants_id', $participants))  ? 'selected' : ''}}> {{$value->name}} </option>
-                @endforeach
-            </select>
-            <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
+    @if($hasAdmin)
+        <div class="col-md-6 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
+            <label for="participants_id">Abir no nome de</label>
+            <div class="input-group mb-3">
+                <select name="owner_id" id="owner_id" class="form-control select2" >
+                    @foreach($users as $value)
+                        @if(count($value->user_info))
+                            <option value="{{$value->id}}" {{old('owner_id', $data->exists() && $data->owner_id ? $data->owner_id : $user->id) == $value->id ? 'selected' : ''}} data-user_info="{{json_encode($value->user_info)}}" disabled> {{$value->name.' '.$value->lastname}} </option>
+                        @else
+                            <option value="{{$value->id}}" {{old('owner_id', $data->exists() && $data->owner_id ? $data->owner_id : $user->id) == $value->id ? 'selected' : ''}} data-user_info="{{json_encode($value->user_info)}}"> {{$value->name.' '.$value->lastname}} </option>
+                        @endif
+
+                    @endforeach
+                </select>
+                <div class="input-group-append">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                </div>
             </div>
+            @if($errors->has('agent_id'))
+                <span class="help-block">{{$errors->first('agent_id')}}</span>
+            @endif
         </div>
-        @if($errors->has('agent_id'))
-            <span class="help-block">{{$errors->first('agent_id')}}</span>
-        @endif
-    </div>
+        <div class="col-md-12 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
+            <label for="participants_id">Responsáveis</label>
+            <div class="input-group mb-3">
+                <select name="participants_id[]" id="participants_id" class="form-control select2" multiple {{($hasAdmin || $data->owner_id==null || $user->id==$data->owner_id ? '' : 'disabled')}}>
+                    @foreach($users as $value)
+                        <option value="{{$value->id}}" {{in_array($value->id, old('participants_id', $participants))  ? 'selected' : ''}} data-user_info="{{json_encode($value->user_info)}}" disabled> {{$value->name.' '.$value->lastname}} </option>
+                    @endforeach
+                </select>
+                <div class="input-group-append">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                </div>
+            </div>
+            @if($errors->has('agent_id'))
+                <span class="help-block">{{$errors->first('agent_id')}}</span>
+            @endif
+        </div>
+    @else
+        <div class="col-md-6 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
+            <label for="participants_id">Responsáveis</label>
+            <div class="input-group mb-3">
+                <select name="participants_id[]" id="participants_id" class="form-control select2" multiple {{($hasAdmin || $data->owner_id==null || $user->id==$data->owner_id ? '' : 'disabled')}}>
+                    @foreach($users as $value)
+                        <option value="{{$value->id}}" {{in_array($value->id, old('participants_id', $participants))  ? 'selected' : ''}} > {{$value->name.' '.$value->lastname}} </option>
+                    @endforeach
+                </select>
+                <div class="input-group-append">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                </div>
+            </div>
+            @if($errors->has('agent_id'))
+                <span class="help-block">{{$errors->first('agent_id')}}</span>
+            @endif
+        </div>
+    @endif
+
+
     <div class="col-md-8 form-group {{$errors->has('description') ? 'has-error' : ''}} ">
         <label for="content">Conteudo</label>
         <textarea rows="12" name="content" class="form-control summernote" id="content">{{old('content', $data->exists() && $data->content  ? $data->content : '')}}</textarea>
@@ -150,6 +191,7 @@
                 {!! $data->exists() && $data->show_client  ? '<b class="text-success">Sim</b>' : '<b class="text-danger">Não</b>'  !!}
             @endif
         </div>
+
     </div>
 
 
@@ -246,11 +288,54 @@
             $(this).val('');
         });
 
+        function formatState (user) {
+            var userAttribute = $(user.element).data('user_info');
+            if (!userAttribute || !userAttribute[0]) {
+                return user.text;
+            }
+            var usersElements = '<ul>';
+            for (var i=0; i< userAttribute.length;i++){
+                usersElements+='<li>'+userAttribute[i].name+'</li>'
+            }
+            usersElements+= '</ul>';
+            var $user = $(
+                    '<span class="text-danger">' + user.text + '</span><br/><b class="p-l-10">Usuários relacionados</b>'+usersElements
+            );
+            return $user;
+        };
+
+
         $(".select2").select2({
             width: 'calc(100% - 38px)',
             placeholder: 'Selecione',
-            allowClear: true
+            allowClear: true,
+            templateResult: formatState
         });
+
+        $('#owner_id').change(function (){
+            $('#participants_id option').attr("disabled", true);
+            $('#participants_id').val([]).trigger('change');
+            var idOwner = Number($(this).val())
+            $('#participants_id option').each(function (e){
+                var option = $(this);
+                var userInfo=JSON.parse(option.attr('data-user_info'));
+
+                if(userInfo.length<1){
+                    option.attr("disabled", false);
+                }
+                for (var i=0; i<userInfo.length;i++){
+                    if(idOwner==userInfo[i].id){
+                        option.attr("disabled", false);
+                    }
+                }
+                $('#participants_id').trigger('change');
+            });
+        });
+
+        @if(!$data->id)
+            $('#owner_id').trigger('change');
+        @endif
+
         $('.summernote').summernote({
             height: 250,
         });

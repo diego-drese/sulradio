@@ -32,23 +32,29 @@
                                 <th>Status</th>
                             </tr>
                             <tr>
-                                <th role="row">
+                                <th style="width: 60px">
+                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
+                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
+                                    </spa>
+                                </th>
+
+                                <th>
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
                                 </th>
                                 <th>
-                                    ---
-                                </th>
-                                <th>
-                                    ---
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Empresa">
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar documento">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Email">
                                 </th>
                                 <th>
                                     ---
                                 </th>
                                 <th>
                                     ---
+                                </th>
+                                <th>
+                                  ----
                                 </th>
                                 <th>
                                     <select class="form-control fieldSearch">
@@ -56,11 +62,6 @@
                                         <option value="1">Sim</option>
                                         <option value="0">Não</option>
                                     </select>
-                                </th>
-                                <th style="width: 60px">
-                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
-                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
-                                    </spa>
                                 </th>
                             </tr>
                             </thead>

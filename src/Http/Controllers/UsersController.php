@@ -24,7 +24,7 @@ class UsersController extends SulradioController {
 	
 	public function index(Request $request) {
 		if ($request->ajax()) {
-			$model = User::where('id','!=', -1)->whereNull('client_id');
+			$model = UserSulRadio::where('id','!=', -1)->whereNull('client_id');
 			return DataTables::of($model)
 				->filter(function ($query) use($request) {
 					$active = $request->get('active');
@@ -34,10 +34,10 @@ class UsersController extends SulradioController {
 				})
 				->addColumn('edit_url', function ($row) {
 					return route('sulradio.user.edit', [$row->id]);
-				})->addColumn('profile_name', function ($row) {
-					return Profile::getById($row->profile_id)->name;
 				})->addColumn('last_login_at', function ($row) {
 					return $row->last_login_at??'---';
+				})->addColumn('created', function ($row) {
+					return $row->user_created_id ? UserSulRadio::getByIdStatic($row->user_created_id)->name : '---';
 				})->addColumn('clients', function ($row) {
 					return UserHasClient::getAllClients($row->id)->pluck('company_name')->toArray();
 				})->toJson();
@@ -46,8 +46,9 @@ class UsersController extends SulradioController {
 	}
 	
 	public function create(UserSulRadio $data) {
-		return $this->renderView('SulRadio::backend.user.create', ['data' => $data, 'clientsSelected'=> []]);
+		return $this->renderView('SulRadio::backend.user.create', ['data' => $data, 'clientsSelected'=> [], 'userTicket'=>[]]);
 	}
+
 	public function notifyUser($idUser){
 		$user = UserSulRadio::where('id', (int)$idUser)->first();
 		try {
@@ -79,8 +80,13 @@ class UsersController extends SulradioController {
 		$dataForm['active']                 = (int)$request->get('active');
 		$dataForm['client_id']              = null;
 		$dataForm['receive_notification']   = null;
+		$dataForm['users_ticket']           = array_map( 'intval', $request->get('users_ticket', []));
 		$dataForm['password']               = bcrypt(Str::random(10));
 		$dataForm['remember_token']         = Str::random(60);
+		$dataForm['user_created_id']        = (int)$user->id;
+		$dataForm['user_updated_id']        = (int)$user->id;
+		$dataForm['user_updated_at']        = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+
 		UserSulRadio::create($dataForm);
 		UserHasClient::createOrUpdate($request->get('clients'), $dataForm['id'], $user);
 		$this->notifyUser($dataForm['id']);
@@ -90,7 +96,7 @@ class UsersController extends SulradioController {
 	}
 	
 	public function edit($id) {
-		$data = User::where('id', (int)$id)->where('id','>',  0)->first();
+		$data = UserSulRadio::where('id', (int)$id)->where('id','>',  0)->first();
 		if(!$data){
 			$userLogged = Auth::user();
 			Log::error('UsersController edit, error load user', ['user'=>$userLogged, 'id'=>$id]);
@@ -101,11 +107,15 @@ class UsersController extends SulradioController {
 			Log::error('UsersController edit, user has client', ['user'=>$userLogged, 'id'=>$id]);
 			return redirect(route('admin.page403get'));
 		}
-		return $this->renderView('SulRadio::backend.user.edit', ['data' => $data, 'clientsSelected'=> UserHasClient::getAllClients($data->id)]);
+		$userTicket = [];
+		if(isset($data->users_ticket) && is_array($data->users_ticket)){
+			$userTicket=User::whereIn('id', $data->users_ticket)->get();
+		}
+		return $this->renderView('SulRadio::backend.user.edit', ['data' => $data, 'clientsSelected'=> UserHasClient::getAllClients($data->id), 'userTicket'=>$userTicket]);
 	}
 	
 	public function update(Request $request, $id) {
-		$data = User::getByIdStatic($id);
+		$data = UserSulRadio::getByIdStatic($id);
 		$dataForm = $request->all();
 		$this->validate($request, [
 			'name' => 'required',
@@ -118,7 +128,11 @@ class UsersController extends SulradioController {
 			},]
 
 		], ['required' => 'Campo obrigatório', 'unique' => 'Email já cadastrado']);
-		$dataForm['active'] = (int)$request->get('active');
+		$user = Auth::user();
+		$dataForm['active']             = (int)$request->get('active');
+		$dataForm['users_ticket']       = array_map( 'intval', $request->get('users_ticket', []));
+		$dataForm['user_updated_id']    = (int)$user->id;
+		$dataForm['user_updated_at']    = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
 		$data->fill($dataForm);
 		$data->save();
 		UserHasClient::createOrUpdate($request->get('clients'), $id, $data);

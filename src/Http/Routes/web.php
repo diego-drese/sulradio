@@ -155,6 +155,7 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/ticket-end/{id}', 'Oka6\SulRadio\Http\Controllers\TicketController@end')->name('ticket.end')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket finaliza']);
 	Route::post('/ticket-upload/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@upload')->name('ticket.upload')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket upload']);
 	Route::post('/ticket-tracker-url/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@saveTrackerUrl')->name('ticket.save.tracker.url')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket salva tracker url']);
+	Route::post('/ticket-comment-send-mail', 'Oka6\SulRadio\Http\Controllers\TicketController@commentSendEmail')->name('ticket.comment.send.email')->where(['iconAdmin' => 'mdi mdi-send', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket envia comentário por email para os clientes']);
 	Route::get('/delete-ticket-tracker-url/{id?}', 'Oka6\SulRadio\Http\Controllers\TicketController@deleteTrackerUrl')->name('ticket.delete.tracker.url')->where(['iconAdmin' => 'fas fa-ticket-alt', 'parentRouteNameAdmin' => 'ticket.index', 'nameAdmin' => 'Ticket delete tracker url']);
 
 	Route::get('/sulradio-users', 'Oka6\SulRadio\Http\Controllers\UsersController@index')->name('sulradio.user.index')->where(['iconAdmin' => 'fas fa-users', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Usuários sulradio", 'nameAdmin' => 'Usuários sead', 'isDefaultAdmin' => '1']);
@@ -168,10 +169,13 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function () {
 	Route::any('/document-folder-type/{goal}', 'Oka6\SulRadio\Http\Controllers\PublicController@getFolderAndTypeDocument')->name('document.folder.type');
 	Route::any('/city/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchCity')->name('city.search');
+	Route::any('/users/search/ticket', 'Oka6\SulRadio\Http\Controllers\PublicController@searchUserTicket')->name('users.search.ticket');
 	Route::any('/broadcast/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchBroadcast')->name('broadcast.search');
 	Route::any('/clients/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchClient')->name('client.search');
 	Route::any('/notification-ticket/read', 'Oka6\SulRadio\Http\Controllers\PublicController@markToReadNotificationsTicket')->name('notification.ticket.mark.read');
 	Route::any('/notifications/ticket', 'Oka6\SulRadio\Http\Controllers\PublicController@notificationsTicket')->name('notifications.ticket');
+	Route::any('/ticket-notification-client/{id}', 'Oka6\SulRadio\Http\Controllers\PublicController@loadTicketNotificationClient')->name('ticket.notification.client');
+	Route::any('/ticket-client-answer/{id}', 'Oka6\SulRadio\Http\Controllers\PublicController@ticketClientAnswer')->name('ticket.client.answer');
 	Route::any('/document/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocument')->name('document.download');
 	Route::any('/document-ticket/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocumentTicket')->name('document.download.ticket');
 	Route::any('/document-ticket/remove/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@removeDocumentTicket')->name('document.remove.ticket');

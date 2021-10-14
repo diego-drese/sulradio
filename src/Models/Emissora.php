@@ -63,7 +63,11 @@ class Emissora extends Model {
 	public function usesTimestamps() : bool{
 		return false;
 	}
-	
+
+	public static function getByIdOnly($id) {
+		return self::where('emissoraID', $id)->first();
+	}
+
 	public static function getById($id, $user) {
 		return self::where('emissoraID', $id)
 			->filterClient($user)
@@ -83,6 +87,7 @@ class Emissora extends Model {
 		$query->leftJoin('servico', 'servico.servicoID', 'emissora.servicoID');
 		return $query;
 	}
+
 	public function scopeFilterClient($query, $user) {
 		if($user->client_id){
 			$client = Client::getById($user->client_id);

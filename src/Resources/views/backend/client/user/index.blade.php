@@ -27,6 +27,7 @@
                                 <th>Email</th>
                                 <th>Perfil</th>
                                 <th>Status</th>
+                                <th>Função</th>
                                 <th>Último Login</th>
                                 <th>Último Email</th>
                                 <th>Reenviar Email</th>
@@ -37,7 +38,7 @@
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
                                 </th>
                                 <th>
-                                    ---
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Email">
                                 </th>
                                 <th>
                                     ---
@@ -49,6 +50,9 @@
                                         <option value="1">Sim</option>
                                         <option value="0">Não</option>
                                     </select>
+                                </th>
+                                <th>
+                                    ---
                                 </th>
                                 <th>
                                     ---
@@ -158,6 +162,7 @@
                             return '---';
                         }
                     },
+                    {data: "function_name", 'name': 'function_name', searchable: false, orderable: false,},
                     {data: "last_login_at", 'name': 'last_login_at'},
                     {data: "last_notification_at", 'name': 'last_notification_at'},
                     {data: null, searchable: false, orderable: false, render: function (data) {

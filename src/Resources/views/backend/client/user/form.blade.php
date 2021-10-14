@@ -84,22 +84,24 @@
             <span class="help-block">{{$errors->first('resource_default_id')}}</span>
         @endif
     </div>
-    <div class="col-md-4 form-group {{$errors->has('active') ? 'text-danger' : ''}} ">
-        <label for="active">Ativo *</label>
+    <div class="col-md-3 form-group {{$errors->has('is_active') ? 'text-danger' : ''}} ">
+        <label for="function_id">Função</label>
         <div class="input-group mb-3">
-            <select name="active" id="active" class="form-control">
-                <option value="1" {{old('active', $data->exists() ? $data->active : '') == "1" ? 'selected' : ''}}> SIM </option>
-                <option value="0" {{old('active', $data->exists() ? $data->active : '') == "0" ? 'selected' : ''}}> NÃO </option>
+            <select name="function_id" id="function_id" class="form-control" required>
+                <option value=""> Selecione </option>
+                @foreach($functions as $function)
+                    <option value="{{$function->funcaoID}}" {{old('function_id', $data->exists() ? $data->function_id : '')==$function->funcaoID? 'selected': ''}}>{{$function->desc_funcao}}</option>
+                @endforeach
             </select>
             <div class="input-group-append">
                 <span class="input-group-text"><i class="fas fa-adjust"></i></span>
             </div>
         </div>
-        @if($errors->has('active'))
-            <span class="help-block">{{$errors->first('active')}}</span>
+        @if($errors->has('function_id'))
+            <span class="help-block">{{$errors->first('function_id')}}</span>
         @endif
     </div>
-    <div class="col-md-4 form-group {{$errors->has('is_active') ? 'text-danger' : ''}} ">
+    <div class="col-md-3 form-group {{$errors->has('is_active') ? 'text-danger' : ''}} ">
         <label for="receive_notification">Recebe notificações automáticas</label>
         <div class="input-group mb-3">
             <select name="receive_notification" id="receive_notification" class="form-control">
@@ -115,6 +117,21 @@
         @endif
     </div>
 
+    <div class="col-md-2 form-group {{$errors->has('active') ? 'text-danger' : ''}} ">
+        <label for="active">Ativo *</label>
+        <div class="input-group mb-3">
+            <select name="active" id="active" class="form-control">
+                <option value="1" {{old('active', $data->exists() ? $data->active : '') == "1" ? 'selected' : ''}}> SIM </option>
+                <option value="0" {{old('active', $data->exists() ? $data->active : '') == "0" ? 'selected' : ''}}> NÃO </option>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-adjust"></i></span>
+            </div>
+        </div>
+        @if($errors->has('active'))
+            <span class="help-block">{{$errors->first('active')}}</span>
+        @endif
+    </div>
 
     <div class="col-md-12 form-group {{$errors->has('description') ? 'text-danger' : ''}} ">
         <label for="description">Observações</label>

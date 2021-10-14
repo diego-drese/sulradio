@@ -4,6 +4,7 @@ namespace Oka6\SulRadio\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Client extends Model {
 	const TABLE = 'client';
@@ -39,5 +40,14 @@ class Client extends Model {
 	}
 	public static function getById($id) {
 		return self::where('id', $id)->first();
+	}
+	public static function getUsersByEmissora($id) {
+		return Cache::tags(['sulradio'])->remember('users_by_emissora-'.$id, 10, function () use($id){
+			$emissora = Emissora::getByIdOnly($id);
+			if($emissora && $emissora->client_id){
+				return UserSulRadio::client($emissora->client_id)->get();
+			}
+			return [];
+		});
 	}
 }

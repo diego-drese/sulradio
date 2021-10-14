@@ -191,10 +191,14 @@
 				columns: [
 					{
 						data: "subject", 'name': 'system_log.subject', render: function (data, display, row) {
+
 							return data;
 						}
 					}, {
 						data: "content", 'name': 'system_log.content', render: function (data, display, row) {
+							if(row.ticket_url){
+								return '<a target="_blank" href="'+row.ticket_url+'">'+data+'</a>'
+							}
 							return data;
 						}
 					}, {

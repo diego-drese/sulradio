@@ -10,6 +10,7 @@ use Oka6\SulRadio\Mail\TicketComment;
 use Oka6\SulRadio\Mail\TicketCreate;
 use Oka6\SulRadio\Mail\TicketTransfer;
 use Oka6\SulRadio\Mail\TicketUpdate;
+use Oka6\SulRadio\Mail\TicketCommentFromClient;
 use Oka6\SulRadio\Models\Ticket;
 use Oka6\SulRadio\Models\TicketNotification;
 
@@ -48,6 +49,8 @@ class ProcessTicketNotification extends Command {
 				$this->sendEmailTypeNew($notification);
 			}else if($notification->type==TicketNotification::TYPE_UPDATE){
 				$this->sendEmailTypeUpdate($notification);
+			}else if($notification->type==TicketNotification::TYPE_COMMENT_CLIENT){
+				$this->sendEmailTypeCommentClient($notification);
 			}else if($notification->type==TicketNotification::TYPE_COMMENT){
 				$this->sendEmailTypeComment($notification);
 			}else if($notification->type==TicketNotification::TYPE_TRANSFER_AGENT){
@@ -85,6 +88,14 @@ class ProcessTicketNotification extends Command {
 		$comment->agent      = $currentAgent;
 		$comment->userLogged = $userLogged;
 		Mail::to($currentAgent->email)->send(new TicketComment($comment));
+	}
+	public function sendEmailTypeCommentClient($notification){
+		$userLogged         = User::getByIdStatic($notification->user_logged);
+		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
+		$comment             = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
+		$comment->agent      = $currentAgent;
+		$comment->userLogged = $userLogged;
+		Mail::to($currentAgent->email)->send(new TicketCommentFromClient($comment));
 	}
 	
 	public function sendEmailTypeUpdate($notification){

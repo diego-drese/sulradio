@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Oka6\Admin\Http\Library\ResourceAdmin;
-use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Helpers\Helper;
+use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Emissora;
 use Oka6\SulRadio\Models\SystemLog;
 use Oka6\SulRadio\Models\Ticket;
@@ -16,10 +16,13 @@ use Oka6\SulRadio\Models\TicketCategory;
 use Oka6\SulRadio\Models\TicketComment;
 use Oka6\SulRadio\Models\TicketDocument;
 use Oka6\SulRadio\Models\TicketNotification;
+use Oka6\SulRadio\Models\TicketNotificationClient;
+use Oka6\SulRadio\Models\TicketNotificationClientUser;
 use Oka6\SulRadio\Models\TicketParticipant;
 use Oka6\SulRadio\Models\TicketPriority;
 use Oka6\SulRadio\Models\TicketStatus;
 use Oka6\SulRadio\Models\TicketUrlTracker;
+use Oka6\SulRadio\Models\UserSulRadio;
 use Yajra\DataTables\DataTables;
 
 class TicketController extends SulradioController {
@@ -58,7 +61,7 @@ class TicketController extends SulradioController {
 					$userData = $user->getById($row->owner_id);
 					return $userData->name;
 				})->addColumn('participants', function ($row)  use($user){
-					$participants = TicketParticipant::getUserNameByTicketId($row->id);
+					$participants = TicketParticipant::getUserNameByTicketId($row->id, $user);
 					return $participants;
 				})->toJson(true);
 		}
@@ -73,7 +76,7 @@ class TicketController extends SulradioController {
 	
 	public function store(Request $request) {
 		$ticketForm = $request->all();
-		$userLogged      = Auth::user();
+		$userLogged = Auth::user();
 		$this->validate($request, [
 			'subject'       => 'required',
 			'priority_id'   => 'required',
@@ -83,15 +86,17 @@ class TicketController extends SulradioController {
 			'end_forecast'  => 'required',
 			'content'       => 'required',
 		]);
-		$ticketForm['owner_id']         = $userLogged->id;
+		$ticketForm['subject']          = strtoupper(Helper::stripAccents($request->get('subject')));
+		$ticketForm['owner_id']         = $request->has('owner_id') ? $request->get('owner_id') : $userLogged->id;
 		$ticketForm['html']             = $request->get('content');
 		$ticketForm['start_forecast']   = Helper::convertDateBrToMysql($ticketForm['start_forecast']);
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
-		
+		$ticketForm['show_client']      = isset($ticketForm['show_client']) ?? 0;
 		$ticket = Ticket::create($ticketForm);
 		if(TicketStatus::statusFinished($request->get('status_id'))){
 			$ticketForm['completed_at'] = date('Y-m-d H:i:s');
 		}
+
 		TicketParticipant::insertByController($request, $ticket, $userLogged, TicketNotification::TYPE_NEW);
 		/** Document attach */
 		if(isset($ticketForm['files']) && count($ticketForm['files'])){
@@ -173,14 +178,19 @@ class TicketController extends SulradioController {
 			'end_forecast'  => 'required',
 			'content'       => 'required',
 		]);
+		$ticketForm['subject']          = strtoupper(Helper::stripAccents($request->get('subject')));
 		$ticketForm['html']             = $request->get('content');
+
+		if($hasAdmin && $request->has('owner_id')){
+			$ticketForm['owner_id'] =  $request->get('owner_id');
+		}
 		$ticketForm['start_forecast']   = Helper::convertDateBrToMysql($ticketForm['start_forecast']);
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
 		$ticketForm['completed_at']     = null;
+
 		if($hasAdmin){
 			$ticketForm['show_client']      = isset($ticketForm['show_client']) ?? 0;
 		}
-
 		if(TicketStatus::statusFinished($request->get('status_id'))){
 			$ticketForm['completed_at'] = date('Y-m-d H:i:s');
 		}
@@ -208,15 +218,16 @@ class TicketController extends SulradioController {
 		if(!$data){
 			return redirect(route('admin.page403get'));
 		}
-		$comments       = TicketComment::getAllByTicketId($id);
+		$comments       = TicketComment::getAllByTicketId($id, $user);
 		$emissora       = Emissora::getById($data->emissora_id, $user);
 		$documents      = TicketDocument::getAllByTicketId($id);
 		$trackerUrl     = TicketUrlTracker::active()->where('ticket_id', $id)->get();
-		$owner          = User::getByIdStatic($data->owner_id);
-		$participants   = TicketParticipant::getUserByTicketId($id, true);
+		$owner          = UserSulRadio::getByIdStatic($data->owner_id);
+		$participants   = TicketParticipant::getUserByTicketId($id, true, $user);
+		$usersEmissora  = Client::getUsersByEmissora($data->emissora_id);
 		$contentLog     = 'Usuário '.$user->name. ' visualizou o ticket '. $id;
 		SystemLog::insertLogTicket(SystemLog::TYPE_VIEW, $contentLog, $id, $user->id);
-		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents, 'trackerUrl'=>$trackerUrl]);
+		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents, 'trackerUrl'=>$trackerUrl, 'usersEmissora'=>$usersEmissora]);
 	}
 	public function comment(Request $request, $id) {
 		$userLogged = Auth::user();
@@ -309,19 +320,92 @@ class TicketController extends SulradioController {
 		SystemLog::insertLogTicket(SystemLog::TYPE_DELETE_TRACKER_URL, $contentLog, $ticketUrlTracker->ticket_id, $userLogged->id);
 		return response()->json(['message'=>'success'], 200);
 	}
-	
+
+	public function commentSendEmail(Request $request) {
+		$commentId = $request->get('comment_id');
+		/** Veirifica ja ja foi enviado  */
+		if(TicketNotificationClient::hasExist($commentId)){
+			return response()->json(['message'=>'Esse comentário ja foi enviado por email.'], 500);
+		}
+
+		$users = $request->get('users');
+		if(!count($users)){
+			return response()->json(['message'=>'Selecione ao menos um usuário'], 500);
+		}
+		$attachment = $request->get('attachment');
+		if(count($attachment) && count($attachment)>10){
+			return response()->json(['message'=>'Selecione no máximo 10 anexos'], 500);
+		}
+		$comment = TicketComment::getById($commentId);
+		$userLogged = Auth::user();
+		$dataSave=[
+			'type'=> TicketNotificationClient::TYPE_QUESTION,
+			'ticket_id'=> $comment->ticket_id,
+			'user_id'=> $userLogged->id,
+			'comment_id'=> $comment->id,
+			'comment'=> $request->get('comment'),
+			'total_send'=> 0,
+			'total_answered'=>0,
+			'status'=>TicketNotificationClient::STATUS_WAITING,
+		];
+		foreach ($attachment as $key=>$value){
+			$index = $key+1;
+			$dataSave["send_file_{$index}"] = $value;
+		}
+		$ticketNotificationClient = TicketNotificationClient::create($dataSave);
+		if(!$ticketNotificationClient){
+			return response()->json(['message'=>'Erro ao salvar notificação'], 500);
+		}
+		foreach ($users as $key=>$value){
+			$userData = UserSulRadio::getByIdStatic($value);
+			TicketNotificationClientUser::create([
+				'identify'=> uniqid(''),
+				'ticket_notification_client_id'=> $ticketNotificationClient->id,
+				'user_id'=> $value,
+				'user_name'=> $userData->name.' '.$userData->lastname,
+				'user_email'=> $userData->email,
+				'status'=> TicketNotificationClientUser::STATUS_WAITING,
+			]);
+		}
+		$comment->send_client=1;
+		$comment->save();
+		$contentLog = 'Usuário '.$userLogged->name. ' solicitou envio de email para o comentário['. $commentId. '] ticket['.$comment->ticket_id.'] ';
+
+		SystemLog::insertLogTicket(SystemLog::TYPE_SEND_EMAIL_CLIENT, $contentLog, $comment->ticket_id, $userLogged->id);
+		return response()->json(['message'=>'success'], 200);
+	}
+
 	protected function makeParameters($extraParameter = null) {
 		$user = Auth::user();
+		$users = UserSulRadio::whereNull('client_id')
+			->when((isset($user->users_ticket) && count($user->users_ticket)), function ($query) use($user) {
+				$usersAllow = $user->users_ticket;
+				$usersAllow[]=(int)$user->id;
+				return $query->whereIn('id', $usersAllow);
+			})
+			->orderBy('name')->get();
+		foreach ($users as &$user){
+			$userInfoArray= [];
+			if(isset($user->users_ticket) && count($user->users_ticket)){
+				$usersInfo = UserSulRadio::whereIn('id', $user->users_ticket)->get();
+				foreach ($usersInfo as $userInfo){
+					$userInfoArray[]=['name'=>$userInfo->name.' '.$userInfo->lastname, 'id'=>$userInfo->id];
+				}
+			}
+			$user->user_info = $userInfoArray;
+		}
+
 		$parameters = [
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('ticket.create'),
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('ticket.edit', [1]),
 			'hasStore' => ResourceAdmin::hasResourceByRouteName('ticket.store'),
 			'hasUpdate' => ResourceAdmin::hasResourceByRouteName('ticket.update', [1]),
+			'hasSendNotification' => ResourceAdmin::hasResourceByRouteName('ticket.comment.send.email'),
 			'status' => TicketStatus::getWithCache(),
 			'statusFinished' => TicketStatus::statusFinished(),
 			'priority' => TicketPriority::getWithCache(),
 			'category' => TicketCategory::getWithProfile($user),
-			'users' => User::whereNull('client_id')->get(),
+			'users' => $users,
 			'user'  => Auth::user()
 		];
 		$this->parameters = $parameters;

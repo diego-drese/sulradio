@@ -4,6 +4,7 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Oka6\Admin\Http\Library\ResourceAdmin;
@@ -15,6 +16,7 @@ use Oka6\Admin\Models\User;
 use Oka6\Admin\Notifications\ResetPasswordNotification;
 use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Emissora;
+use Oka6\SulRadio\Models\Funcao;
 use Oka6\SulRadio\Models\Plan;
 use Oka6\SulRadio\Models\UserSulRadio;
 use Yajra\DataTables\DataTables;
@@ -103,6 +105,8 @@ class ClientController extends SulradioController {
 					return $profile->name;
 				})->addColumn('last_login_at', function ($row) {
 					return $row->last_login_at;
+				})->addColumn('function_name', function ($row) {
+					return $row->function_id ? Funcao::getById($row->function_id)->desc_funcao : '---';
 				})->addColumn('last_notification_at', function ($row) {
 					return $row->last_notification_at;
 				})->toJson(true);
@@ -125,12 +129,16 @@ class ClientController extends SulradioController {
 			},]
 		
 		], ['required' => 'Campo obrigatório', 'unique' => 'Email já cadastrado']);
-		
+
+		$user = Auth::user();
 		$dataForm['id']                     = Sequence::getSequence('users');
-		$dataForm['client_id']              = $clientId;
+		$dataForm['client_id']              = (int)$clientId;
 		$dataForm['receive_notification']   = isset($dataForm['receive_notification']) && $dataForm['receive_notification'] ? 1 : 0;
 		$dataForm['password']               = bcrypt(Str::random(10));
 		$dataForm['remember_token']         = Str::random(60);
+		$dataForm['user_created_id']        = (int)$user->id;
+		$dataForm['user_updated_id']        = (int)$user->id;
+		$dataForm['user_updated_at']        = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
 		UserSulRadio::create($dataForm);
 		$this->notifyUser($clientId, $dataForm['id']);
 		toastr()->success('Usuário criado com sucesso', 'Sucesso');
@@ -185,8 +193,12 @@ class ClientController extends SulradioController {
 				}
 			},]
 		], ['required' => 'Campo obrigatório', 'unique' => 'Email já cadastrado']);
-		$user                   = UserSulRadio::getBy_Id($userId);
-		$user->update($dataForm);
+		$user = Auth::user();
+		$dataForm['user_updated_id']        = (int)$user->id;
+		$dataForm['user_updated_at']        = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+
+		$userUpdate = UserSulRadio::getBy_Id($userId);
+		$userUpdate->update($dataForm);
 		toastr()->success('Usuário Atualizado com sucesso', 'Sucesso');
 		return redirect(route('client.user', [$clientId]));
 	}
@@ -195,7 +207,7 @@ class ClientController extends SulradioController {
 			'plans'             => Plan::getAll(),
 			'hasAdd'            => ResourceAdmin::hasResourceByRouteName('client.create'),
 			'hasEdit'           => ResourceAdmin::hasResourceByRouteName('client.edit', [1]),
-			
+			'functions'         => Funcao::all(),
 			'hasStore'          => ResourceAdmin::hasResourceByRouteName('client.store'),
 			'hasUpdate'         => ResourceAdmin::hasResourceByRouteName('client.update', [1]),
 			

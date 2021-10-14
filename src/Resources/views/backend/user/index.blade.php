@@ -23,6 +23,7 @@
                                 <th>Nome</th>
                                 <th>Email</th>
                                 <th>Perfil</th>
+                                <th>Crido por</th>
                                 <th>Status</th>
                                 <th>Último Login</th>
                                 <th>Clientes</th>
@@ -33,12 +34,14 @@
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
                                 </th>
                                 <th>
-                                    ---
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Email">
+                                </th>
+                                <th>
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Perfil">
                                 </th>
                                 <th>
                                     ---
                                 </th>
-
                                 <th>
                                     <select name="active" class="form-control statusActive">
                                         <option value="">Todos</option>
@@ -46,6 +49,7 @@
                                         <option value="0">Não</option>
                                     </select>
                                 </th>
+
                                 <th>
                                     ---
                                 </th>
@@ -141,7 +145,8 @@
                 columns: [
                     {data: "name", 'name': 'name'},
                     {data: "email", 'name': 'email'},
-                    {data: "profile_name", 'name': 'profile_name', searchable: false, orderable: false,},
+                    {data: "profile_name", 'name': 'profile_name'},
+                    {data: "created", 'name': 'created'},
                     {data: "active", 'name': 'active', orderable: false,
                         render: function (data, display, row) {
                             if (data == "1") {

@@ -13,6 +13,7 @@ class TicketComment extends Model {
 		'html',
 		'user_id',
 		'ticket_id',
+		'send_client',
 	];
 	protected $table = 'ticket_comment';
 	protected $connection = 'sulradio';
@@ -27,14 +28,22 @@ class TicketComment extends Model {
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
-	public static function getAllByTicketId($id) {
+	public static function getAllByTicketId($id, $user=null) {
 		$comments = self::where('ticket_id', $id)
+			->when(($user && isset($user->users_ticket) && count($user->users_ticket)), function ($query) use($user){
+				$query->whereIn('user_id', $user->users_ticket);
+			})
 			->orderBy('created_at')
 			->get();
 		foreach ($comments as &$comment){
 			$user = User::getByIdStatic($comment->user_id);
 			$comment->user_name = $user->name;
 			$comment->user_picture = $user->picture;
+			$comment->notification = null;
+			if($comment->send_client){
+				$comment->notification = TicketNotificationClient::getByParseToFront($comment->id);
+			}
+
 		}
 		return $comments;
 	}

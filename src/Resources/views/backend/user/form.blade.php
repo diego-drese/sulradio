@@ -116,6 +116,24 @@
             <span class="help-block">{{$errors->first('clients')}}</span>
         @endif
     </div>
+
+    <div class="col-md-12 form-group {{$errors->has('clients') ? 'has-error' : ''}} ">
+        <label for="broadcast">Usuários Tickets </label>
+        <div class="input-group mb-3">
+            <select name="users_ticket[]" id="users_ticket" class="form-control" multiple>
+                @foreach($userTicket as $value)
+                    <option value="{{$value->id}}" selected>{{$value->name}}({{$value->lastname}})</option>
+                @endforeach
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="mdi mdi-radio-tower"></i></span>
+            </div>
+        </div>
+        @if($errors->has('users_ticket'))
+            <span class="help-block">{{$errors->first('users_ticket')}}</span>
+        @endif
+    </div>
+
     <div class="col-md-12 form-group {{$errors->has('description') ? 'text-danger' : ''}} ">
         <label for="description">Observações</label>
         <textarea rows="7" name="description" class="form-control"
@@ -227,7 +245,29 @@
                     };
                 }
             }
-
+        });
+        $("#users_ticket").select2({
+            width: 'calc(100% - 38px)',
+            minimumInputLength: 3,
+            placeholder: 'Selecione',
+            allowClear: true,
+            tag: true,
+            ajax: {
+                url: '{{route('users.search.ticket')}}',
+                data: function (params) {
+                    var query = {
+                        search: params.term,
+                        user_id:{{isset($data->id) ? $data->id : 0}}
+                    }
+                    return query;
+                },
+                processResults: function (data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data
+                    };
+                }
+            }
         });
 
     </script>

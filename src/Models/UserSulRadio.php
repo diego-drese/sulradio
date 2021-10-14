@@ -21,11 +21,16 @@ class UserSulRadio extends User {
 		'last_login_at',
 		'last_notification_at',
 		'client_id',
+		'function_id',
+		'users_ticket',
+		'user_created_id',
+		'user_updated_id',
+		'user_updated_at',
 		'remember_token',
 		'description',
 	];
 	public function scopeClient($query, $clientId){
-		return $query->where('client_id',  $clientId);
+		return $query->where('client_id',  (int)$clientId);
 	}
 	
 	public static function getBy_Id($userId){

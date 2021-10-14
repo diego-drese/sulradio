@@ -5,6 +5,7 @@ namespace Oka6\SulRadio\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Oka6\Admin\Models\User;
 
 class TicketParticipant extends Model {
@@ -57,41 +58,54 @@ class TicketParticipant extends Model {
 		}else if($typeNotification==TicketNotification::TYPE_UPDATE){
 			$contentLog = 'Usuário '.$userLogged->name. ' atualizou o ticket '. $ticket->id;
 			$logType = SystemLog::TYPE_UPDATE;
+		}else if($typeNotification==TicketNotification::TYPE_COMMENT_CLIENT){
+			$contentLog = 'Usuário '.$userLogged->name. ' respondeu a um comentário '. $ticket->id;
+			$logType = SystemLog::TYPE_SEND_EMAIL_NOTIFICATION;
 		}else{
 			$contentLog = 'Usuário '.$userLogged->name. ' adicionou um comentário ao ticket '. $ticket->id;
 			$logType = SystemLog::TYPE_COMMENT;
 		}
 
+		if(!in_array($ticket->owner_id, $participants)){
+			$participants[]=$ticket->owner_id;
+		}
+
 		foreach ($participants as $participant){
 			/** Checks if there is a notification of the same ticket for the user  */
+			$userParticipant            = UserSulRadio::getByIdStatic($participant);
 			$insert['agent_current_id'] = $participant;
 			$insert['agent_old_id']     = $participant;
-			if($userLogged->id!=$participant){
+			$userTickets                = !isset($userParticipant->users_ticket) ? [] : $userParticipant->users_ticket;
+
+			if($userLogged->id!=$participant && (!count($userTickets) || in_array($userLogged->id, $userTickets)) ){
 				TicketNotification::create($insert);
 			}
-			SystemLog::insertLogTicket($logType, $contentLog, $ticket->id, $participant);
+
+			if(!count($userTickets) || in_array($userLogged->id, $userTickets)){
+				SystemLog::insertLogTicket($logType, $contentLog, $ticket->id, $participant);
+			}
 		}
-		SystemLog::insertLogTicket($logType, $contentLog, $ticket->id, $ticket->owner_id);
-		if($userLogged->id!=$ticket->owner_id){
-			$insert['agent_current_id'] = $ticket->owner_id;
-			$insert['agent_old_id']     = $ticket->owner_id;
-			TicketNotification::create($insert);
-		}
-		
 	}
+
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
-	public static function getUserByTicketId($id, $data=false) {
-		$query = self::where('ticket_id', $id)->pluck('user_id')->toArray();
+	public static function getUserByTicketId($id, $data=false, $user=null) {
+		$query = self::where('ticket_id', $id);
+		if($user && isset($user->users_ticket) && count($user->users_ticket)){
+			$usersId = $user->users_ticket;
+			$usersId[]= (int)$user->id;
+			$query->whereIn('user_id', $usersId);
+		}
+		$result = $query->pluck('user_id')->toArray();
 		if($data){
-			$query = User::whereIn('id', $query);
+			$query = User::whereIn('id', $result);
 			return $query->get();
 		}
-		return $query;
+		return $result;
 	}
-	public static function getUserNameByTicketId($id) {
-		$usersId = self::getUserByTicketId($id);
+	public static function getUserNameByTicketId($id, $user=null) {
+		$usersId = self::getUserByTicketId($id, null, $user);
 		return User::whereIn('id', $usersId )->pluck('name')->toArray();
 	}
 	public static function removeByTicket($id) {
