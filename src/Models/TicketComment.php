@@ -31,7 +31,9 @@ class TicketComment extends Model {
 	public static function getAllByTicketId($id, $user=null) {
 		$comments = self::where('ticket_id', $id)
 			->when(($user && isset($user->users_ticket) && count($user->users_ticket)), function ($query) use($user){
-				$query->whereIn('user_id', $user->users_ticket);
+				$usersId = $user->users_ticket;
+				$usersId[]= (int)$user->id;
+				$query->whereIn('user_id', $usersId);
 			})
 			->orderBy('created_at')
 			->get();
