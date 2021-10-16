@@ -313,6 +313,7 @@
         });
 
         $('#owner_id').change(function (){
+            $('#participants_id').attr("disabled", false);
             $('#participants_id option').attr("disabled", true);
             $('#participants_id').val([]).trigger('change');
             var idOwner = Number($(this).val())
@@ -334,6 +335,8 @@
 
         @if(!$data->id)
             $('#owner_id').trigger('change');
+        @elseif($hasAdmin)
+            $('#participants_id').attr("disabled", true);
         @endif
 
         $('.summernote').summernote({

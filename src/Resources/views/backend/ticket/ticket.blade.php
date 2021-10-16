@@ -666,7 +666,7 @@
                     data: {_token:$('input[name="_token"]').val(), 'comment_id':commentId, 'comment':comment, 'users':users, 'attachment':attachment},
                     dataType: "json",
                     success: function (data) {
-                        swal("Sucesso!", "Arquivo removido com sucesso", "success").then(() => {
+                        swal("Sucesso!", "Email agendado com sucesso.", "success").then(() => {
                             location.reload();
                         });
                     },
