@@ -120,10 +120,11 @@ class TicketController extends SulradioController {
 	protected function uploadDocument($fileObj, $ticket, $user){
 		$fileName   = $fileObj->file_name;
 		$path       = $this->tempFolder.'/'.$fileObj->file_name;
+		$fullPath   = storage_path('app/'.$path);
 		try {
-			$filesize   = filesize(storage_path('app/'.$path));
-			$fileType   = mime_content_type(storage_path('app/'.$path));
-			Storage::disk('spaces')->putFileAs("tickets", storage_path('app/'.$path), $fileName);
+			$filesize   = filesize($fullPath);
+			$fileType   = mime_content_type($fullPath);
+			Storage::disk('spaces')->putFileAs("tickets", $fullPath, $fileName);
 			$documentSave = [
 				'ticket_id'=>$ticket->id,
 				'user_id'=>$user->id,
@@ -135,7 +136,7 @@ class TicketController extends SulradioController {
 				'removed'=>0,
 			];
 			TicketDocument::create($documentSave);
-			Storage::delete($path);
+			unlink($fullPath);
 		}catch (\Exception $e){
 			Log::error('TicketController uploadDocument', ['message'=>$e->getMessage(),'file'=>$e->getFile(),'line'=>$e->getLine(), 'pathStorage'=>Storage::get($path)]);
 		}
