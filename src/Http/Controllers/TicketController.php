@@ -332,7 +332,7 @@ class TicketController extends SulradioController {
 		if(!count($users)){
 			return response()->json(['message'=>'Selecione ao menos um usuário'], 500);
 		}
-		$attachment = $request->get('attachment');
+		$attachment = $request->get('attachment', []);
 		if(count($attachment) && count($attachment)>10){
 			return response()->json(['message'=>'Selecione no máximo 10 anexos'], 500);
 		}

@@ -351,6 +351,9 @@
                                     Arquivo
                                 </th>
                                 <th class="p-2">
+                                    Tamanho
+                                </th>
+                                <th class="p-2">
                                     Tipo
                                 </th>
                             </tr>
@@ -360,7 +363,7 @@
                             @foreach($documents as $document)
                                 <tr>
                                     <td>
-                                        <input type="checkbox" name="attachment" value="{{$document->id}}">
+                                        <input type="checkbox" name="attachment" data-size="{{$document->file_size}}"value="{{$document->id}}">
                                     </td>
                                     <td>
                                         <a target="_blank" href="{{route('document.download.ticket',[$document->id])}}" >
@@ -368,6 +371,8 @@
                                         </a>
                                     </td>
                                     <td>
+                                        {!! $document->file_size_format !!}
+                                    </td> <td>
                                         {!! $document->file_type !!}
                                     </td>
                                 </tr>
@@ -641,11 +646,25 @@
                     .filter((checkbox) => checkbox.checked)
                     .map((checkbox) => checkbox.value);
 
+            var attachmentSize = Array
+                    .from(document.querySelectorAll('input[name="attachment"]'))
+                    .filter((checkbox) => checkbox.checked)
+                    .map((checkbox) => $(checkbox).attr('data-size'));
+
             if(users.length<1){
                 toastr.info('Selecione ao menos um usuário para envio', "Informações", {timeOut: 6000});
                 return false;
             }
-
+            if(attachmentSize.length){
+                var size = 0;
+                for (var i=0; i<attachmentSize.length; i++){
+                    size+= Number(attachmentSize[i].replace('KB', ""));
+                }
+                if(size>120000){
+                    toastr.info('Limite de anexos excedidos, é possível enviar somente 15Mb ', "Informações", {timeOut: 6000});
+                    return false;
+                }
+            }
             var comment = $("#modal-comment").val();
             var text="Voce selecionou "+users.length+" usuário(s) e "+attachment.length+' anexo(s) para o envio desse comentário. Essa ação nao pode ser desfeita.';
 

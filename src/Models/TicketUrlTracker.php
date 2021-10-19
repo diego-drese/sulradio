@@ -36,7 +36,7 @@ class TicketUrlTracker extends Model {
 	}
 
 	public static function getToCheck() {
-		return self::active()->where('last_tracker', '<',  Carbon::now()->subHour(18))->get();
+		return self::active()->where('last_tracker', '<',  Carbon::now()->subHour(3))->get();
 	}
 
 	protected $connection = 'sulradio';

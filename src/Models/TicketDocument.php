@@ -9,6 +9,7 @@ use Oka6\Admin\Models\User;
 
 class TicketDocument extends Model {
 	const TABLE = 'ticket_document';
+	protected $appends=['file_size_format'];
 	protected $fillable = [
 		'ticket_id',
 		'user_id',
@@ -20,23 +21,24 @@ class TicketDocument extends Model {
 		'file_size',
 		'removed',
 	];
+
 	protected $table = 'ticket_document';
 	protected $connection = 'sulradio';
 	
 	public function getUpdatedAtAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
 	}
-	
-	public function getFileSizeAttribute($value) {
-		if( $value >= 1<<30)
-			return number_format($value/(1<<30),2)."GB";
-		else if( $value >= 1<<20 )
-			return number_format($value/(1<<20),2)."MB";
-		else if( $value >= 1<<10)
-			return number_format($value/(1<<10),2)."KB";
-		return number_format($value)." bytes";
+
+	public function getFileSizeFormatAttribute() {
+		if( $this->file_size >= 1<<30)
+			return number_format($this->file_size/(1<<30),2)."GB";
+		else if( $this->file_size >= 1<<20 )
+			return number_format($this->file_size/(1<<20),2)."MB";
+		else if( $this->file_size >= 1<<10)
+			return number_format($this->file_size/(1<<10),2)."KB";
+		return number_format($this->file_size)." bytes";
 	}
-	
+
 	public function getFileTypeAttribute($value) {
 		if( $value == 'application/pdf')
 			return '<span class="fas fa-file-pdf font-24" title="PDF"></span>';
@@ -55,7 +57,7 @@ class TicketDocument extends Model {
 		
 		return '<span class="fas fa-file font-24 text-danger" title="Não definido"></span>';
 	}
-	
+
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
