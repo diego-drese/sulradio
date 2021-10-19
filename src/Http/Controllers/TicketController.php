@@ -5,6 +5,7 @@ namespace Oka6\SulRadio\Http\Controllers;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\SulRadio\Helpers\Helper;
@@ -119,21 +120,26 @@ class TicketController extends SulradioController {
 	protected function uploadDocument($fileObj, $ticket, $user){
 		$fileName   = $fileObj->file_name;
 		$path       = $this->tempFolder.'/'.$fileObj->file_name;
-		$filesize   = Storage::size($path);
-		$fileType   = Storage::mimeType($path);
-		Storage::disk('spaces')->putFileAs("tickets", storage_path('app/'.$path), $fileName);
-		$documentSave = [
-			'ticket_id'=>$ticket->id,
-			'user_id'=>$user->id,
-			'file_name'=>$fileName,
-			'file_name_original'=>$fileObj->file_name_original,
-			'file_type'=>$fileType,
-			'file_preview'=>'',
-			'file_size'=>$filesize,
-			'removed'=>0,
-		];
-		TicketDocument::create($documentSave);
-		Storage::delete($path);
+		try {
+			$filesize   = filesize(storage_path('app/'.$path));
+			$fileType   = mime_content_type(storage_path('app/'.$path));
+			Storage::disk('spaces')->putFileAs("tickets", storage_path('app/'.$path), $fileName);
+			$documentSave = [
+				'ticket_id'=>$ticket->id,
+				'user_id'=>$user->id,
+				'file_name'=>$fileName,
+				'file_name_original'=>$fileObj->file_name_original,
+				'file_type'=>$fileType,
+				'file_preview'=>'',
+				'file_size'=>$filesize,
+				'removed'=>0,
+			];
+			TicketDocument::create($documentSave);
+			Storage::delete($path);
+		}catch (\Exception $e){
+			Log::error('TicketController uploadDocument', ['message'=>$e->getMessage(),'file'=>$e->getFile(),'line'=>$e->getLine(), 'pathStorage'=>Storage::get($path)]);
+		}
+
 	}
 	public function edit($id) {
 		$user       = Auth::user();
@@ -332,7 +338,7 @@ class TicketController extends SulradioController {
 		if(!count($users)){
 			return response()->json(['message'=>'Selecione ao menos um usuário'], 500);
 		}
-		$attachment = $request->get('attachment', []);
+		$attachment = $request->get('attachment');
 		if(count($attachment) && count($attachment)>10){
 			return response()->json(['message'=>'Selecione no máximo 10 anexos'], 500);
 		}

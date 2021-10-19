@@ -761,11 +761,10 @@
                         this.removeFile(file);
                     });
                     this.on("complete", function (file) {
-                        toastr.success('Arquivos carregados com sucesso, a página sera recarregada em 2 segundos', "Sucesso", {timeOut: 6000});
+                        toastr.success('Arquivos carregados com sucesso, a página sera recarregada em 4 segundos', "Sucesso", {timeOut: 6000});
                         setTimeout(function () {
                             location.reload();
-                        }, 2000);
-
+                        }, 4000);
                     })
                 },
                 success: function (file, result) {
