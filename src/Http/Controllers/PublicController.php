@@ -4,8 +4,10 @@ namespace Oka6\SulRadio\Http\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response as Download;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\Admin\Models\Resource;
 use Oka6\Admin\Models\User;
@@ -123,9 +125,13 @@ class PublicController extends SulradioController {
 		if(!$document){
 			return redirect(route('admin.page404get'));
 		}
-		
-		$urlTemp = Storage::disk('spaces')->temporaryUrl('tickets/'.$document->file_name, now()->addMinutes(5));
-		return redirect($urlTemp);
+		//$urlTemp = Storage::disk('spaces')->temporaryUrl('tickets/'.$document->file_name, now()->addMinutes(5));
+		$headers = [
+			'Content-Type'        => "Content-Type: {$document->file_type}",
+			'Content-Disposition' => 'attachment; filename="'. $document->file_name_original .'"',
+		];
+		return Download::make(Storage::disk('spaces')->get('tickets/'.$document->file_name), Response::HTTP_OK, $headers);
+		//return redirect($urlTemp);
 	}
 	public function removeDocumentTicket(Request $request, $id=null) {
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
