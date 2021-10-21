@@ -61,13 +61,13 @@
 											Nome: {{$item->document_name}}
 										</p>
 										<p>
-											{!! $order && $order=='created_at' ? "<b>Criado:{$item->date}</b>" : "Criado:{$item->date}" !!}
+											{!! $order && $order=='created_at' ? "<b>Criado: {$item->create}</b>" : "Criado: {$item->create}" !!}
 										</p>
 										<p>
 											{!! $order && $order=='date_document' ? "<b>Data: {$item->date}</b>" : "Data: {$item->date}" !!}
 										</p>
 										<p>
-											{!! $order && $order=='validated' ? "<b>Validade:  {$item->date}</b>" : "Validade:  {$item->date}" !!}
+											{!! $order && $order=='validated' ? "<b>Validade: {$item->valid}</b>" : "Validade: {$item->valid}" !!}
 										</p>
 
 										<p>

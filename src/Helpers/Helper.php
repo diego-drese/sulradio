@@ -3,6 +3,7 @@
 namespace Oka6\SulRadio\Helpers;
 
 
+use Illuminate\Support\Facades\Config;
 use Oka6\Admin\Library\MongoUtils;
 
 class Helper {
@@ -158,6 +159,33 @@ class Helper {
 		}
 		$dateBr = \DateTime::createFromFormat($format, $date);
 		return $dateBr->format('Y-m-d H:i:s');
+	}
+	public static function getEmails($tries=null){
+		$env = Config::get('app.env');
+		if($env=='local'){
+			$emailSent = collect(Config::get('multimail.emails'))->reject(function ($array){
+				return $array['provider']!='mailtrap';
+			});
+		}else{
+			$emailSent = collect(Config::get('multimail.emails'))->reject(function ($array){
+				return $array['provider']=='mailtrap';
+			});
+
+			if($tries && is_array($tries) && count($tries)){
+				$emailSent = $emailSent->reject(function ($array) use($tries){
+					return in_array($array['email'], $tries);
+				});
+			}
+		}
+		return $emailSent;
+	}
+
+	public static function getEmailCount(){
+		return self::getEmails()->count();
+	}
+
+	public static function sendEmailRandom($tries=null){
+		return self::getEmails($tries)->random();
 	}
 	
 }

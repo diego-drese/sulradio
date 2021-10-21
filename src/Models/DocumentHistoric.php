@@ -93,9 +93,9 @@ class DocumentHistoric extends Model {
 				$item->user_picture = $user->picture;
 				$item->user_name    = $user->name;
 				$item->action       = DocumentHistoric::ACTION_TRANSLATE[$item->action];
-				$item->create       = $item->created_at->format('d/m/Y');
-				$item->date        = $item->date_document->format('d/m/Y');
-				$item->valid        = $item->validated->format('d/m/Y');
+				$item->create       = $item->created_at->format('d/m/Y H:i');
+				$item->date         = $item->date_document ? $item->date_document->format('d/m/Y') : '---';
+				$item->valid        = $item->validated ? $item->validated->format('d/m/Y') : '---';
 
 				$item->file_size    = $document->getFileSizeAttribute($item->file_size);
 				$item->download     = route('document.download', [$item->document_id]);

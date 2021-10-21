@@ -26,10 +26,14 @@ class SulRadioServiceProvider extends ServiceProvider {
 		$this->mergeConfigFrom(
 			__DIR__ . '/Config/profile_type.php', 'admin.profile_type'
 		);
+
 		$this->mergeConfigFrom(
 			__DIR__ . '/Config/profile_type.php', 'sulradio.profile_type'
 		);
 
+		$this->mergeConfigFrom(
+			__DIR__ . '/Config/multimail.php', 'multimail'
+		);
 		if (file_exists($file = __DIR__.'/Helpers/helper_function.php')) {
 			require $file;
 		}
@@ -54,6 +58,8 @@ class SulRadioServiceProvider extends ServiceProvider {
 		} elseif ($key == 'admin.profile_type') {
 			$this->app['config']->set($key, array_merge($config, require $path));
 		}elseif ($key == 'sulradio.profile_type') {
+			$this->app['config']->set($key, array_merge($config, require $path));
+		}elseif ($key == 'multimail') {
 			$this->app['config']->set($key, array_merge($config, require $path));
 		}
 	}

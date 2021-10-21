@@ -4,8 +4,9 @@ namespace Oka6\SulRadio\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use IWasHereFirst2\LaravelMultiMail\Facades\MultiMail;
 use Oka6\Admin\Models\User;
+use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Mail\TicketComment;
 use Oka6\SulRadio\Mail\TicketCreate;
 use Oka6\SulRadio\Mail\TicketTransfer;
@@ -31,7 +32,7 @@ class ProcessTicketNotification extends Command {
 	protected $description  = 'Process notifications from ticket';
 	
 	
-	
+	protected $emailFrom = null;
 	/**
 	 * Create a new command instance.
 	 *
@@ -44,20 +45,36 @@ class ProcessTicketNotification extends Command {
 	public function handle() {
 		Log::info('ProcessTicketNotification, start process');
 		$notifications = TicketNotification::getToNotify();
+		$emailCount=Helper::getEmailCount();
+
+		$tries=[];
 		foreach ($notifications as $notification){
-			if($notification->type==TicketNotification::TYPE_NEW){
-				$this->sendEmailTypeNew($notification);
-			}else if($notification->type==TicketNotification::TYPE_UPDATE){
-				$this->sendEmailTypeUpdate($notification);
-			}else if($notification->type==TicketNotification::TYPE_COMMENT_CLIENT){
-				$this->sendEmailTypeCommentClient($notification);
-			}else if($notification->type==TicketNotification::TYPE_COMMENT){
-				$this->sendEmailTypeComment($notification);
-			}else if($notification->type==TicketNotification::TYPE_TRANSFER_AGENT){
-				$this->sendEmailTypeTransfer($notification);
+			$try=count($tries);
+
+			while ($try < $emailCount) {
+				$this->emailFrom = Helper::sendEmailRandom($tries);
+				try {
+					if ($notification->type == TicketNotification::TYPE_NEW) {
+						$this->sendEmailTypeNew($notification);
+					} else if ($notification->type == TicketNotification::TYPE_UPDATE) {
+						$this->sendEmailTypeUpdate($notification);
+					} else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
+						$this->sendEmailTypeCommentClient($notification);
+					} else if ($notification->type == TicketNotification::TYPE_COMMENT) {
+						$this->sendEmailTypeComment($notification);
+					} else if ($notification->type == TicketNotification::TYPE_TRANSFER_AGENT) {
+						$this->sendEmailTypeTransfer($notification);
+					}
+					$notification->status = TicketNotification::STATUS_PROCESSED;
+					$notification->save();
+					$try = $emailCount;
+				} catch (\Exception $e) {
+					dd($e);
+					$try++;
+					$tries[] = $this->emailFrom['email'];
+					Log::error('ProcessTicketNotification, retry send email', ['try' => $try, 'e' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'tries'=>$tries]);
+				}
 			}
-			$notification->status = TicketNotification::STATUS_PROCESSED;
-			$notification->save();
 		}
 	}
 	public function getTicket($id){
@@ -78,7 +95,7 @@ class ProcessTicketNotification extends Command {
 		$ticket         = $this->getTicket($notification->ticket_id);
 		$ticket->owner  = $owner;
 		$ticket->agent  = $currentAgent;
-		Mail::to($currentAgent->email)->send(new TicketCreate($ticket));
+		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCreate($ticket));
 	}
 	
 	public function sendEmailTypeComment($notification){
@@ -87,7 +104,7 @@ class ProcessTicketNotification extends Command {
 		$comment             = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
 		$comment->agent      = $currentAgent;
 		$comment->userLogged = $userLogged;
-		Mail::to($currentAgent->email)->send(new TicketComment($comment));
+		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketComment($comment));
 	}
 	public function sendEmailTypeCommentClient($notification){
 		$userLogged         = User::getByIdStatic($notification->user_logged);
@@ -95,7 +112,7 @@ class ProcessTicketNotification extends Command {
 		$comment             = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
 		$comment->agent      = $currentAgent;
 		$comment->userLogged = $userLogged;
-		Mail::to($currentAgent->email)->send(new TicketCommentFromClient($comment));
+		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCommentFromClient($comment));
 	}
 	
 	public function sendEmailTypeUpdate($notification){
@@ -107,7 +124,7 @@ class ProcessTicketNotification extends Command {
 		$ticket->owner      = $owner;
 		$ticket->agent      = $currentAgent;
 		$ticket->userLogged = $userLogged;
-		Mail::to($currentAgent->email)->send(new TicketUpdate($ticket));
+		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketUpdate($ticket));
 	}
 	
 	public function sendEmailTypeTransfer($notification){
@@ -123,12 +140,12 @@ class ProcessTicketNotification extends Command {
 		$ticket->userLogged = $userLogged;
 		
 		$ticket->sentTo   = 'CurrentAgent';
-		Mail::to($currentAgent->email)->send(new TicketTransfer($ticket));
+		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketTransfer($ticket));
 		$ticket->sentTo   = 'OldAgent';
-		Mail::to($oldAgent->email)->send(new TicketTransfer($ticket));
+		MultiMail::to($oldAgent->email)->from($this->emailFrom['email'])->send(new TicketTransfer($ticket));
 		if($notification->user_logged!=$notification->owner_id){
 			$ticket->sentTo   = 'Owner';
-			Mail::to($owner->email)->send(new TicketTransfer($ticket));
+			MultiMail::to($owner->email)->from($this->emailFrom['email'])->send(new TicketTransfer($ticket));
 		}
 		
 	}
