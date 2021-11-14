@@ -660,7 +660,7 @@
                 for (var i=0; i<attachmentSize.length; i++){
                     size+= Number(attachmentSize[i].replace('KB', ""));
                 }
-                if(size>120000){
+                if(size>15728640){
                     toastr.info('Limite de anexos excedidos, é possível enviar somente 15Mb ', "Informações", {timeOut: 6000});
                     return false;
                 }
