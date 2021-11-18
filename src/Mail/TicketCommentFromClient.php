@@ -27,7 +27,6 @@ class TicketCommentFromClient extends Mailable {
 	 */
 	public function build() {
 		$this->data->html = $this->data->answer;
-		$this->data->ticket_id = $this->data->ticket_notification_client_id;
 		return $this->subject('Comentário no ticket')
 			->markdown('SulRadio::backend.emails.ticket-comment', ['data' => $this->data, 'url'=>'']);
 	}

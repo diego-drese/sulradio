@@ -66,7 +66,13 @@ class ProcessXMLAnatel extends Command {
 	}
 	public function downloadFile($url, $fileName){
 		$this->info("Download file[{$fileName}] from ".$url);
-		Storage::disk('local')->put($fileName, file_get_contents($url));
+		$streamContext = stream_context_create(array(
+			'http' => array(
+				'method' => 'GET',
+				'timeout' => 300
+			)
+		));
+		Storage::disk('local')->put($fileName, file_get_contents($url, false, $streamContext));
 	}
 	public function unzipFiles($fileNameZip){
 		$file = storage_path("app/{$fileNameZip}");

@@ -109,9 +109,11 @@ class ProcessTicketNotification extends Command {
 	public function sendEmailTypeCommentClient($notification){
 		$userLogged         = User::getByIdStatic($notification->user_logged);
 		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
-		$comment             = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
-		$comment->agent      = $currentAgent;
-		$comment->userLogged = $userLogged;
+		$comment            = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
+		$clientUser         = \Oka6\SulRadio\Models\TicketNotificationClient::getById($comment->ticket_notification_client_id);
+		$comment->agent     = $currentAgent;
+		$comment->userLogged= $userLogged;
+		$comment->ticket_id = $clientUser->ticket_id;
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCommentFromClient($comment));
 	}
 	
