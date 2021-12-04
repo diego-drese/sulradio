@@ -185,7 +185,7 @@
                                             </a>
                                         </li>
                                     @else
-                                        <li class="list-group-item text-left " id="document-{{$document->id}}">
+                                        <li class="list-group-item text-left document-active" id="document-{{$document->id}}">
                                             <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente' : ''}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
                                                 {{$document->file_name_original}}
                                             </a>
@@ -558,17 +558,21 @@
         .list-group .document-removed{
             padding-left: 1.4em;
         }
+
+        .list-group .document-active::marker{
+            content: "";
+        }
+        
         .list-group .document-removed::marker{
             content: "";
         }
+
         .list-group .document-removed::after{
              font-family: "Font Awesome 5 Free";
              font-weight: 900;
              color: #ffbc34!important;
              display: inline;
              content: "\f069"; /* FontAwesome Unicode */
-
-
         }
     </style>
 @endsection
@@ -582,9 +586,11 @@
         $(".bt-switch input[type='checkbox']").bootstrapSwitch();
         $('#documents-active').on('switchChange.bootstrapSwitch', function (event, state) {
             if($("#documents-active").is(':checked')) {
-                $('.document-removed').hide()
+                $('.document-removed').hide();
+                $('.document-active').show();
             } else {
-                $('.document-removed').show()
+                $('.document-removed').show();
+                $('.document-active').hide();
             }
         });
         var hideAllPopovers = function() {
