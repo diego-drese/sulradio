@@ -169,17 +169,31 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card-body text-center">
-                            <h4 class="card-title">Anexos</h4>
+                            <h4 class="card-title">Anexos <div class="btn-group bt-switch mr-2" title="Não exibe os documentos removidos">
+                                    <input id="documents-active" name="documents-active" type="checkbox" title="Ativos" checked
+                                           value="0" data-on-color="success" data-off-color="danger"
+                                           data-on-text='<i class="fas fa-check-circle"></i>'
+                                           data-off-text='<i class="fas fa-times-circle"></i>'>
+                                </div></h4>
+
                             <ul  class="list-group">
                                 @foreach($documents as $document)
-                                    <li class="list-group-item text-left " id="document-{{$document->id}}">
-                                        <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente' : ''}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
-                                            {{$document->file_name_original}}
-                                        </a>
-                                        @if($user->id==$document->user_id || $hasAdmin)
-                                            <span class="delete-todo todo-action cursor-pointer delete-document" id="delDoc-{{$document->id}}"><i class="ti-close"></i></span>
-                                        @endif
-                                    </li>
+                                    @if($document->removed)
+                                        <li class="list-group-item text-left document-removed hide" id="document-{{$document->id}}">
+                                            <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente - REMOVIDO' : 'REMOVIDO(Não exibe para o cliente)'}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
+                                                {{$document->file_name_original}}
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li class="list-group-item text-left " id="document-{{$document->id}}">
+                                            <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente' : ''}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
+                                                {{$document->file_name_original}}
+                                            </a>
+                                            @if($user->id==$document->user_id || $hasAdmin)
+                                                <span class="delete-todo todo-action cursor-pointer delete-document" id="delDoc-{{$document->id}}"><i class="fas fa-trash-alt text-danger "></i></span>
+                                            @endif
+                                        </li>
+                                    @endif
                                 @endforeach
                             </ul>
 
@@ -428,7 +442,7 @@
 
                     </div>
                     <hr>
-                    <h5 class="mdi mdi-attachment m-b-5"> Anexos</h5>
+                    <h5 class="mdi mdi-attachment m-b-5"> Anexos </h5>
                     <div id="modal-attachment-sent"  class="overflow-auto">
                         <table class="table table-bordered border-primary">
                             <thead class="bg-primary text-white">
@@ -463,6 +477,7 @@
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/summernote.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/dropzone.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/sweetalert2.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/bootstrap-switch.css')}}">
     <style>
         .note-toolbar-wrapper{height: inherit!important;}
         .note-toolbar{z-index: 5}
@@ -536,15 +551,42 @@
         .mouse-pointer:hover{
             text-decoration: underline;
         }
+        .infraCaption{
+            caption-side: top;
+            caption-side: top;
+        }
+        .list-group .document-removed{
+            padding-left: 1.4em;
+        }
+        .list-group .document-removed::marker{
+            content: "";
+        }
+        .list-group .document-removed::after{
+             font-family: "Font Awesome 5 Free";
+             font-weight: 900;
+             color: #ffbc34!important;
+             display: inline;
+             content: "\f069"; /* FontAwesome Unicode */
 
+
+        }
     </style>
 @endsection
 @section('script_footer_end')
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/summernote.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/dropzone.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/sweetalert2.js')}}></script>
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/bootstrap-switch.js')}}></script>
     <script>
         var urlDownload='{{route('document.download.ticket',[':id'])}}';
+        $(".bt-switch input[type='checkbox']").bootstrapSwitch();
+        $('#documents-active').on('switchChange.bootstrapSwitch', function (event, state) {
+            if($("#documents-active").is(':checked')) {
+                $('.document-removed').hide()
+            } else {
+                $('.document-removed').show()
+            }
+        });
         var hideAllPopovers = function() {
             $('.client-notified-info').each(function() {
                 if($(this).attr('aria-describedby')){
@@ -716,7 +758,7 @@
                     dataType: "json",
                     success: function (data) {
                         swal("Sucesso!", "Arquivo removido com sucesso", "success").then(() => {
-                            $('#'+id).remove();
+                            document.location.reload(true);
                         });
                     },
                     error: function (xhr, ajaxOptions, thrownError) {

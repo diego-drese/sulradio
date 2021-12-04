@@ -227,7 +227,7 @@ class TicketController extends SulradioController {
 		}
 		$comments       = TicketComment::getAllByTicketId($id, $user);
 		$emissora       = Emissora::getById($data->emissora_id, $user);
-		$documents      = TicketDocument::getAllByTicketId($id);
+		$documents      = TicketDocument::getAllByTicketId($id, 1);
 		$trackerUrl     = TicketUrlTracker::active()->where('ticket_id', $id)->get();
 		$owner          = UserSulRadio::getByIdStatic($data->owner_id);
 		$participants   = TicketParticipant::getUserByTicketId($id, true, $user);

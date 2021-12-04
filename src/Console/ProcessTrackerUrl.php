@@ -94,12 +94,24 @@ class ProcessTrackerUrl extends Command {
 		switch ($domain){
 			case 'sei.anatel.gov.br':
 			case 'sei.mctic.gov.br':
-				$tblHistorico = $dom->saveXML($dom->getElementById('tblHistorico'));
+				$html = null;
+				$tblDocumentos = $dom->saveXML($dom->getElementById('tblDocumentos'));
+				if (str_contains($tblDocumentos, 'table id="tblDocumentos"')) {
+					$tblDocumentos =preg_replace("/<\/?a( [^>]*)?>/i", "", $tblDocumentos);
+					$tblDocumentos = preg_replace("/<img src=.*?>(.*?)/","", $tblDocumentos);
+					$tblDocumentos = preg_replace("/<input type=.*?>(.*?)/","", $tblDocumentos);
+					$html=$tblDocumentos;
+				}
+
+				$tblHistorico= $dom->saveXML($dom->getElementById('tblHistorico'));
 				if (str_contains($tblHistorico, 'table id="tblHistorico"')) {
-					return $tblHistorico;
+					$tblHistorico = preg_replace("/<a href=.*?>(.*?)<\/a>/","", $tblHistorico);
+					$tblHistorico = preg_replace("/<img src=.*?>(.*?)/","", $tblHistorico);
+					$tblHistorico = preg_replace("/<input type=.*?>(.*?)/","", $tblHistorico);
+					$html.=$tblHistorico;
 				}
 				Log::info('ProcessTrackerUrl parseDomain, identify not found', ['url'=>$url]);
-				return null;
+				return $html;
 			break;
 			default;
 				return $dom->saveXML($dom->getElementsByTagName('body'));

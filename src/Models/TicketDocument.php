@@ -61,11 +61,13 @@ class TicketDocument extends Model {
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
-	public static function getAllByTicketId($id) {
-		return  self::where('ticket_document.ticket_id', $id)
-			->where('removed', 0)
-			->orderBy('ticket_document.file_name_original')
-			->get();
+	public static function getAllByTicketId($id, $showRemoved=0) {
+		$query = self::where('ticket_document.ticket_id', $id)
+				->orderBy('ticket_document.file_name_original');
+		if(!$showRemoved){
+			$query->where('removed', 0);
+		}
+		return	$query->get();
 	}
 	
 	public static function removeById($id, $user, $hasAdmin) {
