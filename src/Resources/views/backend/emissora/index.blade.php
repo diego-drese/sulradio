@@ -22,7 +22,7 @@
                                aria-describedby="file_export_info">
                             <thead>
                             <tr>
-                                <th style="width: 120px">Ações</th>
+                                <th style="width: 130px">Ações</th>
                                 <th>Razão Social</th>
                                 <th>Serviço</th>
                                 <th>Localidade</th>
@@ -127,21 +127,18 @@
                             @if($hasAtosOficiais)
                                 edit_button += '<a href="' + data.atos_oficiais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos Oficiais</b></a>';
                             @endif
-                            @if($hasDocument)
-                                edit_button += '<a href="' + data.documents + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos</b></a>';
-                            @endif
-                            @if($hasDocumentLegal)
-                                edit_button += '<a href="' + data.documents_legal + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Jur.</b></a>';
-                            @endif
-                            @if($hasDocumentEngineering)
-                                edit_button += '<a href="' + data.documents_engineering + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Eng.</b></a>';
-                            @endif
-                            @if($hasDocumentAdmin)
-                                edit_button += '<a href="' + data.documents_admin + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Admin.</b></a>';
-                            @endif
                             @if($hasTicket)
-                                edit_button += '<a href="' + data.ticket + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos.</b></a>';
+                                edit_button += '<a href="' + data.ticket + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos</b></a>';
                             @endif
+                            if(data.url_mosaico){
+                                edit_button += '<a href="' + data.url_mosaico + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>MOSAICO</b></a>';
+                            }
+                            if(data.url_seacco){
+                                edit_button += '<a href="' + data.url_seacco + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>SEACCO</b></a>';
+                            }
+                            if(data.url_cnpj){
+                                edit_button += '<a href="' + data.url_cnpj + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>RECEITA</b></a>';
+                            }
                                 return edit_button
                         }
                     },

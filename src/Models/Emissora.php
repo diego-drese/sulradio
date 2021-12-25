@@ -55,6 +55,10 @@ class Emissora extends Model {
 		'mapa_cobertura',
 		'mapa_localidade',
 		'informacao_renovacao',
+		'fistel',
+		'url_mosaico',
+		'url_seacco',
+		'url_cnpj',
 	];
 	protected $connection = 'sulradio';
 	protected $table = 'emissora';

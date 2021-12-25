@@ -562,7 +562,7 @@
         .list-group .document-active::marker{
             content: "";
         }
-        
+
         .list-group .document-removed::marker{
             content: "";
         }

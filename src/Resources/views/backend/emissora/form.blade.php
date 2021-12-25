@@ -1,14 +1,7 @@
+
+
 <div class="row">
-    <div class="col-md-4 form-group {{$errors->has('type_user') ? 'has-error' : ''}} ">
-        <label for="IdStatusSead">Status SEAD * </label>
-        <select class="form-control select2" id="status_seadID" name="status_seadID" required>
-            <option value="">Selecione</option>
-            @foreach($statusSead as $key=>$value)
-                <option {{isset($data->exists) && (string)$value->status_seadID===(string)$data->status_seadID ? 'selected="selected"' : '' }} value="{{$value->status_seadID}}">{{$value->desc_status_sead}}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-md-8 form-group text-right">
+    <div class="col-md-12 form-group text-right">
         <a  href="{{route('emissora.index')}}" class="btn btn-primary m-r-5">
             <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
         </a>
@@ -28,123 +21,6 @@
             <span class="help-block">{{$errors->first('razao_social')}}</span>
         @endif
     </div>
-
-    <div class="col-md-2 form-group {{$errors->has('servicoID') ? 'has-error' : ''}} ">
-        <label for="servicoID">Serviço *</label>
-        <select class="form-control select2" id="servicoID" name="servicoID" required>
-            <option value="">Selecione</option>
-            @foreach($servico as $key=>$value)
-                <option {{isset($data->exists) && (string)$value->servicoID===(string)$data->servicoID ? 'selected="selected"' : '' }} value="{{$value->servicoID}}">{{$value->desc_servico}}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-md-2 form-group {{$errors->has('tipo_emissoraID') ? 'has-error' : ''}} ">
-        <label for="tipo_emissoraID">Tipo *</label>
-        <select class="form-control select2" id="tipo_emissoraID" name="tipo_emissoraID" required>
-            <option value="">Selecione</option>
-            @foreach($tipoEmissora as $key=>$value)
-                <option {{isset($data->exists) && (string)$value->tipo_emissoraID===(string)$data->tipo_emissoraID ? 'selected="selected"' : '' }} value="{{$value->tipo_emissoraID}}">{{$value->desc_tipo_emissora}}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="col-md-6 form-group {{$errors->has('nome_fantasia') ? 'has-error' : ''}} ">
-        <label for="nome_fantasia">Nome Fantasia</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('nome_fantasia',$data->exists() ? $data->nome_fantasia : '')}}"
-               name="nome_fantasia"
-               id="nome_fantasia">
-        @if($errors->has('nome_fantasia'))
-            <span class="help-block">{{$errors->first('nome_fantasia')}}</span>
-        @endif
-    </div>
-    <div class="col-md-2 form-group {{$errors->has('indicativo_chamada') ? 'has-error' : ''}} ">
-        <label for="nome_fantasia">Indicativo Chamada</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('indicativo_chamada',$data->exists() ? $data->indicativo_chamada : '')}}"
-               name="indicativo_chamada"
-               id="indicativo_chamada">
-        @if($errors->has('indicativo_chamada'))
-            <span class="help-block">{{$errors->first('indicativo_chamada')}}</span>
-        @endif
-    </div>
-
-    <div class="col-md-2 form-group {{$errors->has('faixa_fronteira') ? 'has-error' : ''}} ">
-        <label for="faixa_fronteira">Faixa Fronteira</label>
-        <select class="form-control select2" id="faixa_fronteira" name="faixa_fronteira">
-            <option value="">Selecione</option>
-            <option value="NÃO" {{isset($data->exists) && 'NÃO'===(string)$data->faixa_fronteira ? 'selected="selected"' : '' }}>
-                NÃO
-            </option>
-            <option value="SIM" {{isset($data->exists) && 'SIM'===(string)$data->faixa_fronteira ? 'selected="selected"' : '' }}>
-                SIM
-            </option>
-        </select>
-    </div>
-
-    <div class="col-md-4 form-group {{$errors->has('ufID') ? 'has-error' : ''}} ">
-        <label for="ufID" class="d-block">Localidade da outorga *</label>
-        <div class="row">
-            <div class="col-5 d-inline-block">
-                <select class="form-control select2" id="ufID" name="ufID" required
-                        data-municipioID="{{$data->municipioID}}">
-                    <option value="">Selecione</option>
-                    @foreach($uf as $key=>$value)
-                        <option data-municipioID="{{json_encode($value->municipios)}}"
-                                {{isset($data->exists) && (string)$value->ufID===(string)$data->ufID ? 'selected="selected"' : '' }} value="{{$value->ufID}}">{{$value->desc_uf}}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="col-7 d-inline-block">
-                <select class="form-control select2" id="municipioID" name="municipioID" required>
-
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-1 form-group {{$errors->has('canal') ? 'has-error' : ''}} ">
-        <label for="canal">Canal</label>
-        <input type="text" autocomplete="off" class="form-control" value="{{old('canal',$data->exists() ? $data->canal : '')}}"
-               name="canal"
-               id="canal">
-        @if($errors->has('canal'))
-            <span class="help-block">{{$errors->first('canal')}}</span>
-        @endif
-    </div>
-
-    <div class="col-md-2 form-group {{$errors->has('frequencia') ? 'has-error' : ''}} ">
-        <label for="frequencia">Freq.</label>
-        <input type="text" autocomplete="off" class="form-control" value="{{old('frequencia',$data->exists() ? $data->frequencia : '')}}"
-               name="frequencia"
-               id="frequencia">
-        @if($errors->has('frequencia'))
-            <span class="help-block">{{$errors->first('frequencia')}}</span>
-        @endif
-    </div>
-
-    <div class="col-md-1 form-group {{$errors->has('classe') ? 'has-error' : ''}} ">
-        <label for="classe">Classe</label>
-        <input type="text" autocomplete="off" class="form-control" value="{{old('classe',$data->exists() ? $data->classe : '')}}"
-               name="classe"
-               id="classe">
-        @if($errors->has('classe'))
-            <span class="help-block">{{$errors->first('classe')}}</span>
-        @endif
-    </div>
-
-    <div class="col-md-2 form-group {{$errors->has('potencia') ? 'has-error' : ''}} ">
-        <label for="potencia">Potência Dia/Noite(KW)</label>
-        <input type="text" autocomplete="off" class="form-control" value="{{old('potencia',$data->exists() ? $data->classe : '')}}"
-               name="potencia"
-               id="potencia">
-        @if($errors->has('potencia'))
-            <span class="help-block">{{$errors->first('potencia')}}</span>
-        @endif
-    </div>
-
-
-
     <div class="col-md-4 form-group {{$errors->has('cnpj') ? 'has-error' : ''}} ">
         <label for="classe">CNPJ</label>
         <input type="text" autocomplete="off" class="form-control" value="{{old('cnpj',$data->exists() ? $data->cnpj : '')}}"
@@ -154,37 +30,6 @@
             <span class="help-block">{{$errors->first('cnpj')}}</span>
         @endif
     </div>
-
-    <div class="col-md-3 form-group {{$errors->has('inscricao_estadual') ? 'has-error' : ''}} ">
-        <label for="inscricao_estadual">Inscrição estadual</label>
-        <input type="text" autocomplete="off" class="form-control"
-               value="{{old('inscricao_estadual',$data->exists() ? $data->inscricao_estadual : '')}}"
-               name="inscricao_estadual"
-               id="inscricao_estadual">
-        @if($errors->has('inscricao_estadual'))
-            <span class="help-block">{{$errors->first('inscricao_estadual')}}</span>
-        @endif
-    </div>
-
-    <div class="col-md-2 form-group {{$errors->has('nire') ? 'has-error' : ''}} ">
-        <label for="nire">Nire</label>
-        <input type="text" autocomplete="off" class="form-control" value="{{old('nire',$data->exists() ? $data->nire : '')}}"
-               name="nire"
-               id="nire">
-        @if($errors->has('nire'))
-            <span class="help-block">{{$errors->first('nire')}}</span>
-        @endif
-    </div>
-    <div class="col-md-3 form-group {{$errors->has('tipo_repres_socialID') ? 'has-error' : ''}} ">
-        <label for="tipo_repres_socialID">Representação social</label>
-        <select class="form-control select2" id="tipo_repres_socialID" name="tipo_repres_socialID">
-            <option value="">Selecione</option>
-            @foreach($tipoRepresetanteSocial as $key=>$value)
-                <option {{isset($data->exists) && (string)$value->tipo_repres_socialID===(string)$data->tipo_repres_socialID ? 'selected="selected"' : '' }} value="{{$value->tipo_repres_socialID}}">{{$value->desc_tipo_repres_social}}</option>
-            @endforeach
-        </select>
-    </div>
-
     <div class="col-md-4 form-group {{$errors->has('endereco_sede') ? 'has-error' : ''}} ">
         <label for="endereco_sede">Endereço - Sede </label>
         <input type="text" autocomplete="off" class="form-control"
@@ -235,6 +80,100 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-4 form-group {{$errors->has('ufID') ? 'has-error' : ''}} ">
+        <label for="ufID" class="d-block">Localidade da outorga *</label>
+        <div class="row">
+            <div class="col-5 d-inline-block">
+                <select class="form-control select2" id="ufID" name="ufID" required
+                        data-municipioID="{{$data->municipioID}}">
+                    <option value="">Selecione</option>
+                    @foreach($uf as $key=>$value)
+                        <option data-municipioID="{{json_encode($value->municipios)}}"
+                                {{isset($data->exists) && (string)$value->ufID===(string)$data->ufID ? 'selected="selected"' : '' }} value="{{$value->ufID}}">{{$value->desc_uf}}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-7 d-inline-block">
+                <select class="form-control select2" id="municipioID" name="municipioID" required>
+
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 form-group {{$errors->has('servicoID') ? 'has-error' : ''}} ">
+        <label for="servicoID">Serviço *</label>
+        <select class="form-control select2" id="servicoID" name="servicoID" required>
+            <option value="">Selecione</option>
+            @foreach($servico as $key=>$value)
+                <option {{isset($data->exists) && (string)$value->servicoID===(string)$data->servicoID ? 'selected="selected"' : '' }} value="{{$value->servicoID}}">{{$value->desc_servico}}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-2 form-group {{$errors->has('faixa_fronteira') ? 'has-error' : ''}} ">
+        <label for="faixa_fronteira">Faixa Fronteira</label>
+        <select class="form-control select2" id="faixa_fronteira" name="faixa_fronteira">
+            <option value="">Selecione</option>
+            <option value="NÃO" {{isset($data->exists) && 'NÃO'===(string)$data->faixa_fronteira ? 'selected="selected"' : '' }}>
+                NÃO
+            </option>
+            <option value="SIM" {{isset($data->exists) && 'SIM'===(string)$data->faixa_fronteira ? 'selected="selected"' : '' }}>
+                SIM
+            </option>
+        </select>
+    </div>
+    <div class="col-md-4 form-group {{$errors->has('fistel') ? 'has-error' : ''}} ">
+        <label for="fistel">Fistel</label>
+        <input type="text" autocomplete="off" class="form-control" value="{{old('fistel',$data->exists() ? $data->fistel : '')}}"
+               name="fistel"
+               id="fistel"
+               required>
+        @if($errors->has('fistel'))
+            <span class="help-block">{{$errors->first('fistel')}}</span>
+        @endif
+    </div>
+    <div class="col-md-12 form-group {{$errors->has('url_mosaico') ? 'has-error' : ''}} ">
+        <label for="url_mosaico">Url Consulta MOSAICO</label>
+        <div class="input-group mb-3">
+            <button class="btn btn-success" onclick="copyUrl('url_mosaico')" type="button" id="execCopy">Copiar</button>
+            <input type="text" autocomplete="off" class="form-control"
+                   value="{{old('url_mosaico',$data->exists() ? $data->url_mosaico : '')}}"
+                   name="url_mosaico"
+                   id="url_mosaico"
+                   placeholder="Preencha o Fistel"
+                   readonly>
+            <a href="{{old('url_mosaico',$data->exists() ? $data->url_mosaico : '')}}" id="url_mosaico_link" target="_blank" class="btn btn-info" type="button">Navegar</a>
+        </div>
+    </div>
+    <div class="col-md-12 form-group {{$errors->has('url_seacco') ? 'has-error' : ''}} ">
+        <label for="url_seacco">Url Consulta SEACCO</label>
+        <div class="input-group mb-3">
+            <button class="btn btn-success" onclick="copyUrl('url_seacco')" type="button" id="execCopy">Copiar</button>
+            <input type="text" autocomplete="off" class="form-control"
+                   value="{{old('url_seacco',$data->exists() ? $data->url_seacco : '')}}"
+                   name="url_seacco"
+                   id="url_seacco"
+                   placeholder="Preencha o CNPJ"
+                   readonly>
+            <a href="{{old('url_seacco',$data->exists() ? $data->url_seacco : '')}}" id="url_seacco_link" target="_blank" class="btn btn-info" type="button">Navegar</a>
+        </div>
+    </div>
+
+    <div class="col-md-12 form-group {{$errors->has('url_cnpj') ? 'has-error' : ''}} ">
+        <label for="url_cnpj">Url Consulta CNPJ</label>
+        <div class="input-group mb-3">
+            <button class="btn btn-success" onclick="copyUrl('url_cnpj')" type="button" id="execCopy">Copiar</button>
+            <input type="text" autocomplete="off" class="form-control"
+                   value="{{old('url_cnpj',$data->exists() ? $data->url_cnpj : '')}}"
+                   name="url_cnpj"
+                   id="url_cnpj"
+                   placeholder="Preencha o CNPJ"
+                   readonly>
+            <a href="{{old('url_cnpj',$data->exists() ? $data->url_cnpj : '')}}" id="url_cnpj_link" target="_blank" class="btn btn-info" type="button">Navegar</a>
+        </div>
+    </div>
+
     <div class="col-md-12 form-group {{$errors->has('observacao') ? 'has-error' : ''}} ">
         <label for="observacao">Observações</label>
         <textarea rows="7" name="observacao" class="form-control"
@@ -279,10 +218,100 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
     <script>
+
+        var urlMosaico = '{{\Illuminate\Support\Facades\Config::get('sulradio.url_mosaico')}}';
+        var urlSeacco = '{{\Illuminate\Support\Facades\Config::get('sulradio.url_seacco')}}';
+        var urlCNPJ = '{{\Illuminate\Support\Facades\Config::get('sulradio.url_cnpj')}}';
+        var urlGetByFistel = '{{ route('estacao.rd.fistel', [':fistel']) }}';
+
         $('#cnpj').mask('00.000.000/0000-00', {
             reverse: false, onKeyPress: function (value, event, currentField, options) {
             }
         });
+        function cnpjValidation(value) {
+            if (!value) return false
+
+            // Aceita receber o valor como string, número ou array com todos os dígitos
+            const isString = typeof value === 'string'
+            const validTypes = isString || Number.isInteger(value) || Array.isArray(value)
+
+            // Elimina valor em formato inválido
+            if (!validTypes) return false
+
+            // Filtro inicial para entradas do tipo string
+            if (isString) {
+                // Limita ao máximo de 18 caracteres, para CNPJ formatado
+                if (value.length > 18) return false
+
+                // Teste Regex para veificar se é uma string apenas dígitos válida
+                const digitsOnly = /^\d{14}$/.test(value)
+                // Teste Regex para verificar se é uma string formatada válida
+                const validFormat = /^\d{2}.\d{3}.\d{3}\/\d{4}-\d{2}$/.test(value)
+
+                // Se o formato é válido, usa um truque para seguir o fluxo da validação
+                if (digitsOnly || validFormat) true
+                // Se não, retorna inválido
+                else return false
+            }
+
+            // Guarda um array com todos os dígitos do valor
+            const match = value.toString().match(/\d/g)
+            const numbers = Array.isArray(match) ? match.map(Number) : []
+
+            // Valida a quantidade de dígitos
+            if (numbers.length !== 14) return false
+
+            // Elimina inválidos com todos os dígitos iguais
+            const items = [...new Set(numbers)]
+            if (items.length === 1) return false
+
+            // Cálculo validador
+            const calc = (x) => {
+                const slice = numbers.slice(0, x)
+                let factor = x - 7
+                let sum = 0
+
+                for (let i = x; i >= 1; i--) {
+                    const n = slice[x - i]
+                    sum += n * factor--
+                    if (factor < 2) factor = 9
+                }
+
+                const result = 11 - (sum % 11)
+
+                return result > 9 ? 0 : result
+            }
+
+            // Separa os 2 últimos dígitos de verificadores
+            const digits = numbers.slice(12)
+
+            // Valida 1o. dígito verificador
+            const digit0 = calc(12)
+            if (digit0 !== digits[0]) return false
+
+            // Valida 2o. dígito verificador
+            const digit1 = calc(13)
+            return digit1 === digits[1]
+        }
+
+        $('#cnpj').blur(function (){
+            if(!cnpjValidation(this.value)){
+                toastr.error('Verrifique o cnpj digitado', 'CNPJ Inválido');
+                $('#cnpj').val('');
+                $('#url_seacco').val('');
+                $('#url_cnpj').val('');
+                return;
+            }
+            var cnpj = $('#cnpj').val();
+            var cnpjNumbers = cnpj.replace(/\D/g, '');
+            var urlSeaccoParsed = urlSeacco.replace('{NOME}', $('#razao_social').val()).replace('{CNPJ}', cnpjNumbers)
+            $('#url_seacco').val(urlSeaccoParsed);
+            $('#url_seacco_link').attr('href', urlSeaccoParsed);
+            var urlCnpjParsed = urlCNPJ.replace('{CNPJ}', $('#cnpj').val());
+            $('#url_cnpj').val(urlCnpjParsed);
+            $('#url_cnpj_link').attr('href', urlCnpjParsed);
+
+        })
         $(".select2").select2({
             width: '100%',
             placeholder: 'Selecione',
@@ -299,6 +328,34 @@
 
         });
         $('#ufID').trigger('change');
+
+        $('#fistel').blur(function(){
+            var fistel = this.value;
+            $.ajax({
+                url: urlGetByFistel.replace(':fistel', fistel),
+                type: "get",
+                dataType: 'json',
+                data: {},
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    if(data.id){
+                        var urlMosaicoParsed = urlMosaico.replace('{ID}',data.id).replace('{STATE}', data.state);
+                        $('#url_mosaico').val(urlMosaicoParsed);
+                        $('#url_mosaico_link').attr('href', urlMosaicoParsed);
+                        toastr.success('Dados carregados com sucesso', 'Identificador');
+                        return false;
+                    }
+                    toastr.warning('Não foi encontados dados para esse fistel', 'Identificador');
+                    $('#url_mosaico').val('');
+                    $('#url_mosaico_link').attr('href', '');
+                },
+                error: function (erro) {
+                    toastr.error(erro.responseJSON.message, 'Erro');
+                }
+            });
+        });
 
         $('#sedufID').change(function () {
             if (!this.value) return false;
@@ -511,6 +568,16 @@
                 });
             });
 
+        function copyUrl(id){
+            var copyText = document.getElementById(id);
+            /* Select the text field */
+            copyText.value;
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+
+            /* Alert the copied text */
+            toastr.success(copyText.value, 'Copiado')
+        }
             $('#clearFilterContato').click(function () {
                 tableContato.state.clear();
                 $('#tableEndereco .fieldSearch').val('');

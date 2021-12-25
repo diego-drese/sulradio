@@ -133,10 +133,9 @@ class EmissoraController extends SulradioController {
 	public function store(Request $request) {
 		$dataForm = $request->all();
 		$this->validate($request, [
-			'status_seadID' => 'required',
 			'razao_social' => 'required',
+			'cnpj' => 'required',
 			'servicoID' => 'required',
-			'tipo_emissoraID' => 'required',
 			'municipioID' => 'required',
 		]);
 		$create = Emissora::create($dataForm);
@@ -169,10 +168,9 @@ class EmissoraController extends SulradioController {
 		$data = Emissora::getById($id, $user);
 		$dataForm = $request->all();
 		$this->validate($request, [
-			'status_seadID' => 'required',
 			'razao_social' => 'required',
+			'cnpj' => 'required',
 			'servicoID' => 'required',
-			'tipo_emissoraID' => 'required',
 			'municipioID' => 'required',
 		]);
 		$data->fill($dataForm);

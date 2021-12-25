@@ -69,6 +69,12 @@ class EstacaoRd extends Model {
 	public function getUpdatedAtAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
 	}
+	public static function getByFistel($fistel){
+		return self::where('fistel', $fistel)->first();
+	}
+	public static function getByCnpj($cnpj){
+		return self::where('cnpj', $cnpj)->first();
+	}
 	public static function getByArrayId($broadcast){
 		return self::whereIn('id', is_array($broadcast) ? $broadcast : [])->get();
 	}

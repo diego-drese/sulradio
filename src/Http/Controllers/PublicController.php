@@ -18,6 +18,7 @@ use Oka6\SulRadio\Models\DocumentFolder;
 use Oka6\SulRadio\Models\DocumentHistoric;
 use Oka6\SulRadio\Models\DocumentType;
 use Oka6\SulRadio\Models\Emissora;
+use Oka6\SulRadio\Models\EstacaoRd;
 use Oka6\SulRadio\Models\States;
 use Oka6\SulRadio\Models\SystemLog;
 use Oka6\SulRadio\Models\Ticket;
@@ -98,6 +99,10 @@ class PublicController extends SulradioController {
 		return response()->json($query, 200);
 	}
 	
+	public function getIdFromFistel($fistel) {
+		$emissora = EstacaoRd::getByFistel($fistel);
+		return response()->json(['id'=>isset($emissora->id)? $emissora->id :null, 'state'=>isset($emissora->state)? $emissora->state :null], 200);
+	}
 	public function getFolderAndTypeDocument($goal) {
 		$folder = DocumentFolder::getWithCache($goal);
 		$type   = DocumentType::getWithCache($goal);

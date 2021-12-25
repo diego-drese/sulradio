@@ -169,6 +169,7 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function () {
 	Route::any('/document-folder-type/{goal}', 'Oka6\SulRadio\Http\Controllers\PublicController@getFolderAndTypeDocument')->name('document.folder.type');
 	Route::any('/city/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchCity')->name('city.search');
+	Route::any('/estacao-rd/{fistel}', 'Oka6\SulRadio\Http\Controllers\PublicController@getIdFromFistel')->name('estacao.rd.fistel');
 	Route::any('/users/search/ticket', 'Oka6\SulRadio\Http\Controllers\PublicController@searchUserTicket')->name('users.search.ticket');
 	Route::any('/broadcast/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchBroadcast')->name('broadcast.search');
 	Route::any('/clients/search', 'Oka6\SulRadio\Http\Controllers\PublicController@searchClient')->name('client.search');
