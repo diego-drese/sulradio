@@ -46,30 +46,37 @@ class ProcessTicketNotification extends Command {
 		Log::info('ProcessTicketNotification, start process');
 		$notifications = TicketNotification::getToNotify();
 		$emailCount=Helper::getEmailCount();
-
+		$userSendNotification=[];
 		$tries=[];
 		foreach ($notifications as $notification){
 			$try=count($tries);
 
 			while ($try < $emailCount) {
 				$this->emailFrom = Helper::sendEmailRandom($tries);
+				$keyVerify = $notification->ticket_id.$notification->type.$notification->agent_current_id;
 				try {
-					if ($notification->type == TicketNotification::TYPE_NEW) {
+					$notification->status = TicketNotification::STATUS_PROCESSED;
+					if ($notification->type == TicketNotification::TYPE_UPDATE ||
+						$notification->type == TicketNotification::TYPE_COMMENT ) {
+						if(isset($userSendNotification[$keyVerify])){
+							$notification->status = TicketNotification::STATUS_IGNORED;
+						}else if($notification->type == TicketNotification::TYPE_UPDATE) {
+							$this->sendEmailTypeUpdate($notification);
+						}else{
+							$this->sendEmailTypeComment($notification);
+						}
+						$userSendNotification[$keyVerify]=true;
+					}else if ($notification->type == TicketNotification::TYPE_NEW) {
 						$this->sendEmailTypeNew($notification);
-					} else if ($notification->type == TicketNotification::TYPE_UPDATE) {
-						$this->sendEmailTypeUpdate($notification);
 					} else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
 						$this->sendEmailTypeCommentClient($notification);
-					} else if ($notification->type == TicketNotification::TYPE_COMMENT) {
-						$this->sendEmailTypeComment($notification);
 					} else if ($notification->type == TicketNotification::TYPE_TRANSFER_AGENT) {
 						$this->sendEmailTypeTransfer($notification);
 					}
-					$notification->status = TicketNotification::STATUS_PROCESSED;
+
 					$notification->save();
 					$try = $emailCount;
 				} catch (\Exception $e) {
-					dd($e);
 					$try++;
 					$tries[] = $this->emailFrom['email'];
 					Log::error('ProcessTicketNotification, retry send email', ['try' => $try, 'e' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'tries'=>$tries]);
@@ -95,16 +102,29 @@ class ProcessTicketNotification extends Command {
 		$ticket         = $this->getTicket($notification->ticket_id);
 		$ticket->owner  = $owner;
 		$ticket->agent  = $currentAgent;
+		if($ticket->emissora){
+			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+		}
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCreate($ticket));
 	}
 	
 	public function sendEmailTypeComment($notification){
 		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
 		$userLogged         = User::getByIdStatic($notification->user_logged);
-		$comment             = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
-		$comment->agent      = $currentAgent;
-		$comment->userLogged = $userLogged;
-		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketComment($comment));
+		$comment            = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
+		$ticket             = $this->getTicket($notification->ticket_id);
+		if($comment){
+			$comment->agent         = $currentAgent;
+			$comment->userLogged    = $userLogged;
+			$comment->emissora      = null;
+			$comment->subject       = $ticket->subject;
+			if($ticket->emissora){
+				$comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+			}
+			MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketComment($comment));
+		}else{
+			Log::error('ProcessTicketNotification sendEmailTypeComment, comment not found', ['notification'=>$notification]);
+		}
 	}
 	public function sendEmailTypeCommentClient($notification){
 		$userLogged         = User::getByIdStatic($notification->user_logged);
@@ -121,11 +141,13 @@ class ProcessTicketNotification extends Command {
 		$userLogged         = User::getByIdStatic($notification->user_logged);
 		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
 		$owner              = User::getByIdStatic($notification->owner_id);
-		
 		$ticket             = $this->getTicket($notification->ticket_id);
 		$ticket->owner      = $owner;
 		$ticket->agent      = $currentAgent;
 		$ticket->userLogged = $userLogged;
+		if($ticket->emissora){
+			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+		}
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketUpdate($ticket));
 	}
 	

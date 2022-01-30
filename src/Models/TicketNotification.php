@@ -22,7 +22,8 @@ class TicketNotification extends Model {
 	const STATUS_WAITING = 0;
 	const STATUS_PROCESSING = 1;
 	const STATUS_PROCESSED = 2;
-	
+	const STATUS_IGNORED = 3;
+
 	const TYPE_NEW = 1;
 	const TYPE_UPDATE = 2;
 	const TYPE_COMMENT = 3;
@@ -47,8 +48,9 @@ class TicketNotification extends Model {
 	
 	public static function getToNotify() {
 		$notifications = self::where('status', self::STATUS_WAITING)
-			->where('updated_at', '<', Carbon::now()->subMinutes(5)->toDateTimeString())
+			->where('updated_at', '<', Carbon::now()->subMinutes(60)->toDateTimeString())
 			->limit(50)
+			->orderBy('id', 'desc')
 			->get();
 		if($notifications){
 			//self::whereIn('id', $notifications->pluck('id')->toArray())->update(['status'=>self::STATUS_PROCESSING]);

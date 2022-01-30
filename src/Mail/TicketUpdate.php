@@ -26,7 +26,7 @@ class TicketUpdate extends Mailable {
 	 * @return $this
 	 */
 	public function build() {
-		return $this->subject('Ticket atualizado')
+		return $this->subject('Atualização-'.$this->data->subject.' '.$this->data->emissora)
 			->markdown('SulRadio::backend.emails.ticket-update', ['data' => $this->data, 'url'=>'']);
 	}
 }
