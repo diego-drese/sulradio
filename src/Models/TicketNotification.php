@@ -48,7 +48,7 @@ class TicketNotification extends Model {
 	
 	public static function getToNotify() {
 		$notifications = self::where('status', self::STATUS_WAITING)
-			->where('updated_at', '<', Carbon::now()->subMinutes(60)->toDateTimeString())
+			->where('updated_at', '<', Carbon::now()->subMinutes(5)->toDateTimeString())
 			->limit(50)
 			->orderBy('id', 'desc')
 			->get();

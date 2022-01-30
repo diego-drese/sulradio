@@ -131,9 +131,15 @@ class ProcessTicketNotification extends Command {
 		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
 		$comment            = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
 		$clientUser         = \Oka6\SulRadio\Models\TicketNotificationClient::getById($comment->ticket_notification_client_id);
+		$ticket             = $this->getTicket($clientUser->ticket_id);
 		$comment->agent     = $currentAgent;
 		$comment->userLogged= $userLogged;
 		$comment->ticket_id = $clientUser->ticket_id;
+		$comment->emissora  = null;
+		$comment->subject   = $ticket->subject;
+		if($ticket->emissora){
+			$comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+		}
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCommentFromClient($comment));
 	}
 	
