@@ -134,7 +134,7 @@
                                 edit_button += '<a href="' + data.url_mosaico + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>MOSAICO</b></a>';
                             }
                             if(data.url_seacco){
-                                edit_button += '<a href="' + data.url_seacco + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>SEACCO</b></a>';
+                                edit_button += '<a href="' + data.url_seacco + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>SIACCO</b></a>';
                             }
                             if(data.url_cnpj){
                                 edit_button += '<a href="' + data.url_cnpj + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>RECEITA</b></a>';

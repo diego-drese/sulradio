@@ -36,11 +36,11 @@ class TicketCategory extends Model {
 	
 	public static function getWithProfile($user) {
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-		$query      = self::where('is_active', 1)->orderBy('name', 'asc');
+		$query      = self::where('ticket_category.is_active', 1)->orderBy('name', 'asc');
 		if(!$hasAdmin){
 			$query->select('ticket_category.*')
 				->join('ticket_category_profile', 'ticket_category_profile.ticket_category_id', 'ticket_category.id')
-				->where('profile_id', $user->profile_id)
+				->where('profile_id', (int)$user->profile_id)
 				->where('user_id_removed', 0);
 		}
 		return $query->get();

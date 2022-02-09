@@ -147,7 +147,7 @@
         </div>
     </div>
     <div class="col-md-12 form-group {{$errors->has('url_seacco') ? 'has-error' : ''}} ">
-        <label for="url_seacco">Url Consulta SEACCO</label>
+        <label for="url_seacco">Url Consulta SIACCO</label>
         <div class="input-group mb-3">
             <button class="btn btn-success" onclick="copyUrl('url_seacco')" type="button" id="execCopy">Copiar</button>
             <input type="text" autocomplete="off" class="form-control"

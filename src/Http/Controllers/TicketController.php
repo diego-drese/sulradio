@@ -391,15 +391,15 @@ class TicketController extends SulradioController {
 				return $query->whereIn('id', $usersAllow);
 			})
 			->orderBy('name')->get();
-		foreach ($users as &$user){
+		foreach ($users as &$userChange){
 			$userInfoArray= [];
-			if(isset($user->users_ticket) && count($user->users_ticket)){
-				$usersInfo = UserSulRadio::whereIn('id', $user->users_ticket)->get();
+			if(isset($userChange->users_ticket) && count($userChange->users_ticket)){
+				$usersInfo = UserSulRadio::whereIn('id', $userChange->users_ticket)->get();
 				foreach ($usersInfo as $userInfo){
 					$userInfoArray[]=['name'=>$userInfo->name.' '.$userInfo->lastname, 'id'=>$userInfo->id];
 				}
 			}
-			$user->user_info = $userInfoArray;
+			$userChange->user_info = $userInfoArray;
 		}
 
 		$parameters = [
