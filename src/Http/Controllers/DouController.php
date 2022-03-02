@@ -41,7 +41,7 @@ class DouController extends SulradioController {
 			
 			$searchEmissora     = $request->get('search_emissora');
 			if($searchEmissora){
-				$search = Emissora::get;
+				$search = Emissora::get();
 				return response()->json($search);
 			}
 			$id     = $request->get('id');

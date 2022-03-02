@@ -88,7 +88,11 @@ class TicketNotificationClientUser extends Model {
 					for ($i=1; $i<11; $i++){
 						$answerFile = "answer_file_{$i}";
 						if($value->$answerFile){
-							$attach[] = TicketDocument::getById($value->$answerFile);
+							$attachFile = TicketDocument::getById($value->$answerFile);
+							if($attachFile){
+								$attach[] = $attachFile;
+							}
+
 						}
 					}
 				}
