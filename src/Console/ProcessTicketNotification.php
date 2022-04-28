@@ -23,15 +23,15 @@ class ProcessTicketNotification extends Command {
 	 * @var string
 	 */
 	protected $signature = 'Sulradio:ProcessTicketNotification';
-	
+
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
 	protected $description  = 'Process notifications from ticket';
-	
-	
+
+
 	protected $emailFrom = null;
 	/**
 	 * Create a new command instance.
@@ -41,7 +41,7 @@ class ProcessTicketNotification extends Command {
 	public function __construct() {
 		parent::__construct();
 	}
-	
+
 	public function handle() {
 		Log::info('ProcessTicketNotification, start process');
 		$notifications = TicketNotification::getToNotify();
@@ -50,23 +50,15 @@ class ProcessTicketNotification extends Command {
 		$tries=[];
 		foreach ($notifications as $notification){
 			$try=count($tries);
-
 			while ($try < $emailCount) {
 				$this->emailFrom = Helper::sendEmailRandom($tries);
-				$keyVerify = $notification->ticket_id.$notification->type.$notification->agent_current_id;
 				try {
 					$notification->status = TicketNotification::STATUS_PROCESSED;
-					if ($notification->type == TicketNotification::TYPE_UPDATE ||
-						$notification->type == TicketNotification::TYPE_COMMENT ) {
-						if(isset($userSendNotification[$keyVerify])){
-							$notification->status = TicketNotification::STATUS_IGNORED;
-						}else if($notification->type == TicketNotification::TYPE_UPDATE) {
-							$this->sendEmailTypeUpdate($notification);
-						}else{
-							$this->sendEmailTypeComment($notification);
-						}
-						$userSendNotification[$keyVerify]=true;
-					}else if ($notification->type == TicketNotification::TYPE_NEW) {
+					if ($notification->type == TicketNotification::TYPE_UPDATE) {
+						$this->sendEmailTypeUpdate($notification);
+					}else if ($notification->type == TicketNotification::TYPE_COMMENT) {
+						$this->sendEmailTypeComment($notification);
+					} else if ($notification->type == TicketNotification::TYPE_NEW) {
 						$this->sendEmailTypeNew($notification);
 					} else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
 						$this->sendEmailTypeCommentClient($notification);
@@ -107,7 +99,7 @@ class ProcessTicketNotification extends Command {
 		}
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCreate($ticket));
 	}
-	
+
 	public function sendEmailTypeComment($notification){
 		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
 		$userLogged         = User::getByIdStatic($notification->user_logged);
@@ -142,7 +134,7 @@ class ProcessTicketNotification extends Command {
 		}
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCommentFromClient($comment));
 	}
-	
+
 	public function sendEmailTypeUpdate($notification){
 		$userLogged         = User::getByIdStatic($notification->user_logged);
 		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
@@ -156,19 +148,19 @@ class ProcessTicketNotification extends Command {
 		}
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketUpdate($ticket));
 	}
-	
+
 	public function sendEmailTypeTransfer($notification){
 		$userLogged         = User::getByIdStatic($notification->user_logged);
 		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
 		$oldAgent           = User::getByIdStatic($notification->agent_old_id);
 		$owner              = User::getByIdStatic($notification->owner_id);
-		
+
 		$ticket             = $this->getTicket($notification->ticket_id);
 		$ticket->owner      = $owner;
 		$ticket->oldAgent   = $oldAgent;
 		$ticket->agent      = $currentAgent;
 		$ticket->userLogged = $userLogged;
-		
+
 		$ticket->sentTo   = 'CurrentAgent';
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketTransfer($ticket));
 		$ticket->sentTo   = 'OldAgent';
@@ -177,9 +169,9 @@ class ProcessTicketNotification extends Command {
 			$ticket->sentTo   = 'Owner';
 			MultiMail::to($owner->email)->from($this->emailFrom['email'])->send(new TicketTransfer($ticket));
 		}
-		
+
 	}
-	
-	
+
+
 }
 
