@@ -140,7 +140,8 @@ class PublicController extends SulradioController {
 	}
 	public function removeDocumentTicket(Request $request, $id=null) {
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-		$update     = TicketDocument::removeById($id, Auth::user(), $hasAdmin);
+        $hasSendNotification = ResourceAdmin::hasResourceByRouteName('ticket.comment.send.email');
+		$update     = TicketDocument::removeById($id, Auth::user(), ($hasAdmin || $hasSendNotification) ?? false);
 		if($update){
 			$userLogged = Auth::user();
 			$contentLog = 'Usuário '.$userLogged->name. ' removeu um arquivo ao ticket '. $update->ticket_id. ' arquivo['.$update->file_name.']';

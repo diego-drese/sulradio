@@ -181,7 +181,7 @@
         @endif
         <label for="show_client" title="Somente com emissora selecionada">Exibe para o cliente</label>
         <div class="input-group mb-3 bt-switch ">
-            @if($hasAdmin)
+            @if($hasAdmin || $hasSendNotification)
                 <input id="show_client" name="show_client" type="checkbox" title="Exibe esse ticket para o cliente assoaciado a essa emissora"
                        {{old('show_client', $data->exists() ? $data->show_client : '') == 1 ? 'checked' : ''}}
                        value="1" data-on-color="success" data-off-color="danger"
@@ -358,9 +358,9 @@
                 url: '{{route('ticket.upload', [$data->id])}}',
                 uploadMultiple: true,
                 addRemoveLinks: true,
-                maxFilesize: 30,
-                parallelUploads: 1,
-                maxFiles: 10,
+                maxFilesize: 40,
+                parallelUploads: 2,
+                maxFiles: 40,
                 preventDuplicates: true,
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val()

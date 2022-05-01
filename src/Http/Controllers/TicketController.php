@@ -144,7 +144,8 @@ class TicketController extends SulradioController {
 	}
 	public function edit($id) {
 		$user       = Auth::user();
-		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+
+        $hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 		$data       = Ticket::withSelectDataTable()
 			->withParticipants($user, $hasAdmin)
 			->withStatus()

@@ -189,7 +189,7 @@
                                             <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente' : ''}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
                                                 {{$document->file_name_original}}
                                             </a>
-                                            @if($user->id==$document->user_id || $hasAdmin)
+                                            @if($user->id==$document->user_id || $hasAdmin || $hasSendNotification)
                                                 <span class="delete-todo todo-action cursor-pointer delete-document" id="delDoc-{{$document->id}}"><i class="fas fa-trash-alt text-danger "></i></span>
                                             @endif
                                         </li>
@@ -796,9 +796,9 @@
                 url: '{{route('ticket.upload', [$data->id])}}',
                 uploadMultiple: true,
                 addRemoveLinks: true,
-                maxFilesize: 30,
-                parallelUploads: 1,
-                maxFiles: 10,
+                maxFilesize: 40,
+                parallelUploads: 2,
+                maxFiles: 40,
                 preventDuplicates: true,
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val()
