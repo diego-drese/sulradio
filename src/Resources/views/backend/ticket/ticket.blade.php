@@ -606,14 +606,24 @@
                 theme: 'monokai'
             }
         });
+
+        var submitComment = false;
         $('#saveComment').click(function (){
-            var url= '{{route('ticket.comment', [$data->id])}}';
-            $('#form-comment').attr('action', url).submit();
+            if(!submitComment){
+                var url= '{{route('ticket.comment', [$data->id])}}';
+                $('#form-comment').attr('action', url).submit();
+                submitComment=true;
+            }
+
         });
 
+        var endTicket = false;
         $('#endTicket').click(function (){
-            var url= '{{route('ticket.end', [$data->id])}}';
-            $('#form-comment').attr('action', url).submit();
+            if(!endTicket){
+                var url= '{{route('ticket.end', [$data->id])}}';
+                $('#form-comment').attr('action', url).submit();
+                endTicket=true;
+            }
         });
 
 
