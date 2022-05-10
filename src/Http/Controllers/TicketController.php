@@ -93,10 +93,10 @@ class TicketController extends SulradioController {
 		$ticketForm['start_forecast']   = Helper::convertDateBrToMysql($ticketForm['start_forecast']);
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
 		$ticketForm['show_client']      = isset($ticketForm['show_client']) ?? 0;
-		$ticket = Ticket::create($ticketForm);
 		if(TicketStatus::statusFinished($request->get('status_id'))){
 			$ticketForm['completed_at'] = date('Y-m-d H:i:s');
 		}
+        $ticket = Ticket::create($ticketForm);
 
 		TicketParticipant::insertByController($request, $ticket, $userLogged, TicketNotification::TYPE_NEW);
 		/** Document attach */
