@@ -51,7 +51,7 @@ class TicketParticipant extends Model {
 		];
 		$contentLog='Não definido,['.$typeNotification.']';
 		$logType=SystemLog::TYPE_UNDEFINED;
-
+        $forceNotification = false;
 		if($typeNotification==TicketNotification::TYPE_NEW){
 			$contentLog = 'Usuário '.$userLogged->name. ' criou o ticket '. $ticket->id;
 			$logType = SystemLog::TYPE_NEW;
@@ -61,6 +61,7 @@ class TicketParticipant extends Model {
 		}else if($typeNotification==TicketNotification::TYPE_COMMENT_CLIENT){
 			$contentLog = 'Usuário '.$userLogged->name. ' respondeu a um comentário '. $ticket->id;
 			$logType = SystemLog::TYPE_SEND_EMAIL_NOTIFICATION;
+            $forceNotification=true;
 		}else{
 			$contentLog = 'Usuário '.$userLogged->name. ' adicionou um comentário ao ticket '. $ticket->id;
 			$logType = SystemLog::TYPE_COMMENT;
@@ -77,7 +78,7 @@ class TicketParticipant extends Model {
 			$insert['agent_old_id']     = $participant;
 			$userTickets                = !isset($userParticipant->users_ticket) ? [] : $userParticipant->users_ticket;
 
-			if($userLogged->id!=$participant && (!count($userTickets) || in_array($userLogged->id, $userTickets)) ){
+			if($userLogged->id!=$participant && ($forceNotification || !count($userTickets) || in_array($userLogged->id, $userTickets)) ){
 				TicketNotification::create($insert);
 			}
 
