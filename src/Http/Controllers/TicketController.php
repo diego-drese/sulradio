@@ -60,7 +60,7 @@ class TicketController extends SulradioController {
 					return $row->desc_servico.'-'.$row->emissora."({$row->desc_municipio} {$row->desc_uf})";
 				})->addColumn('user_name', function ($row) use($user){
 					$userData = $user->getById($row->owner_id);
-					return $userData->name;
+					return $userData ? $userData->name : '---';
 				})->addColumn('participants', function ($row)  use($user){
 					$participants = TicketParticipant::getUserNameByTicketId($row->id, $user);
 					return $participants;

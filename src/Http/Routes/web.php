@@ -177,9 +177,11 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function 
 	Route::any('/notifications/ticket', 'Oka6\SulRadio\Http\Controllers\PublicController@notificationsTicket')->name('notifications.ticket');
 	Route::any('/ticket-notification-client/{id}', 'Oka6\SulRadio\Http\Controllers\PublicController@loadTicketNotificationClient')->name('ticket.notification.client');
 	Route::any('/ticket-client-answer/{id}', 'Oka6\SulRadio\Http\Controllers\PublicController@ticketClientAnswer')->name('ticket.client.answer');
+	Route::any('/ticket-move', 'Oka6\SulRadio\Http\Controllers\PublicController@ticketMove')->name('ticket.move');
 	Route::any('/document/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocument')->name('document.download');
 	Route::any('/document-ticket/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocumentTicket')->name('document.download.ticket');
-	Route::any('/document-ticket/remove/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@removeDocumentTicket')->name('document.remove.ticket');
+	Route::any('/document-ticket/delete/', 'Oka6\SulRadio\Http\Controllers\PublicController@deleteDocumentTicket')->name('document.delete.ticket');
+	Route::any('/document-ticket/archived', 'Oka6\SulRadio\Http\Controllers\PublicController@archivedDocumentTicket')->name('document.archived.ticket');
 });
 
 

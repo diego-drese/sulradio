@@ -191,10 +191,7 @@
                 {!! $data->exists() && $data->show_client  ? '<b class="text-success">Sim</b>' : '<b class="text-danger">Não</b>'  !!}
             @endif
         </div>
-
     </div>
-
-
     </div>
     @if(!$data->id)
         <div class="col-md-12 form-group {{$errors->has('description') ? 'has-error' : ''}} ">
@@ -203,7 +200,7 @@
                 <div class="dz-message">Arraste o arquivo</div>
             </div>
         </div>
-        @endif
+    @endif
 
 </div>
 
@@ -243,6 +240,8 @@
         }
         .note-toolbar-wrapper{height: inherit!important;}
         .note-toolbar{z-index: 5}
+        .mouse-pointer{cursor: pointer}
+        .mouse-pointer:hover{text-decoration: underline}
     </style>
 @endsection
 @section('script_footer_end')

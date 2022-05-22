@@ -177,12 +177,21 @@
                                 </div></h4>
 
                             <ul  class="list-group">
-                                @foreach($documents as $document)
+                                <li class="list-group-item text-left document-removed hide" id="">
+                                    <button class="btn btn-danger" type="button" id="toRemove">Remover selecionados <i class="fas fa-trash-alt text-danger "></i></button>
+                                </li>
+                                <li class="list-group-item text-left document-active" id="">
+                                    <button class="btn btn-warning" type="button" id="toArchived">Arquivar selecionados <i class="fas fa-arrow-right text-danger "></i></button>
+                                </li>
+                                @foreach($documents as $key=>$document)
                                     @if($document->removed)
                                         <li class="list-group-item text-left document-removed hide" id="document-{{$document->id}}">
                                             <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente - REMOVIDO' : 'REMOVIDO(Não exibe para o cliente)'}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
                                                 {{$document->file_name_original}}
                                             </a>
+                                            @if($hasAdmin)
+                                                <input type="checkbox" name="toRemove" class="toRemove" value="{{$document->id}}">
+                                            @endif
                                         </li>
                                     @else
                                         <li class="list-group-item text-left document-active" id="document-{{$document->id}}">
@@ -190,7 +199,7 @@
                                                 {{$document->file_name_original}}
                                             </a>
                                             @if($user->id==$document->user_id || $hasAdmin || $hasSendNotification)
-                                                <span class="delete-todo todo-action cursor-pointer delete-document" id="delDoc-{{$document->id}}"><i class="fas fa-trash-alt text-danger "></i></span>
+                                                <input type="checkbox" name="toArchived" class="toArchived" value="{{$document->id}}">
                                             @endif
                                         </li>
                                     @endif
@@ -299,6 +308,31 @@
                     </div>
                 </div>
             </div>
+            @if($hasAdmin)
+                <div class="card">
+                    <div class="row">
+                        <div class="col-12 border-right">
+                            <div class="card-body text-center bg-missed">
+                                <h4 class="card-title">Move os dados desse ticket para o ticket escolhido no campo abaixo</h4>
+                                <div class="input-group mb-3">
+                                    <input type="number" name="moveId" id="moveId" class="form-control text-uppercase" placeholder="Identificador do ticket">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text mouse-pointer" id="moveTicket">Mover</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p>
+                                        <i><b>*</b> Os participantes nao serão transferidos</i>.<br/>
+                                        <i><b>**</b> O ticket escolhido no campo receberá os dados desse ticket.</i>.<br/>
+                                        <i><b>***</b> Esse ticket será removido após o processo.</i>.<br/>
+                                        <i><b>****</b> Essa ação é irreversível.</i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -567,13 +601,7 @@
             content: "";
         }
 
-        .list-group .document-removed::after{
-             font-family: "Font Awesome 5 Free";
-             font-weight: 900;
-             color: #ffbc34!important;
-             display: inline;
-             content: "\f069"; /* FontAwesome Unicode */
-        }
+
     </style>
 @endsection
 @section('script_footer_end')
@@ -614,7 +642,94 @@
                 $('#form-comment').attr('action', url).submit();
                 submitComment=true;
             }
+        });
+        var sweet_loader = '<div class="sweet_loader"><svg viewBox="0 0 140 140" width="140" height="140"><g class="outline"><path d="m 70 28 a 1 1 0 0 0 0 84 a 1 1 0 0 0 0 -84" stroke="rgba(0,0,0,0.1)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></g><g class="circle"><path d="m 70 28 a 1 1 0 0 0 0 84 a 1 1 0 0 0 0 -84" stroke="#71BBFF" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dashoffset="200" stroke-dasharray="300"></path></g></svg></div>';
 
+        $('#toArchived').click(function (){
+            var removeIds = [] ;
+            $("input:checkbox[class=toArchived]:checked").each(function(){
+                removeIds.push($(this).val());
+            });
+            if(removeIds.length<1){
+                swal("Atenção!", "Seleciona o menos um item para arquivar", "warning");
+                return false;
+            }
+            swal({
+                title: "Você têm certeza?",
+                text: 'Essa ação irá arquivar '+removeIds.length+' arquivo(s)',
+                type: "error",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim!",
+                cancelButtonText: "Cancelar!",
+            }).then((isConfirm) => {
+                if (isConfirm.dismiss==='cancel') return;
+
+                $.ajax({
+                    url: '{{route('document.archived.ticket')}}',
+                    type: "POST",
+                    data: {_token:$('input[name="_token"]').val(), 'documents':removeIds},
+                    dataType: "json",
+                    beforeSend: function() {
+                        swal.fire({
+                            html: '<h5>Arquivando Aguarde...</h5>',
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                    },
+                    success: function (data) {
+                        swal("Sucesso!", "Arquivos arquivados com sucesso", "success").then(() => {
+                            document.location.reload(true);
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        swal("Erro!", xhr.responseJSON.message, "error");
+                    }
+                });
+            });
+        });
+
+        $('#toRemove').click(function (){
+            var removeIds = [] ;
+            $("input:checkbox[class=toRemove]:checked").each(function(){
+                removeIds.push($(this).val());
+            });
+            if(removeIds.length<1){
+                swal("Atenção!", "Seleciona o menos um item para remover", "warning");
+                return false;
+            }
+            swal({
+                title: "Você têm certeza?",
+                text: 'Essa ação irá remover '+removeIds.length+' arquivo(s), essa ação é irreversivel.',
+                type: "error",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim!",
+                cancelButtonText: "Cancelar!",
+            }).then((isConfirm) => {
+                if (isConfirm.dismiss==='cancel') return;
+                $.ajax({
+                    url: '{{route('document.delete.ticket')}}',
+                    type: "POST",
+                    data: {_token:$('input[name="_token"]').val(), 'documents':removeIds},
+                    dataType: "json",
+                    beforeSend: function() {
+                        swal.fire({
+                            html: '<h5>Removendo aguarde...</h5>',
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                    },
+                    success: function (data) {
+                        swal("Sucesso!", "Arquivos removidos com sucesso", "success").then(() => {
+                            document.location.reload(true);
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        swal("Erro!", xhr.responseJSON.message, "error");
+                    }
+                });
+            });
         });
 
         var endTicket = false;
@@ -765,7 +880,6 @@
                 confirmButtonText: "Sim!",
                 cancelButtonText: "Cancelar!",
             }).then((isConfirm) => {
-                console.log(isConfirm);
                 if (isConfirm.dismiss==='cancel') return;
                 $.ajax({
                     url: url,
@@ -783,12 +897,6 @@
                 });
             });
         }
-
-        $('.delete-document').click(function (){
-            var url = '{{route('document.remove.ticket', [':id'])}}';
-            var id = this.id.split('-')[1];
-            cancelSubscripton(url.replace(':id', id), 'Você está prestes a remover esse documento', 'document-'+id)
-        });
 
         $(document).ready(function () {
             Dropzone.prototype.defaultOptions.dictDefaultMessage = "Arraste os arquivos aqui para enviar";
@@ -888,6 +996,47 @@
                 });
             });
         }
+        $("#moveTicket").click(function (){
+            var idToMove = $("#moveId").val();
+            var idCurrent = "{{$data->id ? $data->id : 0}}";
+            if(idToMove=="0" || !idToMove || idToMove==idCurrent){
+                swal("Atenção!", "Digite o identificador diferente de zero e "+idCurrent, "warning");
+                return false;
+            }
+            swal({
+                title: "Você têm certeza?",
+                text: 'Essa ação irá mover os dados definitivamente.',
+                type: "error",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim!",
+                cancelButtonText: "Cancelar!",
+            }).then((isConfirm) => {
+                if (isConfirm.dismiss==='cancel') return;
+                $.ajax({
+                    url: '{{route('ticket.move')}}',
+                    type: "POST",
+                    data: {_token:$('input[name="_token"]').val(), 'idToMove':idToMove, 'idCurrent':idCurrent},
+                    dataType: "json",
+                    beforeSend: function() {
+                        swal.fire({
+                            html: '<h5>Movendo Aguarde...</h5>',
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                    },
+                    success: function (data) {
+                        swal("Sucesso!", "Dados movidos com sucesso.", "success").then(() => {
+                            var url = '{{route('ticket.ticket', ':id')}}';
+                            window.location = url.replace(':id', idToMove);
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        swal("Erro!", xhr.responseJSON.message, "error");
+                    }
+                });
+            });
+        })
     </script>
 @endsection
 

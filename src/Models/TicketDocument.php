@@ -5,6 +5,7 @@ namespace Oka6\SulRadio\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Oka6\Admin\Models\User;
 
 class TicketDocument extends Model {
@@ -70,11 +71,18 @@ class TicketDocument extends Model {
 		return	$query->get();
 	}
 	
-	public static function removeById($id, $user, $hasAdmin) {
+	public static function removeById($id, $hasAdmin) {
+        if($hasAdmin){
+            $remove = self::where('id', $id)->first();
+            $remove->delete();
+            Storage::disk('spaces')->delete('tickets/'.$remove->file_name);
+            return $remove;
+        }
+		return null;
+	}
+
+    public static function archivedById($id) {
 		$query = self::where('id', $id);
-		if(!$hasAdmin){
-			$query->where('user_id', $user->id);
-		}
 		$document = $query->first();
 		$document->removed=1;
 		$document->save();

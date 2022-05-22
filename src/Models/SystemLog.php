@@ -24,6 +24,7 @@ class SystemLog extends Model {
 	const TYPE_SAVE_TRACKER_URL = 9;
 	const TYPE_DELETE_TRACKER_URL = 10;
 	const TYPE_SEND_EMAIL_CLIENT = 11;
+	const TYPE_MOVE_TICKET = 12;
 	const TYPE_UNDEFINED = 99;
 
 	const ZONE_TICKET = 1;
@@ -42,6 +43,7 @@ class SystemLog extends Model {
 		self::TYPE_DELETE_TRACKER_URL => 'Deleta rastreador',
 		self::TYPE_SEND_EMAIL_CLIENT => 'Notificação Email',
 		self::TYPE_SEND_EMAIL_NOTIFICATION => 'Comentário enviado por email',
+		self::TYPE_MOVE_TICKET => 'Dados de ticket movido',
 		self::TYPE_UNDEFINED => 'Indefinido',
 		];
 	const ZONE_TEXT = [self::ZONE_TICKET => 'Ticket', self::ZONE_SEAD => 'SEAD', self::ZONE_UNDEFINED=> 'Indefinido',];
@@ -142,6 +144,7 @@ class SystemLog extends Model {
 			case self::TYPE_SAVE_TRACKER_URL:
 			case self::TYPE_DELETE_TRACKER_URL:
 			case self::TYPE_VIEW:
+			case self::TYPE_MOVE_TICKET:
 				$data['content'] = $content;
 				$data['only_root'] = 1;
 			break;

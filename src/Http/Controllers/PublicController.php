@@ -22,11 +22,13 @@ use Oka6\SulRadio\Models\EstacaoRd;
 use Oka6\SulRadio\Models\States;
 use Oka6\SulRadio\Models\SystemLog;
 use Oka6\SulRadio\Models\Ticket;
+use Oka6\SulRadio\Models\TicketComment;
 use Oka6\SulRadio\Models\TicketDocument;
 use Oka6\SulRadio\Models\TicketNotification;
 use Oka6\SulRadio\Models\TicketNotificationClient;
 use Oka6\SulRadio\Models\TicketNotificationClientUser;
 use Oka6\SulRadio\Models\TicketParticipant;
+use Oka6\SulRadio\Models\TicketUrlTracker;
 use Oka6\SulRadio\Models\UserSulRadio;
 use Yajra\DataTables\DataTables;
 
@@ -138,18 +140,69 @@ class PublicController extends SulradioController {
 		return Download::make(Storage::disk('spaces')->get('tickets/'.$document->file_name), Response::HTTP_OK, $headers);
 		//return redirect($urlTemp);
 	}
-	public function removeDocumentTicket(Request $request, $id=null) {
+
+	public function deleteDocumentTicket(Request $request, $id=null) {
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-        $hasSendNotification = ResourceAdmin::hasResourceByRouteName('ticket.comment.send.email');
-		$update     = TicketDocument::removeById($id, Auth::user(), ($hasAdmin || $hasSendNotification) ?? false);
-		if($update){
-			$userLogged = Auth::user();
-			$contentLog = 'Usuário '.$userLogged->name. ' removeu um arquivo ao ticket '. $update->ticket_id. ' arquivo['.$update->file_name.']';
-			SystemLog::insertLogTicket(SystemLog::TYPE_DELETE_UPLOAD, $contentLog, $id, $userLogged->id);
-			return response()->json(['message'=>'success'], 200);
-		}else{
-			return response()->json(['message'=>'Erro ao remover o arquivo, somente admin e o propio usuário que subio o arquivo podem remover. '], 500);
-		}
+        $documentsId = $request->get('documents');
+        $userLogged = Auth::user();
+        foreach ($documentsId as  $docId){
+            $update     = TicketDocument::removeById($docId, ($hasAdmin) ?? false);
+            if($update) {
+                $contentLog = 'Usuário ' . $userLogged->name . ' deletou permanentemente um arquivo do ticket ' . $update->ticket_id . ' arquivo[' . $update->file_name . ']';
+                SystemLog::insertLogTicket(SystemLog::TYPE_DELETE_UPLOAD, $contentLog, $id, $userLogged->id);
+            }
+        }
+        return response()->json(['message'=>'success'], 200);
+	}
+
+    public function ticketMove(Request $request) {
+		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+        $idCurrent = $request->get('idCurrent');
+        $idToMove = $request->get('idToMove');
+        if($hasAdmin){
+            $ticket = Ticket::getById($idToMove);
+            if(!$ticket){
+                return response()->json(['message'=>'Ticket não encontrado'], 500);
+            }
+
+            $ticketComment = TicketComment::where('ticket_id', $idCurrent)->update(['ticket_id'=> $idToMove]);
+            $ticketDocument = TicketDocument::where('ticket_id', $idCurrent)->update(['ticket_id'=> $idToMove]);
+            $ticketNotification = TicketNotification::where('ticket_id', $idCurrent)->update(['ticket_id'=> $idToMove]);
+            $ticketNotificationClient = TicketNotificationClient::where('ticket_id', $idCurrent)->update(['ticket_id'=> $idToMove]);
+            $ticketUrlTracker = TicketUrlTracker::where('ticket_id', $idCurrent)->update(['ticket_id'=> $idToMove]);
+            $systemLog = SystemLog::where('ticket_id', $idCurrent)->update(['ticket_id'=> $idToMove]);
+
+            /** Delete Ticket */
+            Ticket::where('id', $idCurrent)->delete();
+
+            $userLogged = Auth::user();
+            $contentLog = 'Usuário ' . $userLogged->name . ' moveu os dados do ticket id['.$idCurrent.'] para['.$idToMove.']';
+            SystemLog::insertLogTicket(SystemLog::TYPE_MOVE_TICKET, $contentLog, $idToMove, $userLogged->id);
+
+            /** Add comment with information */
+            $comment = TicketComment::create([
+                'html'=>$contentLog,
+                'user_id'=>$userLogged->id,
+                'ticket_id'=>$idToMove
+            ]);
+            /** Notifica todos os participantes */
+            $ticket = Ticket::getById($idToMove);
+            TicketParticipant::notifyParticipants($ticket, $userLogged,TicketNotification::TYPE_COMMENT, $comment->id);
+        }
+
+        return response()->json(['message'=>'success'], 200);
+	}
+    public function archivedDocumentTicket(Request $request) {
+        $documentsId = $request->get('documents');
+        foreach ($documentsId as  $docId){
+            $update     = TicketDocument::archivedById($docId);
+            if($update){
+                $userLogged = Auth::user();
+                $contentLog = 'Usuário '.$userLogged->name. ' arquivou um arquivo do ticket '. $update->ticket_id. ' arquivo['.$update->file_name.']';
+                SystemLog::insertLogTicket(SystemLog::TYPE_DELETE_UPLOAD, $contentLog, $docId, $userLogged->id);
+            }
+        }
+        return response()->json(['message'=>'success'], 200);
 	}
 
 	public function markToReadNotificationsTicket() {
