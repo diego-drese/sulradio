@@ -25,14 +25,14 @@ return [
 			'pass'          => '040816Srd',
 			'from_name'     => 'Sead',
 			'provider'      => 'outlook',
+		],'sead.sulradio@outlook.com' => [
+			'username'      => 'sead.sulradio@outlook.com',
+			'email'         => 'sead.sulradio@outlook.com',
+			'pass'          => '040816Srd',
+			'from_name'     => 'Sead',
+			'provider'      => 'outlook',
 		],
-		'sead.sulradio@gmail.com' => [
-			'username'      => 'sead.sulradio@gmail.com',
-			'email'         => 'sead.sulradio@gmail.com',
-		    'pass'          => '040816Srd',
-		    'from_name'     => 'Sead',
-		    'provider'      => 'gmail',
-	    ],
+
     ],
 
     'provider' => [
@@ -44,11 +44,7 @@ return [
             'host'      => 'smtp.office365.com',
             'port'      => '587',
             'encryption' => 'tls',
-        ],'gmail' => [
-		    'host'      => 'smtp.gmail.com',
-		    'port'      => '465',
-		    'encryption' => 'ssl',
-	    ],
+        ]
     ],
 
 ];
