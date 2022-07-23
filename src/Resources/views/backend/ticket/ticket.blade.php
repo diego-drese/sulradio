@@ -186,21 +186,22 @@
                                 @foreach($documents as $key=>$document)
                                     @if($document->removed)
                                         <li class="list-group-item text-left document-removed hide" id="document-{{$document->id}}">
-                                            <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente - REMOVIDO' : 'REMOVIDO(Não exibe para o cliente)'}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
-                                                {{$document->file_name_original}}
-                                            </a>
                                             @if($hasAdmin)
                                                 <input type="checkbox" name="toRemove" class="toRemove" value="{{$document->id}}">
                                             @endif
+                                            <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente - REMOVIDO' : 'REMOVIDO(Não exibe para o cliente)'}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
+                                                {{$document->file_name_original}}
+                                            </a>
+
                                         </li>
                                     @else
                                         <li class="list-group-item text-left document-active" id="document-{{$document->id}}">
-                                            <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente' : ''}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
-                                                {{$document->file_name_original}}
-                                            </a>
                                             @if($user->id==$document->user_id || $hasAdmin || $hasSendNotification)
                                                 <input type="checkbox" name="toArchived" class="toArchived" value="{{$document->id}}">
                                             @endif
+                                            <a class="{{$document->file_preview=='client'? 'text-dark' : ''}}" title="{{$document->file_preview=='client'? 'Documento adicionado pelo cliente' : ''}}" target="_blank" href="{{route('document.download.ticket', [$document->id])}}" >
+                                                {{$document->file_name_original}}
+                                            </a>
                                         </li>
                                     @endif
                                 @endforeach
