@@ -67,13 +67,13 @@ class ProcessTicketNotification extends Command {
                         } else if ($notification->type == TicketNotification::TYPE_TRANSFER_AGENT) {
                             $this->sendEmailTypeTransfer($notification);
                         }
-                        $notification->save();
-                        $try = $emailCount;
-                        $userSendNotification[$keyMap]=true;
                     }else{
                         Log::info('ProcessTicketNotification, ignoring send email', ['keyMap'=>$keyMap, 'notification'=>$notification]);
                     }
 
+                    $notification->save();
+                    $try = $emailCount;
+                    $userSendNotification[$keyMap]=true;
 
 				} catch (\Exception $e) {
 					$try++;
