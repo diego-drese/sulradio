@@ -53,21 +53,28 @@ class ProcessTicketNotification extends Command {
 			while ($try < $emailCount) {
 				$this->emailFrom = Helper::sendEmailRandom($tries);
 				try {
-					$notification->status = TicketNotification::STATUS_PROCESSED;
-					if ($notification->type == TicketNotification::TYPE_UPDATE) {
-						$this->sendEmailTypeUpdate($notification);
-					}else if ($notification->type == TicketNotification::TYPE_COMMENT) {
-						$this->sendEmailTypeComment($notification);
-					} else if ($notification->type == TicketNotification::TYPE_NEW) {
-						$this->sendEmailTypeNew($notification);
-					} else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
-						$this->sendEmailTypeCommentClient($notification);
-					} else if ($notification->type == TicketNotification::TYPE_TRANSFER_AGENT) {
-						$this->sendEmailTypeTransfer($notification);
-					}
+                    $keyMap = $notification->ticket_id.'-'.$notification->type.'-'.$notification->agent_current_id;
+                    if(!isset($userSendNotification[$keyMap])){
+                        $notification->status = TicketNotification::STATUS_PROCESSED;
+                        if ($notification->type == TicketNotification::TYPE_UPDATE) {
+                            $this->sendEmailTypeUpdate($notification);
+                        }else if ($notification->type == TicketNotification::TYPE_COMMENT) {
+                            $this->sendEmailTypeComment($notification);
+                        } else if ($notification->type == TicketNotification::TYPE_NEW) {
+                            $this->sendEmailTypeNew($notification);
+                        } else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
+                            $this->sendEmailTypeCommentClient($notification);
+                        } else if ($notification->type == TicketNotification::TYPE_TRANSFER_AGENT) {
+                            $this->sendEmailTypeTransfer($notification);
+                        }
+                        $notification->save();
+                        $try = $emailCount;
+                        $userSendNotification[$keyMap]=true;
+                    }else{
+                        Log::info('ProcessTicketNotification, ignoring send email', ['keyMap'=>$keyMap, 'notification'=>$notification]);
+                    }
 
-					$notification->save();
-					$try = $emailCount;
+
 				} catch (\Exception $e) {
 					$try++;
 					$tries[] = $this->emailFrom['email'];
