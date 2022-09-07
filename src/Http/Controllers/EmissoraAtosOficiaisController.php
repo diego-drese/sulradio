@@ -20,13 +20,13 @@ use Oka6\SulRadio\Models\Servico;
 use Oka6\SulRadio\Models\TipoAto;
 use Oka6\SulRadio\Models\TipoPenalidade;
 use Oka6\SulRadio\Models\Uf;
+use Oka6\SulRadio\Models\UserSulRadio;
 use Yajra\DataTables\DataTables;
 
 class EmissoraAtosOficiaisController extends SulradioController {
 	use ValidatesRequests;
 	
 	public function index(Request $request, $emissoraID) {
-		
 		if ($request->ajax()) {
 			$query = Ato::query()
 				->withEmissora($emissoraID)
@@ -55,7 +55,6 @@ class EmissoraAtosOficiaisController extends SulradioController {
 			$dou                = Dou::getById($douId);
 			$tipo               = TipoAto::getOrCreateByName($dou->type_name);
 			$data->tipo_atoID   = $tipo->tipo_atoID;
-			$data->numero_ato   = $dou->id;
 			$data->numero_ato   = $dou->id;
 			$data->data_dou     = $dou->date->format('Y-m-d H:i:s');
 			$data->secao        = $dou->pub_name;
@@ -140,6 +139,8 @@ class EmissoraAtosOficiaisController extends SulradioController {
 	protected function makeParameters($extraParameter = null) {
 		$user = Auth::user();
 		$emissora = Emissora::getById($extraParameter['emissoraID'], $user);
+        $usersClients =  UserSulRadio::query()->client($emissora->client_id)->get();
+
 		$parameters = [
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('emissora.atos.oficiais.create', [1]),
 			'hasEdit' => ResourceAdmin::hasResourceByRouteName('emissora.atos.oficiais.edit', [1, 1]),
@@ -148,6 +149,7 @@ class EmissoraAtosOficiaisController extends SulradioController {
 			'tipoAto' => TipoAto::getWithCache(),
 			'uf' => Uf::getWithCache(),
 			'client' => Client::getById($emissora->client_id),
+            'usersClients'=> $usersClients,
 			'categoria' => AtoCategoria::getWithCache(),
 			'servico' => Servico::getWithCache(),
 			'finalidade' => Finalidade::getWithCache(),

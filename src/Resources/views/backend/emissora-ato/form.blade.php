@@ -161,11 +161,6 @@
         @endif
     </div>
 
-
-
-
-
-
     <div class="col-md-4 form-group {{$errors->has('tipo_penalidadeID') ? 'has-error' : ''}} ">
         <label for="tipo_penalidadeID">Tipo de penalidade.</label>
         <select class="form-control select2" id="tipo_penalidadeID" name="tipo_penalidadeID">
@@ -224,6 +219,34 @@
             <span class="help-block">{{$errors->first('ato_url')}}</span>
         @endif
     </div>
+    @if(count($usersClients))
+    <div class="col-md-12 form-group">
+        <label for="observacao">Notificaçoes</label>
+        <table class="table table-striped table-bordered dataTable no-footer">
+            <tr>
+                <th>Email</th>
+                <th>Nome</th>
+                <th>Status</th>
+                <th>Enviar</th>
+                <th>Data Envio</th>
+            </tr>
+            @foreach($usersClients as $user)
+               <tr>
+                   <td>{{$user->email}}</td>
+                   <td>{{$user->name." ".$user->lastname}}</td>
+                   <td>{{$user->receive_notification }}</td>
+                   <td>Status</td>
+                   <td>---</td>
+               </tr>
+            @endforeach
+        </table>
+
+
+
+
+
+    </div>
+    @endif
 </div>
 
 <div class="col-md-12 form-group">
@@ -314,7 +337,5 @@
 
         });
         $('#ufID').trigger('change');
-
-
     </script>
 @endsection

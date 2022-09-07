@@ -307,7 +307,7 @@ class TicketController extends SulradioController {
 		}
 		$parse = parse_url($url);
 		$domain = $parse['host'];
-		$domains = ['sei.anatel.gov.br', 'sei.mctic.gov.br'];
+		$domains = ['sei.anatel.gov.br', 'sei.mctic.gov.br', 'sei.mcom.gov.br'];
 		if(!in_array($domain, $domains)){
 			return response()->json(['message'=>'Somente os domínios [<b>'.implode(' , ', $domains).'</b>] são permitidos'], 500);
 		}
