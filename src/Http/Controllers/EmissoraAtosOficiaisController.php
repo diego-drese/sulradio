@@ -10,6 +10,7 @@ use Oka6\Admin\Library\MongoUtils;
 use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Models\Ato;
 use Oka6\SulRadio\Models\AtoCategoria;
+use Oka6\SulRadio\Models\AtoNotification;
 use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Dou;
 use Oka6\SulRadio\Models\Emissora;
@@ -45,12 +46,13 @@ class EmissoraAtosOficiaisController extends SulradioController {
 	}
 	
 	public function create(Request $request, Ato $data, $emissoraID) {
-		$douId      = $request->get('dou_id');
-		$user       = Auth::user();
-		$emissora   = Emissora::getById($emissoraID, $user);
-		$data->servicoID = $emissora->servicoID;
-		$data->canal_freq = $emissora->canal.'/'.$emissora->frequencia;
-		$data->classe = $emissora->classe;
+		$douId              = $request->get('dou_id');
+		$user               = Auth::user();
+		$emissora           = Emissora::getById($emissoraID, $user);
+		$data->servicoID    = $emissora->servicoID;
+		$data->canal_freq   = $emissora->canal.'/'.$emissora->frequencia;
+		$data->classe       = $emissora->classe;
+        $usersClients       =  UserSulRadio::query()->client($emissora->client_id)->get();
 		if($douId){
 			$dou                = Dou::getById($douId);
 			$tipo               = TipoAto::getOrCreateByName($dou->type_name);
@@ -70,7 +72,7 @@ class EmissoraAtosOficiaisController extends SulradioController {
 			$data->municipioID = $ufID->municipioID;
 			$data->ufID = $ufID->ufID;
 		}
-		return $this->renderView('SulRadio::backend.emissora-ato.create', ['data' => $data, 'emissoraID' => $emissoraID, 'douId'=>$douId]);
+		return $this->renderView('SulRadio::backend.emissora-ato.create', ['data' => $data, 'emissoraID' => $emissoraID, 'douId'=>$douId, 'usersClients'=>$usersClients]);
 	}
 	
 	public function store(Request $request, $emissoraID) {
@@ -85,20 +87,20 @@ class EmissoraAtosOficiaisController extends SulradioController {
 			'finalidadeID' => 'required',
 		]);
 		$dataForm['emissoraID'] = $emissoraID;
-		$dataForm['data_ato'] = Helper::convertDateBrToMysql($dataForm['data_ato']);
-		$dataForm['data_dou'] = Helper::convertDateBrToMysql($dataForm['data_dou']);
-		$ato = Ato::create($dataForm);
+		$dataForm['data_ato']   = Helper::convertDateBrToMysql($dataForm['data_ato']);
+		$dataForm['data_dou']   = Helper::convertDateBrToMysql($dataForm['data_dou']);
+		$ato                    = Ato::create($dataForm);
+        $emissora               = Emissora::getById($emissoraID, $user);
 		if(isset($dataForm['douId']) && !empty($dataForm['douId'])){
 			$dou                = Dou::getById($dataForm['douId']);
 			if(!$dou->emissora_id){
-				$emissora           = Emissora::getById($emissoraID, $user);
 				$dou->ato_id        = $ato->atoID;
 				$dou->emissora_id   = $emissoraID;
 				$dou->emissora_name = $emissora->razao_social;
 				$dou->save();
 			}
-		
 		}
+        AtoNotification::add($emissora, $ato, $user);
 		toastr()->success('Ato Criado com sucesso', 'Sucesso');
 		return redirect(route('emissora.atos.oficiais.index', $emissoraID));
 		
@@ -108,10 +110,11 @@ class EmissoraAtosOficiaisController extends SulradioController {
 		$data = Ato::getById($id);
 		$data->ufID = null;
 		$ufID = Municipio::getById($data->municipioID);
+        $usersClients= AtoNotification::getUsersByAtoId($id);
 		if ($ufID) {
 			$data->ufID = $ufID->ufID;
 		}
-		return $this->renderView('SulRadio::backend.emissora-ato.edit', ['data' => $data, 'emissoraID' => $emissoraID]);
+		return $this->renderView('SulRadio::backend.emissora-ato.edit', ['data' => $data, 'emissoraID' => $emissoraID, 'usersClients'=>$usersClients]);
 	}
 	
 	public function update(Request $request, $emissoraID, $id) {
@@ -139,7 +142,7 @@ class EmissoraAtosOficiaisController extends SulradioController {
 	protected function makeParameters($extraParameter = null) {
 		$user = Auth::user();
 		$emissora = Emissora::getById($extraParameter['emissoraID'], $user);
-        $usersClients =  UserSulRadio::query()->client($emissora->client_id)->get();
+
 
 		$parameters = [
 			'hasAdd' => ResourceAdmin::hasResourceByRouteName('emissora.atos.oficiais.create', [1]),
@@ -149,8 +152,7 @@ class EmissoraAtosOficiaisController extends SulradioController {
 			'tipoAto' => TipoAto::getWithCache(),
 			'uf' => Uf::getWithCache(),
 			'client' => Client::getById($emissora->client_id),
-            'usersClients'=> $usersClients,
-			'categoria' => AtoCategoria::getWithCache(),
+            'categoria' => AtoCategoria::getWithCache(),
 			'servico' => Servico::getWithCache(),
 			'finalidade' => Finalidade::getWithCache(),
 			'tipoPenalidade' => TipoPenalidade::getWithCache(),

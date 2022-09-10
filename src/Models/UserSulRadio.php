@@ -20,6 +20,7 @@ class UserSulRadio extends User {
 		'type',
 		'last_login_at',
 		'last_notification_at',
+		'receive_notification',
 		'client_id',
 		'function_id',
 		'users_ticket',

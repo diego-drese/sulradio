@@ -220,31 +220,26 @@
         @endif
     </div>
     @if(count($usersClients))
-    <div class="col-md-12 form-group">
-        <label for="observacao">Notificaçoes</label>
-        <table class="table table-striped table-bordered dataTable no-footer">
-            <tr>
-                <th>Email</th>
-                <th>Nome</th>
-                <th>Status</th>
-                <th>Enviar</th>
-                <th>Data Envio</th>
-            </tr>
-            @foreach($usersClients as $user)
-               <tr>
-                   <td>{{$user->email}}</td>
-                   <td>{{$user->name." ".$user->lastname}}</td>
-                   <td>{{$user->receive_notification }}</td>
-                   <td>Status</td>
-                   <td>---</td>
-               </tr>
-            @endforeach
-        </table>
-
-
-
-
-
+        <div class="col-md-12 form-group">
+            <label for="observacao">Notificaçoes</label>
+            <table class="table table-striped table-bordered dataTable no-footer">
+                <tr>
+                    <th>Email</th>
+                    <th>Nome</th>
+                    <th width="120px">Recebe Notificações</th>
+                    <th>Status Envio</th>
+                    <th>Data Envio</th>
+                </tr>
+                @foreach($usersClients as $user)
+                   <tr>
+                       <td>{{$user->email}}</td>
+                       <td>{{$user->name." ".$user->lastname}}</td>
+                       <td>{!! $user->receive_notification? '<span class="badge badge-success mr-1 ">SIM</span>': '<span class="badge badge-danger mr-1 ">NÃO</span>' !!}</td>
+                       <td>{{$user->status_send??'----' }}</td>
+                       <td>{{$user->date_sent??'----' }}</td>
+                   </tr>
+                @endforeach
+            </table>
     </div>
     @endif
 </div>

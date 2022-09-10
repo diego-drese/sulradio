@@ -45,7 +45,7 @@ class Client extends Model {
 		return Cache::tags(['sulradio'])->remember('users_by_emissora-'.$id, 10, function () use($id){
 			$emissora = Emissora::getByIdOnly($id);
 			if($emissora && $emissora->client_id){
-				return UserSulRadio::client($emissora->client_id)->get();
+				return UserSulRadio::client($emissora->client_id)->where('active', 1)->get();
 			}
 			return [];
 		});

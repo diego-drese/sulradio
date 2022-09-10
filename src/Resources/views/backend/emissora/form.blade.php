@@ -392,129 +392,8 @@
                     "sSortDescending": ": Ordenar colunas de forma descendente"
                 }
             };
-            var hasEditSocio = '{{$hasSocios}}';
-            var hasEditEndereco = '{{$hasEndereco}}';
-            var hasEditContato = '{{$hasContato}}';
-            var tableSocio = $('#tableSocio').DataTable({
-                language: languageDatatable,
-                serverSide: true,
-                processing: true,
-                autoWidth: false,
-                orderCellsTop: true,
-                stateSave: true,
-                searching: true,
-                stateLoaded: function (settings, data) {
-                    setTimeout(function () {
-                        var dataExtra = settings.ajax.data({});
-                        var searchCols = settings.aoPreSearchCols;
-                        if (searchCols && searchCols.length) {
-                            for (var i = 0; i < searchCols.length; i++) {
-                                $('#tableSocio thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
-                            }
-                        }
-                    }, 50);
-                },
-                ajax: {
-                    url: '{{ route('emissora.socio.index', $data->emissoraID) }}',
-                    type: 'GET',
-                    data: function (d) {
-                        d._token = $("input[name='_token']").val();
-                        return d;
-                    }
-                },
-                columns: [
-                    {
-                        data: null, searchable: false, orderable: false, render: function (data) {
-                            if (!hasEditSocio) return '---';
-                            var edit_button = "";
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
-                            return edit_button
-                        }
-                    },
-                    {data: "nome", 'name': 'nome'},
-                    {data: "desc_categoria", 'name': 'emissora_socio_categoria.desc_categoria'},
-
-                ]
-            });
-
-            $('#tableSocio thead tr:eq(1) th').each(function (i) {
-                $('.fieldSearch', this).on('keyup change', function () {
-                    if (tableSocio.column(i).search() !== this.value) {
-                        tableSocio.column(i).search(this.value).draw();
-                    }
-                });
-            });
-
-            $('#clearFilterSocios').click(function () {
-                tableSocio.state.clear();
-                $('#tableSocio .fieldSearch').val('');
-                tableSocio.search('').columns().search('').draw();
-
-            });
-
-            var tableEndereco = $('#tableEndereco').DataTable({
-                language: languageDatatable,
-                serverSide: true,
-                processing: true,
-                autoWidth: false,
-                orderCellsTop: true,
-                stateSave: true,
-                searching: true,
-                stateLoaded: function (settings, data) {
-                    setTimeout(function () {
-                        var dataExtra = settings.ajax.data({});
-                        var searchCols = settings.aoPreSearchCols;
-                        if (searchCols && searchCols.length) {
-                            for (var i = 0; i < searchCols.length; i++) {
-                                $('#tableEndereco thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
-                            }
-                        }
-                    }, 50);
-                },
-                ajax: {
-                    url: '{{ route('emissora.endereco.index', $data->emissoraID) }}',
-                    type: 'GET',
-                    data: function (d) {
-                        d._token = $("input[name='_token']").val();
-                        return d;
-                    }
-                },
-                columns: [
-                    {
-                        data: null, searchable: false, orderable: false, render: function (data) {
-                            if (!hasEditEndereco) return '---';
-                            var edit_button = "";
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
-                            return edit_button
-                        }
-                    },
-                    {data: "desc_tipo_endereco", 'name': 'emissora_tipo_endereco.desc_tipo_endereco'},
-                    {data: "desc_uf", 'name': 'uf.desc_uf'},
-                    {data: "desc_municipio", 'name': 'municipio.desc_municipio'},
-                    {data: "logradouro", 'name': 'logradouro', render:function (data, display , row){
-                            var endereco = row.logradouro+'<br/>';
-                            endereco+='Numero: '+row.numero+' Complemento: '+row.complemento+'<br/>';
-                            endereco+='Bairro: '+row.bairro+' Cep: '+row.cep+'<br/>';
-
-                            return endereco;
-                        }},
-
-                ]
-            });
-
-            $('#tableEndereco thead tr:eq(1) th').each(function (i) {
-                $('.fieldSearch', this).on('keyup change', function () {
-                    if (tableEndereco.column(i).search() !== this.value) {
-                        tableEndereco.column(i).search(this.value).draw();
-                    }
-                });
-            });
-
-            $('#clearFilterEnd').click(function () {
-                tableEndereco.state.clear();
-                $('#tableEndereco .fieldSearch').val('');
-                tableEndereco.search('').columns().search('').draw();
-            })
+            var hasEditContato = '{{$hasEditContato}}';
+            var hasUpdateContato = '{{$hasUpdateContato}}';
 
             var tableContato = $('#tableContato').DataTable({
                 language: languageDatatable,
@@ -523,21 +402,20 @@
                 autoWidth: false,
                 orderCellsTop: true,
                 stateSave: true,
-                searching: true,
                 stateLoaded: function (settings, data) {
                     setTimeout(function () {
                         var dataExtra = settings.ajax.data({});
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#tableContato thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                $('#table_user thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
                     }, 50);
                 },
                 ajax: {
-                    url: '{{ route('emissora.contato.index', $data->emissoraID) }}',
+                    url: '{{ route('emissora.contato.index', [$data->client_id??-1, 'emissora_id'=>$data->emissoraID]) }}',
                     type: 'GET',
                     data: function (d) {
                         d._token = $("input[name='_token']").val();
@@ -547,26 +425,52 @@
                 columns: [
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
-                            if (!hasEditContato) return '---';
                             var edit_button = "";
-                            edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            if(hasEditContato){
+                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Editar</b></a>';
+                            }
+
+
                             return edit_button
                         }
                     },
 
-                    {data: "nome_contato", 'name': 'nome_contato'},
-                    {data: "desc_funcao", 'name': 'funcao.desc_funcao'},
-
+                    {data: "name", 'name': 'name'},
+                    {data: "lastname", 'name': 'lastname'},
+                    {data: "active", 'name': 'active', orderable: false,
+                        render: function (data, display, row) {
+                            if (data == "1") {
+                                return '<span class="badge badge-success mr-1 ">SIM</span>';
+                            } else if (data == '0') {
+                                return '<span class="badge badge-danger mr-1 ">NÃO</span>';
+                            }
+                            return '---';
+                        }
+                    },
+                    {data: "receive_notification", 'name': 'receive_notification', orderable: false,
+                        render: function (data, display, row) {
+                            if (data == "1") {
+                                return '<span class="badge badge-success mr-1">SIM</span>';
+                            } else if (data == '0') {
+                                return '<span class="badge badge-danger mr-1">NÃO</span>';
+                            }
+                            return '---';
+                        }
+                    },
+                    {data: "email", 'name': 'email'},
+                    {data: "cell_phone", 'name': 'cell_phone'},
+                    {data: "function_name", 'name': 'function_name',  searchable: false, orderable: false,},
                 ]
             });
 
-            $('#tableContato thead tr:eq(1) th').each(function (i) {
-                $('.fieldSearch', this).on('keyup change', function () {
-                    if (tableContato.column(i).search() !== this.value) {
-                        tableContato.column(i).search(this.value).draw();
-                    }
-                });
+
+        $('#tableContato thead tr:eq(1) th').each(function (i) {
+            $('.fieldSearch', this).on('keyup change', function () {
+                if (tableContato.column(i).search() !== this.value) {
+                    tableContato.column(i).search(this.value, true).draw();
+                }
             });
+        });
 
         function copyUrl(id){
             var copyText = document.getElementById(id);
@@ -578,11 +482,9 @@
             /* Alert the copied text */
             toastr.success(copyText.value, 'Copiado')
         }
-            $('#clearFilterContato').click(function () {
-                tableContato.state.clear();
-                $('#tableEndereco .fieldSearch').val('');
-                tableContato.search('').columns().search('').draw();
-            })
+        $('#clearFilterContato').click(function () {
+            tableContato.state.clear();
+        })
         @endif
     </script>
 @endsection

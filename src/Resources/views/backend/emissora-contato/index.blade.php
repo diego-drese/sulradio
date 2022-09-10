@@ -6,12 +6,6 @@
 				<a  href="{{route('emissora.index')}}" class="btn btn-primary m-r-5">
 					<span class=" fas fa-arrow-left"></span> <b>Voltar</b>
 				</a>
-				@if($hasAddContato)
-					<a href="{{route('emissora.contato.create', $data->emissoraID)}}"
-					   class="btn btn-primary">
-						<span class="fa fa-plus"></span> <b>Adicionar</b>
-					</a>
-				@endif
 			</div>
 		</div>
 	</div>
@@ -22,6 +16,11 @@
 		<tr>
 			<th style="width: 80px">Ações</th>
 			<th>Nome</th>
+			<th>Sobre nome</th>
+			<th>Ativo</th>
+			<th>Notificações automáticas</th>
+			<th>Email</th>
+			<th>Celular</th>
 			<th>Função</th>
 		</tr>
 		<tr>
@@ -31,7 +30,18 @@
 				</spa>
 			</th>
 			<th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome"></th>
-			<th><input type="text" autocomplete="off" maxlength="4" class="fieldSearch form-control text-primary" placeholder="Buscar Função"></th>
+			<th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Sobre nome"></th>
+			<th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Email"></th>
+			<th>
+				---
+			</th>
+			<th>
+				---
+			</th>
+			<th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Celular"></th>
+			<th>
+				---
+			</th>
 		</tr>
 		</thead>
 		<tbody>

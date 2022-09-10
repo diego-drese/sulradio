@@ -133,6 +133,7 @@ class ClientController extends SulradioController {
 		$user = Auth::user();
 		$dataForm['id']                     = Sequence::getSequence('users');
 		$dataForm['client_id']              = (int)$clientId;
+		$dataForm['active']                 = isset($dataForm['active']) && $dataForm['active'] ? 1 : 0;
 		$dataForm['receive_notification']   = isset($dataForm['receive_notification']) && $dataForm['receive_notification'] ? 1 : 0;
 		$dataForm['password']               = bcrypt(Str::random(10));
 		$dataForm['remember_token']         = Str::random(60);
@@ -177,9 +178,10 @@ class ClientController extends SulradioController {
 		return redirect(route('client.user', [$clientId]));
 	}
 	
-	public function userEdit($clientId, $userId) {
+	public function userEdit(Request $request, $clientId, $userId) {
 		$data = UserSulRadio::getBy_Id($userId);
-		return $this->renderView('SulRadio::backend.client.user.edit', ['data' => $data, 'client'=>Client::getById($clientId), 'profiles' => Profile::getProfilesByTypes(Config::get('sulradio.profile_type'))]);
+        $emissoraId = $request->get('emissora_id');
+		return $this->renderView('SulRadio::backend.client.user.edit', ['emissoraId'=>$emissoraId, 'data' => $data, 'client'=>Client::getById($clientId), 'profiles' => Profile::getProfilesByTypes(Config::get('sulradio.profile_type'))]);
 	}
 	public function userUpdate(Request $request, $clientId, $userId) {
 		$dataForm = $request->all();
@@ -193,13 +195,21 @@ class ClientController extends SulradioController {
 				}
 			},]
 		], ['required' => 'Campo obrigatório', 'unique' => 'Email já cadastrado']);
-		$user = Auth::user();
+		$user                               = Auth::user();
+        $dataForm['active']                 = (int)isset($dataForm['active']) && $dataForm['active'] ? 1 : 0;
+        $dataForm['receive_notification']   = (int)isset($dataForm['receive_notification']) && $dataForm['receive_notification'] ? 1 : 0;
 		$dataForm['user_updated_id']        = (int)$user->id;
 		$dataForm['user_updated_at']        = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
 
-		$userUpdate = UserSulRadio::getBy_Id($userId);
-		$userUpdate->update($dataForm);
-		toastr()->success('Usuário Atualizado com sucesso', 'Sucesso');
+		$userUpdate                         = UserSulRadio::getBy_Id($userId);
+
+		$userUpdate->fill($dataForm);
+        $userUpdate->save();
+        toastr()->success('Usuário Atualizado com sucesso', 'Sucesso');
+        if(isset($dataForm['emissora_id'])){
+            return redirect(route('emissora.edit', [$dataForm['emissora_id']]));
+        }
+
 		return redirect(route('client.user', [$clientId]));
 	}
 	protected function makeParameters($extraParameter = null) {

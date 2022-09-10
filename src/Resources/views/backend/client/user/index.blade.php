@@ -197,6 +197,7 @@
                 });
             });
 
+
             $('#clearFilter').click(function () {
                 table_user.state.clear();
                 window.location.reload();

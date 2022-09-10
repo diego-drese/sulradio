@@ -48,8 +48,6 @@ class EmissoraController extends SulradioController {
 					return route('emissora.atos.comercial.index', [$row->emissoraID]);
 				})->addColumn('processos', function ($row) {
 					return route('emissora.processo.index', [$row->emissoraID]);
-				})->addColumn('endereco', function ($row) {
-					return route('emissora.endereco.index', [$row->emissoraID]);
 				})->addColumn('contatos', function ($row) {
 					return route('emissora.contato.index', [$row->emissoraID]);
 				})->addColumn('socios', function ($row) {
@@ -193,7 +191,8 @@ class EmissoraController extends SulradioController {
 			'hasSocios' => ResourceAdmin::hasResourceByRouteName('emissora.socio.index', [1]),
 			'hasAddSocios' => ResourceAdmin::hasResourceByRouteName('emissora.socio.create', [1]),
 			'hasContato' => ResourceAdmin::hasResourceByRouteName('emissora.contato.index', [1]),
-			'hasAddContato' => ResourceAdmin::hasResourceByRouteName('emissora.contato.create', [1]),
+			'hasEditContato' => ResourceAdmin::hasResourceByRouteName('client.user.edit', [1,1]),
+			'hasUpdateContato' => ResourceAdmin::hasResourceByRouteName('client.user.update', [1,1]),
 			'hasEndereco' => ResourceAdmin::hasResourceByRouteName('emissora.endereco.index', [1]),
 			'hasAddEndereco' => ResourceAdmin::hasResourceByRouteName('emissora.endereco.create', [1]),
 			'hasDocument' => ResourceAdmin::hasResourceByRouteName('emissora.document.index', [1]),

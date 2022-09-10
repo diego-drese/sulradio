@@ -11,6 +11,7 @@
         @if($errors->has('name'))
             <span class="help-block">{{$errors->first('name')}}</span>
         @endif
+        <input type="hidden" name="emissora_id" value="{{$emissoraId}}">
     </div>
     <div class="col-md-4 form-group {{$errors->has('lastname') ? 'text-danger' : ''}} ">
         <label for="lastname">Sobrenome *</label>

@@ -37,11 +37,7 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/emissora-endereco/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraEnderecoController@update')->name('emissora.endereco.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.endereco.index', 'nameAdmin' => 'Endereços emissoras, salva edição']);
 	
 	Route::get('/emissora-contato/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraContatoController@index')->name('emissora.contato.index')->where(['iconAdmin' => 'fas fa-map-marker-alt', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Contatos emissoras']);
-	Route::get('/emissora-contato/{emissoraID}/create', 'Oka6\SulRadio\Http\Controllers\EmissoraContatoController@create')->name('emissora.contato.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'emissora.contato.index', 'nameAdmin' => 'Contatos emissoras, adicionar',]);
-	Route::post('/emissora-contato/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraContatoController@store')->name('emissora.contato.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Contatos emissoras , salva novo']);
-	Route::get('/emissora-contato/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraContatoController@edit')->name('emissora.contato.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.contato.index', 'nameAdmin' => 'Contatos emissoras, editar']);
-	Route::post('/emissora-contato/{emissoraID}/{id}', 'Oka6\SulRadio\Http\Controllers\EmissoraContatoController@update')->name('emissora.contato.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'emissora.contato.index', 'nameAdmin' => 'Contatos emissoras, salva edição']);
-	
+
 	Route::get('/emissora-socio/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraSocioController@index')->name('emissora.socio.index')->where(['iconAdmin' => 'fas fa-user', 'parentRouteNameAdmin' => 'emissora.index', 'nameAdmin' => 'Sócios emissoras']);
 	Route::get('/emissora-socio/{emissoraID}/create', 'Oka6\SulRadio\Http\Controllers\EmissoraSocioController@create')->name('emissora.socio.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'emissora.socio.index', 'nameAdmin' => 'Sócios emissoras, adicionar',]);
 	Route::post('/emissora-socio/{emissoraID}', 'Oka6\SulRadio\Http\Controllers\EmissoraSocioController@store')->name('emissora.socio.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Sócios emissoras , salva novo']);
