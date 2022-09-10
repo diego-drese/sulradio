@@ -146,9 +146,16 @@
     @if($hasStore || $hasUpdate)
         <button style="float: right;" type="submit" class="btn btn-success">Salvar</button>
     @endif
-    <a style="float: right;" href="{{route('client.user',[$client->id])}}" class="btn btn-primary m-r-5">
-        <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
-    </a>
+    @if(isset($emissoraId))
+        <a style="float: right;" href="{{route('emissora.edit',[$emissoraId])}}" class="btn btn-primary m-r-5">
+            <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
+        </a>
+    @else
+        <a style="float: right;" href="{{route('client.user',[$client->id])}}" class="btn btn-primary m-r-5">
+            <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
+        </a>
+    @endif
+
 </div>
 @section('style_head')
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
