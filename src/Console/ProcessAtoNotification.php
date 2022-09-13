@@ -66,7 +66,10 @@ class ProcessAtoNotification extends Command {
                         'url'=>$ato->ato_url,
                     ];
 
-                    MultiMail::to($user->email)->from($this->emailFrom['email'])->send(new AtoNotificationMail($data));
+                    MultiMail::to($user->email)
+                        ->bcc('sulradio@sulradio.com.br')
+                        ->from($this->emailFrom['email'])
+                        ->send(new AtoNotificationMail($data));
                     $try                        = $emailCount;
                     $notification->status       = AtoNotification::STATUS_SEND;
                     $notification->date_sent    = date('Y-m-d H:i:s');
