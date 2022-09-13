@@ -67,7 +67,7 @@ class ProcessAtoNotification extends Command {
                     ];
 
                     MultiMail::to($user->email)
-                        ->bcc('sulradio@sulradio.com.br')
+                        ->bcc(['sulradio@sulradio.com.br','alfio@sulradio.com.br'])
                         ->from($this->emailFrom['email'])
                         ->send(new AtoNotificationMail($data));
                     $try                        = $emailCount;
