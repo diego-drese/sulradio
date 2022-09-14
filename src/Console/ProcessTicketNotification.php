@@ -68,6 +68,7 @@ class ProcessTicketNotification extends Command {
                             $this->sendEmailTypeTransfer($notification);
                         }
                     }else{
+                        $notification->status = TicketNotification::STATUS_IGNORED;
                         Log::info('ProcessTicketNotification, ignoring send email', ['keyMap'=>$keyMap, 'notification'=>$notification]);
                     }
 
