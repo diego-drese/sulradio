@@ -53,7 +53,7 @@ class TicketNotification extends Model {
 			->orderBy('id', 'desc')
 			->get();
 		if($notifications){
-			//self::whereIn('id', $notifications->pluck('id')->toArray())->update(['status'=>self::STATUS_PROCESSING]);
+			self::whereIn('id', $notifications->pluck('id')->toArray())->update(['status'=>self::STATUS_PROCESSING]);
 		}
 		return $notifications;
 		
