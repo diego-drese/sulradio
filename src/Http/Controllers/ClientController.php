@@ -81,10 +81,9 @@ class ClientController extends SulradioController {
 		$this->validate($request, [
 			'name' => 'required',
 			'plan_id' => 'required',
-			'is_active' => 'required',
-			'broadcast' => 'required',
+			'is_active' => 'required'
 		]);
-		$brodcast                   = $dataForm['broadcast'];
+		$brodcast                   = isset($dataForm['broadcast']) ? $dataForm['broadcast'] : [];
 		$dataForm['broadcast']      = json_encode($brodcast);
 		$data->fill($dataForm);
 		$data->save();

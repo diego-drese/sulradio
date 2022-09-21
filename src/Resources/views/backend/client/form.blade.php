@@ -223,7 +223,7 @@
     <div class="col-md-12 form-group {{$errors->has('broadcast') ? 'has-error' : ''}} ">
         <label for="broadcast">Emissoras *</label>
         <div class="input-group mb-3">
-            <select name="broadcast[]" id="broadcast" class="form-control" multiple required>
+            <select name="broadcast[]" id="broadcast" class="form-control" multiple>
                 @foreach($broadcast as $value)
                     <option value="{{$value->emissoraID}}" selected>{{$value->desc_servico.'-'.$value->nome_fantasia."({$value->desc_municipio} {$value->desc_uf})"}}</option>
                 @endforeach
