@@ -6,6 +6,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response as Download;
 use Oka6\Admin\Http\Library\ResourceAdmin;
@@ -229,22 +230,24 @@ class PublicController extends SulradioController {
 		$ticketNotificationClient = TicketNotificationClient::getById($ticketNotificationClientUser->ticket_notification_client_id);
 		$user = Auth::user();
 		$resource = Resource::where('id', (int)$user->resource_default_id)->first();
-		if($ticketNotificationClientUser->status==TicketNotificationClientUser::getStatusText(TicketNotificationClientUser::STATUS_ANSWERED)){
-			toastr()->info('Esse email ja foi respondido', 'Info');
-			return redirect(route($resource->route_name));
-		}
+
 
 		if((int)$ticketNotificationClientUser->user_id!=(int)$user->id){
 			toastr()->info('Ticket não encontrado', 'Info');
+            Log::info('Usuário logado é diferente do ticket selecionado', ['email_logged'=>$user->email, 'id_logged'=>$user->id, 'id_user_answer'=>$ticketNotificationClientUser->user_id, 'answerId'=>$id]);
 			return redirect(route($resource->route_name));
 		}
-
 
 		if ($request->isMethod('post')){
 			if(!$request->get('content')){
 				toastr()->info('Preencha o texto para enviar', 'Info');
 				return redirect()->back();
 			}
+
+            if($ticketNotificationClientUser->status==TicketNotificationClientUser::getStatusText(TicketNotificationClientUser::STATUS_ANSWERED)){
+                toastr()->info('Esse email ja foi respondido', 'Info');
+                return redirect(route($resource->route_name));
+            }
 
 			$ticketNotificationClient->status = TicketNotificationClient::STATUS_ANSWERED;
 			$ticketNotificationClient->total_answered++;

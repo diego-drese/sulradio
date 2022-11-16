@@ -95,6 +95,7 @@ class ProcessTrackerUrl extends Command {
 			case 'sei.anatel.gov.br':
 			case 'sei.mctic.gov.br':
 			case 'sei.mcom.gov.br':
+			case 'super.mcom.gov.br':
 				$html = null;
 				$tblDocumentos = $dom->saveXML($dom->getElementById('tblDocumentos'));
 				if (str_contains($tblDocumentos, 'table id="tblDocumentos"')) {
