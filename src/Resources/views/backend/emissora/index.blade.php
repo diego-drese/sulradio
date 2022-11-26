@@ -120,26 +120,16 @@
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
                             var edit_button = "";
-
                             @if($hasEdit)
-                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Dados Estação</b></a>';
+                                edit_button += '<a href="' + data.edit_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Dados</b></a>';
                             @endif
                             @if($hasAtosOficiais)
-                                edit_button += '<a href="' + data.atos_oficiais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos Oficiais</b></a>';
+                                edit_button += '<a href="' + data.atos_oficiais + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Atos</b></a>';
                             @endif
                             @if($hasTicket)
                                 edit_button += '<a href="' + data.ticket + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Documentos</b></a>';
                             @endif
-                            if(data.url_mosaico){
-                                edit_button += '<a href="' + data.url_mosaico + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>MOSAICO</b></a>';
-                            }
-                            if(data.url_seacco){
-                                edit_button += '<a href="' + data.url_seacco + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>SIACCO</b></a>';
-                            }
-                            if(data.url_cnpj){
-                                edit_button += '<a href="' + data.url_cnpj + '" class="badge badge-secondary mr-1" target="_blank" role="button" aria-pressed="true"><b>RECEITA</b></a>';
-                            }
-                                return edit_button
+                            return edit_button
                         }
                     },
                     {data: "razao_social", 'name': 'emissora.razao_social'},

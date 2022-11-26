@@ -16,10 +16,6 @@
                             <tr>
                                 <th style="width: 75px">Ações</th>
                                 <th>Assunto</th>
-                                <th>Categoria</th>
-                                <th>Status</th>
-                                <th>Atualizado</th>
-                                <th>Término</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">
@@ -30,20 +26,6 @@
                                 <th role="row">
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Assunto">
                                 </th>
-
-                                <th role="row">
-                                    ---
-                                </th>
-                                <th role="row">
-                                    ---
-                                </th>
-                                <th role="row">
-                                    ---
-                                </th>
-                                <th role="row">
-                                    ---
-                                </th>
-
                             </tr>
                             </thead>
                             <tbody>
@@ -141,28 +123,7 @@
                         }
                     },
                     {data: "subject", 'name': 'subject'},
-                    {data: "category_name", 'name': 'ticket_category.id', render:function (data, display, row){
-                            return '<b style="color:'+row.category_color+'">'+data+'</b>'
-                    }},
-                    {data: "status_name", 'name': 'ticket_status.id', render:function (data, display, row){
-                            return '<b style="color:'+row.status_color+'">'+data+'</b>'
-                    }},
-                    {data: "updated_at", 'name': 'ticket.updated_at'},
-                    {data: "end_forecast", 'name': 'ticket.end_forecast', render:function (data, display, row){
-                            if(!data){
-                                return '---';
-                            }
-                            var now = moment();
-                            var endForest = moment(data, "DD/MM/YYYY");
-                            var days = endForest.diff(now, 'days');
-                            if(days<0){
-                                return '<b class="text-danger">'+data+'</b>'
-                            }else if(days<3){
-                                return '<b class="text-warning">'+data+'</b>'
-                            }else{
-                                return '<b class="text-success">'+data+'</b>'
-                            }
-                    }},
+
                 ]
             });
 

@@ -59,7 +59,9 @@ class ProcessTicketNotification extends Command {
                         if ($notification->type == TicketNotification::TYPE_UPDATE) {
                             $this->sendEmailTypeUpdate($notification);
                         }else if ($notification->type == TicketNotification::TYPE_COMMENT) {
-                            $this->sendEmailTypeComment($notification);
+                            $this->sendEmailTypeComment($notification, TicketNotification::TYPE_COMMENT);
+                        }else if ($notification->type == TicketNotification::TYPE_TRACKER_URL) {
+                            $this->sendEmailTypeComment($notification, TicketNotification::TYPE_TRACKER_URL);
                         } else if ($notification->type == TicketNotification::TYPE_NEW) {
                             $this->sendEmailTypeNew($notification);
                         } else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
@@ -74,8 +76,15 @@ class ProcessTicketNotification extends Command {
 
                     $notification->save();
                     $try = $emailCount;
-                    $userSendNotification[$keyMap]=true;
 
+                    if ($notification->type == TicketNotification::TYPE_TRACKER_URL){
+                        /** Check send all notifications */
+                        if(!TicketNotification::checkAllNotifications($notification->comment_id)){
+                            \Oka6\SulRadio\Models\TicketComment::where('id', $notification->comment_id)->delete();
+                        }
+                    }else{
+                        $userSendNotification[$keyMap]=true;
+                    }
 				} catch (\Exception $e) {
 					$try++;
 					$tries[] = $this->emailFrom['email'];
@@ -108,7 +117,7 @@ class ProcessTicketNotification extends Command {
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCreate($ticket));
 	}
 
-	public function sendEmailTypeComment($notification){
+	public function sendEmailTypeComment($notification, $type){
 		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
 		$userLogged         = User::getByIdStatic($notification->user_logged);
 		$comment            = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
@@ -118,6 +127,7 @@ class ProcessTicketNotification extends Command {
 			$comment->userLogged    = $userLogged;
 			$comment->emissora      = null;
 			$comment->subject       = $ticket->subject;
+			$comment->type          = $type;
 			if($ticket->emissora){
 				$comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
 			}

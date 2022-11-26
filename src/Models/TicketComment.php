@@ -35,7 +35,7 @@ class TicketComment extends Model {
 				$usersId[]= (int)$user->id;
 				$query->whereIn('user_id', $usersId);
 			})
-			->orderBy('created_at')
+			->orderBy('created_at', 'DESC')
 			->get();
 		foreach ($comments as &$comment){
 			$user = User::getByIdStatic($comment->user_id);

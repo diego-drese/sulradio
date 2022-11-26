@@ -40,7 +40,7 @@ class TicketNotificationClient extends Model {
 		self::STATUS_WAITING => 'Aguardando disparo',
 		self::STATUS_PROCESSING=> 'Processando',
 		self::STATUS_SEND=> 'Enviado',
-		self::STATUS_ANSWERED=> 'Respondida',
+		self::STATUS_ANSWERED=> 'Respondido',
 		self::STATUS_UNDEFINED => 'Indefinido',
 		];
 

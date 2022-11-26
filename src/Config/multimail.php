@@ -13,9 +13,9 @@ return [
 
     'emails'  => [
         'from@example.com' => [
-			'username'      => 'de2dc7572f0fdb',
+			'username'      => 'cac88c3d066236',
 			'email'         => 'from@example.com',
-			'pass'          => 'f9199ef5bf77e6',
+			'pass'          => '0efbd6d5bc128e',
 			'from_name'     => 'from@example.com',
 			'provider'      => 'mailtrap',
         ],

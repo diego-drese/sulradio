@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Oka6\SulRadio\Models\TicketNotification;
 
 class TicketComment extends Mailable {
 	use Queueable, SerializesModels;
@@ -27,7 +28,12 @@ class TicketComment extends Mailable {
 	 * @return $this
 	 */
 	public function build() {
-		return $this->subject('Comentário-'.$this->data->subject.' '.$this->data->emissora)
-			->markdown('SulRadio::backend.emails.ticket-comment', ['data' => $this->data, 'url'=>'']);
+        if($this->data->type==TicketNotification::TYPE_COMMENT){
+            return $this->subject('Comentário-'.$this->data->subject.' '.$this->data->emissora)
+                ->markdown('SulRadio::backend.emails.ticket-comment', ['data' => $this->data, 'url'=>'']);
+        }
+
+        return $this->subject('Acompanhamento de processo-'.$this->data->emissora)
+            ->markdown('SulRadio::backend.emails.ticket-comment', ['data' => $this->data, 'url'=>'']);
 	}
 }

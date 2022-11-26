@@ -10,14 +10,19 @@
                 </div>
             </div>
             <div class="card">
+                @if($ticketNotificationClient->status!=\Oka6\SulRadio\Models\TicketNotificationClientUser::getStatusText(\Oka6\SulRadio\Models\TicketNotificationClientUser::STATUS_ANSWERED))
                 <div class="card-body p-10">
                     <h4 class="m-b-20">Escreva um comentário</h4>
-
                         {{ csrf_field() }}
                         <textarea id="content" name="content" class="summernote" aria-hidden="true" style="display: none;"></textarea>
                         <button id="saveComment" type="button" class="m-t-20 btn waves-effect waves-light btn-success">Salvar comentário</button>
-
                 </div>
+                @else
+                    <div class="card-body p-10">
+                        <h4 class="m-b-20">Sua Resposta</h4>
+                        {!! $ticketNotificationClientUser->answer !!}
+                    </div>
+                @endif
             </div>
         </div>
         <div class="col-lg-4">
@@ -36,12 +41,28 @@
                                 @endforeach
                             </ul>
                             <ul  class="list-group p-t-10">
-                                <li class="list-group-item text-center"><h4 class="card-title">Anexar</h4></li>
-                                @for($i=1;$i<11;$i++)
-                                    <li class="list-group-item text-left">
-                                        <input type="file" class="form-control" name="answer_file_{{$i}}" />
-                                    </li>
-                                @endfor
+                                @if($ticketNotificationClient->status!=\Oka6\SulRadio\Models\TicketNotificationClientUser::getStatusText(\Oka6\SulRadio\Models\TicketNotificationClientUser::STATUS_ANSWERED))
+                                    <li class="list-group-item text-center"><h4 class="card-title">Anexar</h4></li>
+                                    @for($i=1;$i<11;$i++)
+                                        <li class="list-group-item text-left">
+                                            <input type="file" class="form-control" name="answer_file_{{$i}}" />
+                                        </li>
+                                    @endfor
+                                @else
+                                    <li class="list-group-item text-center"><h4 class="card-title">Seus anexos</h4></li>
+                                    <?php
+                                        for ($i=1;$i<11;$i++){
+                                            $col = 'answer_file_'.$i;
+                                            if($ticketNotificationClientUser->$col){
+                                                $document = \Oka6\SulRadio\Models\TicketDocument::where('id',$ticketNotificationClientUser->$col)->first();
+                                                echo '<li class="list-group-item text-left">';
+                                                echo ' <a href="'.route('document.download.ticket', $ticketNotificationClientUser->$col).'" >'.$document->file_name_original.'</a>';
+                                                echo ' </li>';
+                                            }
+
+                                        }
+                                    ?>
+                                @endif
                             </ul>
                         </div>
                     </div>

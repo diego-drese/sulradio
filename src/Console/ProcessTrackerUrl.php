@@ -49,7 +49,7 @@ class ProcessTrackerUrl extends Command {
 				$url->hash = $hash;
 				$url->last_modify = date('Y-m-d H:i:s');
 				$user   = User::getByIdStatic(-1);
-				$commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>'.$html;
+				$commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>';
 				$comment = TicketComment::create([
 					'html'=>$commentText,
 					'user_id'=>$user->id,
@@ -58,7 +58,7 @@ class ProcessTrackerUrl extends Command {
 				if($notify){
 					/** Notifica todos os participantes */
 					$ticket = Ticket::getById($url->ticket_id);
-					TicketParticipant::notifyParticipants($ticket, $user,TicketNotification::TYPE_COMMENT, $comment->id);
+					TicketParticipant::notifyParticipants($ticket, $user,TicketNotification::TYPE_TRACKER_URL, $comment->id);
 				}
 			}
 			$url->save();
@@ -85,11 +85,13 @@ class ProcessTrackerUrl extends Command {
 	}
 
 	public function parseDomain($url){
-		$parse = parse_url($url);
-		$domain = $parse['host'];
-		$dom = new \DOMDocument('1.0', 'UTF-8');
+        $url        = str_replace('sei.mcom', 'super.mcom', $url);
+		$parse      = parse_url($url);
+		$domain     = $parse['host'];
+		$dom        = new \DOMDocument('1.0', 'UTF-8');
 		$dom->recover = true;
 		$dom->strictErrorChecking = false;
+
 		@$dom->loadHTMLFile($url);
 		switch ($domain){
 			case 'sei.anatel.gov.br':
@@ -112,7 +114,7 @@ class ProcessTrackerUrl extends Command {
 					$tblHistorico = preg_replace("/<input type=.*?>(.*?)/","", $tblHistorico);
 					$html.=$tblHistorico;
 				}
-				Log::info('ProcessTrackerUrl parseDomain, identify not found', ['url'=>$url]);
+				Log::info('ProcessTrackerUrl parseDomain', ['url'=>$url]);
 				return $html;
 			break;
 			default;

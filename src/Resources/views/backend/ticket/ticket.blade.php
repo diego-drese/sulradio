@@ -132,7 +132,7 @@
                             <ul class="list-group">
                                 <li class="list-group-item">
                                     <h6>Emissora</h6>
-                                    <h6 class="text-info"> {!! $data->emissora ? $data->emissora : '-----' !!}</h6>
+                                    <h6 class="text-info"> {!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}</h6>
                                 </li>
                                 <li class="list-group-item">
                                     <h6>Prev. Início</h6>

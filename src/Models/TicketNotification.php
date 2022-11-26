@@ -29,6 +29,7 @@ class TicketNotification extends Model {
 	const TYPE_COMMENT = 3;
 	const TYPE_TRANSFER_AGENT = 4;
 	const TYPE_COMMENT_CLIENT = 5;
+	const TYPE_TRACKER_URL = 6;
 	const TYPE_UNDEFINED = 99;
 
 	protected $table = 'ticket_notification';
@@ -44,6 +45,11 @@ class TicketNotification extends Model {
 
 	public static function getLastNotifications($id) {
 		return self::where('id', $id)->paginate(15);
+	}
+    public static function checkAllNotifications($commentId) {
+		return self::where('comment_id', $commentId)
+            ->whereIn('status', [self::STATUS_WAITING, self::STATUS_PROCESSING])
+            ->count();
 	}
 	
 	public static function getToNotify() {

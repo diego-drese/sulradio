@@ -117,7 +117,7 @@ class EmissoraController extends SulradioController {
 								->where('show_client', 1)
 								->first();
 			$documents  = TicketDocument::getAllByTicketId($data->id);
-			return $this->renderView('SulRadio::backend.emissora.ticket', ['data' => $data, 'user'=>$user, 'documents'=>$documents, 'emissora'=>$emissora]);
+			return $this->renderView('SulRadio::backend.emissora.ticket', ['data' => $data, 'user'=>$user, 'documents'=>$documents, 'emissora'=>$emissora, 'emissoraID'=>$emissoraID]);
 		}
 
 		return $this->renderView('SulRadio::backend.emissora.tickets', ['emissoraID'=>$emissoraID, 'emissora'=>$emissora]);
