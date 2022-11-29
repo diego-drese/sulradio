@@ -447,16 +447,6 @@
                             return '---';
                         }
                     },
-                    {data: "receive_notification", 'name': 'receive_notification', orderable: false,
-                        render: function (data, display, row) {
-                            if (data == "1") {
-                                return '<span class="badge badge-success mr-1">SIM</span>';
-                            } else if (data == '0') {
-                                return '<span class="badge badge-danger mr-1">NÃO</span>';
-                            }
-                            return '---';
-                        }
-                    },
                     {data: "email", 'name': 'email'},
                     {data: "cell_phone", 'name': 'cell_phone'},
                     {data: "function_name", 'name': 'function_name',  searchable: false, orderable: false,},

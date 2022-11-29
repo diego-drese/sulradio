@@ -28,7 +28,7 @@
                                             {{$document->file_name_original}}
                                         </a>
                                         @if($user->id==$document->user_id || $hasAdmin)
-                                            <span class="delete-todo todo-action cursor-pointer delete-document" id="delDoc-{{$document->id}}"><i class="ti-close"></i></span>
+                                            <span class="delete-todo todo-action cursor-pointer delete-document" id="delDoc-{{$document->id}}"></span>
                                         @endif
                                     </li>
                                 @endforeach

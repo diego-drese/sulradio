@@ -18,7 +18,6 @@
 			<th>Nome</th>
 			<th>Sobre nome</th>
 			<th>Ativo</th>
-			<th>Notificações automáticas</th>
 			<th>Email</th>
 			<th>Celular</th>
 			<th>Função</th>
@@ -32,9 +31,6 @@
 			<th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome"></th>
 			<th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Sobre nome"></th>
 			<th><input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Email"></th>
-			<th>
-				---
-			</th>
 			<th>
 				---
 			</th>
