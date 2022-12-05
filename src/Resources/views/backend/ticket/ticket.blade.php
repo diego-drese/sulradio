@@ -10,6 +10,22 @@
             </div>
             <div class="card">
                 <div class="card-body">
+                    <h4 class="m-b-20">Escreva um comentário</h4>
+                    <form method="post" action="#" id="form-comment">
+                        {{ csrf_field() }}
+                        <textarea id="content" name="content" class="summernote" aria-hidden="true" style="display: none;"></textarea>
+                        <a  href="{{route('ticket.index')}}" class="m-t-20 btn waves-effect waves-light btn-primary">
+                            <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
+                        </a>
+                        <button id="saveComment" type="button" class="m-t-20 btn waves-effect waves-light btn-success">Salvar comentário</button>
+                        @if(($hasAdmin || in_array($user->id, $participants->pluck('id')->toArray()) || $user->id==$data->owner_id) &&  !$data->completed_at)
+                            <button id="endTicket" class="m-t-20 btn waves-effect waves-light btn-danger">Encerrar ticket</button>
+                        @endif
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
                     <h4 class="card-title mdi mdi-comment-text-outline"> Comentários</h4>
                     <ul class="list-unstyled m-t-10 border-bottom comment-content">
                     @foreach($comments as $comment)
@@ -81,22 +97,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="m-b-20">Escreva um comentário</h4>
-                    <form method="post" action="#" id="form-comment">
-                        {{ csrf_field() }}
-                        <textarea id="content" name="content" class="summernote" aria-hidden="true" style="display: none;"></textarea>
-                            <a  href="{{route('ticket.index')}}" class="m-t-20 btn waves-effect waves-light btn-primary">
-                                <span class=" fas fa-arrow-left"></span> <b>Voltar</b>
-                            </a>
-                            <button id="saveComment" type="button" class="m-t-20 btn waves-effect waves-light btn-success">Salvar comentário</button>
-                        @if(($hasAdmin || in_array($user->id, $participants->pluck('id')->toArray()) || $user->id==$data->owner_id) &&  !$data->completed_at)
-                                <button id="endTicket" class="m-t-20 btn waves-effect waves-light btn-danger">Encerrar ticket</button>
-                            @endif
-                    </form>
-                </div>
-            </div>
+
         </div>
         <div class="col-lg-4">
             <div class="card">
