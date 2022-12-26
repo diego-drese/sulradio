@@ -25,10 +25,12 @@ class SystemLog extends Model {
 	const TYPE_DELETE_TRACKER_URL = 10;
 	const TYPE_SEND_EMAIL_CLIENT = 11;
 	const TYPE_MOVE_TICKET = 12;
+    const TYPE_DEADLINE = 13;
+    const TYPE_PROTOCOL_DEADLINE = 14;
 	const TYPE_UNDEFINED = 99;
 
 	const ZONE_TICKET = 1;
-	const ZONE_SEAD= 2;
+	const ZONE_SEAD = 2;
 	const ZONE_UNDEFINED= 99;
 
 	const TYPE_TEXT = [
@@ -44,6 +46,8 @@ class SystemLog extends Model {
 		self::TYPE_SEND_EMAIL_CLIENT => 'Notificação Email',
 		self::TYPE_SEND_EMAIL_NOTIFICATION => 'Comentário enviado por email',
 		self::TYPE_MOVE_TICKET => 'Dados de ticket movido',
+		self::TYPE_DEADLINE => 'Alerta de Prazo Execução',
+		self::TYPE_PROTOCOL_DEADLINE => 'Alerta de Prazo Protocolo',
 		self::TYPE_UNDEFINED => 'Indefinido',
 		];
 	const ZONE_TEXT = [self::ZONE_TICKET => 'Ticket', self::ZONE_SEAD => 'SEAD', self::ZONE_UNDEFINED=> 'Indefinido',];
@@ -136,6 +140,8 @@ class SystemLog extends Model {
 			case self::TYPE_COMMENT:
 			case self::TYPE_SEND_EMAIL_CLIENT:
 			case self::TYPE_TRANSFER_AGENT:
+            case self::TYPE_DEADLINE:
+            case self::TYPE_PROTOCOL_DEADLINE:
 				$data['content'] = $content;
 			break;
 			case self::TYPE_SEND_EMAIL_NOTIFICATION:

@@ -9,6 +9,8 @@ use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Mail\TicketComment;
 use Oka6\SulRadio\Mail\TicketCreate;
+use Oka6\SulRadio\Mail\TicketDeadline;
+use Oka6\SulRadio\Mail\TicketProtocolDeadline;
 use Oka6\SulRadio\Mail\TicketTransfer;
 use Oka6\SulRadio\Mail\TicketUpdate;
 use Oka6\SulRadio\Mail\TicketCommentFromClient;
@@ -62,6 +64,10 @@ class ProcessTicketNotification extends Command {
                             $this->sendEmailTypeComment($notification, TicketNotification::TYPE_COMMENT);
                         }else if ($notification->type == TicketNotification::TYPE_TRACKER_URL) {
                             $this->sendEmailTypeComment($notification, TicketNotification::TYPE_TRACKER_URL);
+                        } else if ($notification->type == TicketNotification::TYPE_DEADLINE) {
+                            $this->sendEmailTypeDeadline($notification);
+                        } else if ($notification->type == TicketNotification::TYPE_PROTOCOL_DEADLINE) {
+                            $this->sendEmailTypeProtocolDeadline($notification);
                         } else if ($notification->type == TicketNotification::TYPE_NEW) {
                             $this->sendEmailTypeNew($notification);
                         } else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
@@ -105,6 +111,7 @@ class ProcessTicketNotification extends Command {
 			->where('ticket.id', $id)
 			->first();
 	}
+
 	public function sendEmailTypeNew($notification){
 		$currentAgent   = User::getByIdStatic($notification->agent_current_id);
 		$owner          = User::getByIdStatic($notification->user_logged);
@@ -115,6 +122,30 @@ class ProcessTicketNotification extends Command {
 			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
 		}
 		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCreate($ticket));
+	}
+
+    public function sendEmailTypeDeadline($notification){
+		$currentAgent   = User::getByIdStatic($notification->agent_current_id);
+		$owner          = User::getByIdStatic($notification->user_logged);
+		$ticket         = $this->getTicket($notification->ticket_id);
+		$ticket->owner  = $owner;
+		$ticket->agent  = $currentAgent;
+		if($ticket->emissora){
+			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+		}
+		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketDeadline($ticket));
+	}
+
+    public function sendEmailTypeProtocolDeadline($notification){
+		$currentAgent   = User::getByIdStatic($notification->agent_current_id);
+		$owner          = User::getByIdStatic($notification->user_logged);
+		$ticket         = $this->getTicket($notification->ticket_id);
+		$ticket->owner  = $owner;
+		$ticket->agent  = $currentAgent;
+		if($ticket->emissora){
+			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+		}
+		MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketProtocolDeadline($ticket));
 	}
 
 	public function sendEmailTypeComment($notification, $type){

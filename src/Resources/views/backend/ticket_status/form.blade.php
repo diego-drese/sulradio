@@ -59,6 +59,27 @@
             <span class="help-block">{{$errors->first('update_completed_at')}}</span>
         @endif
     </div>
+
+    <div class="col-md-3 form-group {{$errors->has('is_active') ? 'has-error' : ''}} ">
+        <label for="update_completed_at">
+            Controle de prazos<br/>
+            <span style="font-size: 10px;font-weight: 300;">Somente um status terá essa função</span>
+        </label>
+        <div class="input-group mb-3">
+            <select name="send_deadline" id="send_deadline" class="form-control">
+                <option value="" {{old('send_deadline', $data->exists() ? $data->send_deadline : '') == "0" ? 'selected' : ''}}> NÃO </option>
+                <option value="deadline" {{old('send_deadline', $data->exists() ? $data->send_deadline : 'deadline') == "deadline" ? 'selected' : ''}}> Prazo Execução </option>
+                <option value="protocol_deadline" {{old('send_deadline', $data->exists() ? $data->protocol_deadline : 'protocol_deadline') == "protocol_deadline" ? 'selected' : ''}}> Prazo Protocolo </option>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-adjust"></i></span>
+            </div>
+        </div>
+
+        @if($errors->has('send_deadline'))
+            <span class="help-block">{{$errors->first('send_deadline')}}</span>
+        @endif
+    </div>
     <div class="col-md-12 form-group {{$errors->has('description') ? 'has-error' : ''}} ">
         <label for="description">Descrição</label>
         <textarea rows="7" name="description" class="form-control"

@@ -157,9 +157,9 @@
         <textarea rows="12" name="content" class="form-control summernote" id="content">{{old('content', $data->exists() && $data->content  ? $data->content : '')}}</textarea>
     </div>
     <div class="col-md-4 form-group {{$errors->has('name') ? 'has-error' : ''}} ">
-        <label for="start_forecast">Previsão de início *</label>
+        <label for="start_forecast">Prazo Execução *</label>
         <div class="input-group mb-3">
-            <input type="text" name="start_forecast" id="start_forecast" class="form-control" placeholder="Previsão de inicio" required
+            <input type="text" name="start_forecast" id="start_forecast" class="form-control" placeholder="Prazo Execução" required
                    value="{{old('start_forecast', $data->exists() && $data->start_forecast ? $data->start_forecast : date('d/m/Y'))}}">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
@@ -168,9 +168,9 @@
         @if($errors->has('start_forecast'))
             <span class="help-block">{{$errors->first('start_forecast')}}</span>
         @endif
-        <label for="end_forecast">Previsão de término *</label>
+        <label for="end_forecast">Prazo Protocolo *</label>
         <div class="input-group mb-3">
-            <input type="text" name="end_forecast" id="end_forecast" class="form-control" placeholder="Previsão de término" required
+            <input type="text" name="end_forecast" id="end_forecast" class="form-control" placeholder="Prazo Protocolo" required
                    value="{{old('end_forecast', $data->exists() && $data->end_forecast ? $data->end_forecast : date('d/m/Y'))}}">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
@@ -179,6 +179,14 @@
         @if($errors->has('end_forecast'))
             <span class="help-block">{{$errors->first('end_forecast')}}</span>
         @endif
+        <label for="send_deadline" title="Controle de envio de alertas dos prazos">Notificar Prazos</label>
+        <div class="input-group mb-3 bt-switch ">
+            <input id="send_deadline" name="send_deadline" type="checkbox" title="Notifica usuários envolvidos com os prazos estabelecidos"
+                   {{old('send_deadline', $data->exists() && isset($data->send_deadline) ? $data->send_deadline : 1) == 1 ? 'checked' : ''}}
+                   value="1" data-on-color="success" data-off-color="danger"
+                   data-on-text='<i class="fas fa-check-circle"></i>'
+                   data-off-text='<i class="fas fa-times-circle"></i>'>
+        </div>
         <label for="show_client" title="Somente com emissora selecionada">Exibe para o cliente</label>
         <div class="input-group mb-3 bt-switch ">
             @if($hasAdmin || $hasSendNotification)
@@ -253,7 +261,11 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/bootstrap-switch.js')}}></script>
 
     <script>
+
         $(".bt-switch input[type='checkbox']").bootstrapSwitch();
+        $('#send_deadline').on('switchChange.bootstrapSwitch', function (){
+            validateDate();
+        })
         $('#start_forecast, #end_forecast').daterangepicker({
             singleDatePicker: true,
             autoUpdateInput: false,
@@ -276,17 +288,30 @@
 
         }).on('apply.daterangepicker', function (ev, picker) {
             $(this).val(picker.startDate.format('DD/MM/YYYY'));
-            var a = moment($("#start_forecast").val(), "DD/MM/YYYY"),
-                b = moment($("#end_forecast").val(), "DD/MM/YYYY");
-            if(b.unix() < a.unix()){
-                $('#end_forecast').val(a.format('DD/MM/YYYY'));
-                toastr.info('A data de término não pode sere menor que a data de início', "Data inválida", {timeOut: 6000});
-            }
+            validateDate();
 
         }).on('cancel.daterangepicker', function (ev, picker) {
             $(this).val('');
         });
 
+        function validateDate(){
+            console.log('ok');
+            var a = moment($("#start_forecast").val(), "DD/MM/YYYY"),
+                b = moment($("#end_forecast").val(), "DD/MM/YYYY"),
+                sendDeadLine = $('#send_deadline').is(':checked'),
+                c = 24 * 60 * 60,
+                diffDays = Math.round(Math.abs((b.unix() - a.unix()) / (c))),
+                daysAllowed = 3;
+
+            if(b.unix() < a.unix()){
+                $('#end_forecast').val(a.format('DD/MM/YYYY'));
+                toastr.info('O Prazo Protocolo deve ser maior que o Prazo Execução', "Data inválida", {timeOut: 6000});
+            }
+            if(sendDeadLine && diffDays < daysAllowed){
+                $('#end_forecast').val(a.add(3,'days').format('DD/MM/YYYY'));
+                toastr.info('O Prazo Protocolo deve ser no minimo 3 dias maior que o Prazo Execução', "Data inválida", {timeOut: 6000});
+            }
+        }
         function formatState (user) {
             var userAttribute = $(user.element).data('user_info');
             if (!userAttribute || !userAttribute[0]) {

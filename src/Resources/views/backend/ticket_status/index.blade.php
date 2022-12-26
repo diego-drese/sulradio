@@ -26,6 +26,7 @@
                                 <th>Nome</th>
                                 <th>Ativo</th>
                                 <th>Finaliza Automaticamente</th>
+                                <th>Controle de prazos</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">
@@ -48,6 +49,11 @@
                                         <option value="">Todos</option>
                                         <option value="1">Sim</option>
                                         <option value="0">Não</option>
+                                    </select>
+                                </th><th>
+                                    <select class="form-control fieldSearch">
+                                        <option value=""> Todos </option>
+                                        <option value="deadline"> Prazos </option>
                                     </select>
                                 </th>
                             </tr>
@@ -105,7 +111,8 @@
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#table_plans thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                var id = searchCols[i]['sSearch'].replace('^', "").replace('$', '')
+                                $('#table_plans thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(id);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
@@ -152,6 +159,13 @@
                                 return '<span class="badge badge-danger mr-1 ">NÃO</span>';
                             }
                             return '---';
+                        }
+                    },{data: "send_deadline", 'name': 'send_deadline',
+                        render: function (data, display, row) {
+                            if(data)
+                                return '<span class="badge badge-success mr-1 ">'+row.send_deadline_text+'</span>';
+                            else
+                                return '---';
                         }
                     },
 

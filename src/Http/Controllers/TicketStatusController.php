@@ -19,6 +19,14 @@ class TicketStatusController extends SulradioController {
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) {
 					return route('ticket.status.edit', [$row->id]);
+				})->addColumn('send_deadline_text', function ($row) {
+                    $text = '---';
+					if($row->send_deadline=='deadline'){
+                        $text = 'Prazo Execução';
+                    }elseif($row->send_deadline=='protocol_deadline'){
+                        $text = ' Prazo Protocolo';
+                    }
+                    return $text;
 				})->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.ticket_status.index', []);
@@ -35,12 +43,20 @@ class TicketStatusController extends SulradioController {
 			'name' => 'required',
 			'is_active' => 'required',
 		]);
+        if(!$dataForm['send_deadline']){
+            $dataForm['send_deadline']=null;
+        }
 		$status = TicketStatus::create($dataForm);
 		
 		if($request->get('update_completed_at') == 1){
 			TicketStatus::where('id', '!=', $status->id)
 				->update(['update_completed_at'=>0]);
 		}
+        if($request->get('send_deadline')){
+            TicketStatus::where('id', '!=', $status->id)
+                ->where('send_deadline', $request->get('send_deadline'))
+                ->update(['send_deadline'=>null]);
+        }
 		Cache::tags('sulradio')->flush();
 		toastr()->success('Status Criado com sucesso', 'Sucesso');
 		return redirect(route('ticket.status.index'));
@@ -59,11 +75,19 @@ class TicketStatusController extends SulradioController {
 			'name' => 'required',
 			'is_active' => 'required',
 		]);
+        if(!$dataForm['send_deadline']){
+            $dataForm['send_deadline']=null;
+        }
 		$data->fill($dataForm);
 		$data->save();
 		if($request->get('update_completed_at') == 1){
 			TicketStatus::where('id', '!=', $id)->update(['update_completed_at'=>0]);
 		}
+        if($request->get('send_deadline')){
+            TicketStatus::where('id', '!=', $id)
+                ->where('send_deadline', $request->get('send_deadline'))
+                ->update(['send_deadline'=>null]);
+        }
 		
 		Cache::tags('sulradio')->flush();
 		toastr()->success("{$data->name} Atualizado com sucesso", 'Sucesso');

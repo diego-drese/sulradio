@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\Admin\Models\Resource;
 use function GuzzleHttp\json_decode;
+use function Sodium\add;
 
 class Ticket extends Model {
 	const TABLE = 'ticket';
@@ -25,6 +26,7 @@ class Ticket extends Model {
 		'start_forecast',
 		'end_forecast',
 		'show_client',
+		'send_deadline',
 	];
 
 	protected $table = 'ticket';
@@ -129,5 +131,22 @@ class Ticket extends Model {
 			}
 		}
 		return $query->get();
+	}
+
+    public static function getDeadLines($day, $statusIdDeadLine) {
+        $now = Carbon::now()->addDays($day);
+		return self::where('start_forecast', '>=', $now->format('Y-m-d 00:00:00'))
+            ->where('start_forecast', '<=', $now->format('Y-m-d 23:59:59'))
+            ->where('status_id', $statusIdDeadLine)
+            ->get();
+
+	}
+
+    public static function getProtocolDeadLines($day, $statusIdDeadLine) {
+    $now = Carbon::now()->addDays($day);
+    return self::where('end_forecast', '>=', $now->format('Y-m-d 00:00:00'))
+        ->where('end_forecast', '<=', $now->format('Y-m-d 23:59:59'))
+        ->where('status_id', $statusIdDeadLine)
+        ->get();
 	}
 }

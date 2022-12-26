@@ -14,10 +14,13 @@ class TicketStatus extends Model {
 		'is_active',
 		'update_completed_at',
 		'color',
+		'send_deadline',
 	];
-	protected $table = 'ticket_status';
-	protected $connection = 'sulradio';
-	
+	protected $table                = 'ticket_status';
+	protected $connection           = 'sulradio';
+	const STATUS_DEADLINE           = 'deadline';
+	const STATUS_PROTOCOL_DEADLINE  = 'protocol_deadline';
+
 	public function getUpdatedAtAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y H:i') : '';
 	}
@@ -25,6 +28,7 @@ class TicketStatus extends Model {
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
+
 	public static function statusFinished($id= null) {
 		return Cache::tags(['sulradio'])->remember('ticket_status_finished-'.$id, 120, function () use($id) {
 			if($id){
@@ -40,5 +44,9 @@ class TicketStatus extends Model {
 				->orderBy('name', 'asc')
 				->get();
 		});
+	}
+
+    public static function getStatusDeadLine($deadLineType) {
+        return self::where('send_deadline', $deadLineType)->first();
 	}
 }
