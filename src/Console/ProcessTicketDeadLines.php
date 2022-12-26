@@ -46,9 +46,6 @@ class ProcessTicketDeadLines extends Command {
 
 	public function handle() {
 		Log::info('ProcessTicketDeadLines, start process');
-        $out = new \Symfony\Component\Console\Output\ConsoleOutput();
-
-
         $proccessDays           = [60, 45, 30, 20, 15, 10, 5, 4, 3, 2, 1];
         $statusDeadline         = TicketStatus::getStatusDeadLine(TicketStatus::STATUS_DEADLINE);
         $statusProtocolDeadline = TicketStatus::getStatusDeadLine(TicketStatus::STATUS_PROTOCOL_DEADLINE);

@@ -30,14 +30,16 @@ class ProcessCleanDou extends Command {
 	public function __construct() {
 		parent::__construct();
 	}
-	
 
-	
 	public function handle() {
         $limitDelete = Carbon::now()->subMonths(3);
-		$count = Dou::where('created_at', '<=', MongoUtils::convertDatePhpToMongo($limitDelete))
+        $count = Dou::where('created_at', '<', MongoUtils::convertDatePhpToMongo($limitDelete))
             ->where('ato_id', 'exists', false)
             ->count();
+
+		Dou::where('created_at', '<', MongoUtils::convertDatePhpToMongo($limitDelete))
+            ->where('ato_id', 'exists', false)
+            ->delete();
         $this->info("ProcessCleanDou, delete less[".$limitDelete->format('Y-m-d')."], total[{$count}]");
 	}
 
