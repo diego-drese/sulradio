@@ -29,7 +29,7 @@
                                 <th>Status</th>
                                 <th>Emissora</th>
                                 <th>Atualizado</th>
-                                <th>Término</th>
+                                <th>Prazo&nbsp;Protocolo</th>
                                 <th>Responsáveis</th>
                                 <th>Solicitante</th>
                             </tr>

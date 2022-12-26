@@ -136,11 +136,11 @@
                                     <h6 class="text-info"> {!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}</h6>
                                 </li>
                                 <li class="list-group-item">
-                                    <h6>Prev. Início</h6>
+                                    <h6>Prazo Execução</h6>
                                     <h6 class="text-info">{{$data->start_forecast}}</h6>
                                 </li>
                                 <li class="list-group-item">
-                                    <h6>Prev. Término</h6>
+                                    <h6>Prazo Protocolo</h6>
                                     <h6 class="text-info">{{$data->end_forecast}}</h6>
                                 </li>
                                 <li class="list-group-item">
@@ -1041,6 +1041,7 @@
         })
     </script>
 @endsection
+
 
 
 

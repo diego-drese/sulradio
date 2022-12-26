@@ -67,9 +67,9 @@
         </label>
         <div class="input-group mb-3">
             <select name="send_deadline" id="send_deadline" class="form-control">
-                <option value="" {{old('send_deadline', $data->exists() ? $data->send_deadline : '') == "0" ? 'selected' : ''}}> NÃO </option>
-                <option value="deadline" {{old('send_deadline', $data->exists() ? $data->send_deadline : 'deadline') == "deadline" ? 'selected' : ''}}> Prazo Execução </option>
-                <option value="protocol_deadline" {{old('send_deadline', $data->exists() ? $data->protocol_deadline : 'protocol_deadline') == "protocol_deadline" ? 'selected' : ''}}> Prazo Protocolo </option>
+                <option value="" {{old('send_deadline', $data->exists() && !$data->send_deadline ? $data->send_deadline : '') == "0" ? 'selected' : ''}}> NÃO </option>
+                <option value="deadline" {{old('send_deadline', $data->exists() ? $data->send_deadline : '') == "deadline" ? 'selected' : ''}}> Prazo Execução </option>
+                <option value="protocol_deadline" {{old('send_deadline', $data->exists() ? $data->send_deadline : '') == "protocol_deadline" ? 'selected' : ''}}> Prazo Protocolo </option>
             </select>
             <div class="input-group-append">
                 <span class="input-group-text"><i class="fas fa-adjust"></i></span>
