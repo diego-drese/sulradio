@@ -24,7 +24,7 @@ class EmissoraContatoController extends SulradioController {
 	public function index(Request $request, $clientId) {
 		if ($request->ajax()) {
             $emissoraId = $request->get('emissora_id');
-            $query = UserSulRadio::query()->client($clientId);
+            $query = UserSulRadio::query()->where('active', '=', 1)->client($clientId);
 			return DataTables::of($query)
 				->addColumn('edit_url', function ($row) use($emissoraId){
                     return route('client.user.edit', [ $row->client_id, $row->_id, 'emissora_id'=>$emissoraId]);
