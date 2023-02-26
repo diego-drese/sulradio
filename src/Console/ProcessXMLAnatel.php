@@ -46,7 +46,8 @@ class ProcessXMLAnatel extends Command {
 			$array = array_merge($newArray, $array);
 		}
 		foreach ($array as $index => $node){
-			$index= str_replace('@','', iconv('UTF-8','ASCII//TRANSLIT', $index));
+			$index  = str_replace('@','', iconv('UTF-8','ASCII//TRANSLIT', $index));
+            $index = preg_replace('/[^a-z0-9_]/i', '', $index);
 			$out[strtolower($index)] = (is_array($node)) ? $this->xml2array($node) : $node;
 		}
 		return $out;

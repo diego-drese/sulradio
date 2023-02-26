@@ -27,6 +27,7 @@ class Ticket extends Model {
 		'end_forecast',
 		'show_client',
 		'send_deadline',
+        'renewal_alert'
 	];
 
 	protected $table = 'ticket';
@@ -97,6 +98,9 @@ class Ticket extends Model {
 	public function getEndForecastAttribute($value) {
 		return $value ? (new Carbon($value))->format('d/m/Y') : '';
 	}
+    public function getRenewalAlertAttribute($value) {
+		return $value ? (new Carbon($value))->format('d/m/Y') : '';
+	}
 	public static function getById($id) {
 		return self::where('id', $id)->first();
 	}
@@ -147,6 +151,12 @@ class Ticket extends Model {
     return self::where('end_forecast', '>=', $now->format('Y-m-d 00:00:00'))
         ->where('end_forecast', '<=', $now->format('Y-m-d 23:59:59'))
         ->where('status_id', $statusIdDeadLine)
+        ->get();
+	}
+    public static function getRenewalAlert($day) {
+    $now = Carbon::now()->addDays($day);
+    return self::where('renewal_alert', '>=', $now->format('Y-m-d 00:00:00'))
+        ->where('renewal_alert', '<=', $now->format('Y-m-d 23:59:59'))
         ->get();
 	}
 }

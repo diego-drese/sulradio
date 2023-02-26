@@ -92,7 +92,9 @@ class TicketController extends SulradioController {
 		$ticketForm['html']             = $request->get('content');
 		$ticketForm['start_forecast']   = Helper::convertDateBrToMysql($ticketForm['start_forecast']);
 		$ticketForm['end_forecast']     = Helper::convertDateBrToMysql($ticketForm['end_forecast']);
+        $ticketForm['renewal_alert']    = Helper::convertDateBrToMysql($ticketForm['renewal_alert']);
 		$ticketForm['show_client']      = isset($ticketForm['show_client']) ?? 0;
+
 		if(TicketStatus::statusFinished($request->get('status_id'))){
 			$ticketForm['completed_at'] = date('Y-m-d H:i:s');
 		}
@@ -146,6 +148,7 @@ class TicketController extends SulradioController {
 		$user       = Auth::user();
 
         $hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+
 		$data       = Ticket::withSelectDataTable()
 			->withParticipants($user, $hasAdmin)
 			->withStatus()
@@ -198,6 +201,7 @@ class TicketController extends SulradioController {
 
 		if($hasAdmin){
 			$ticketForm['show_client']      = isset($ticketForm['show_client']) ?? 0;
+            $ticketForm['renewal_alert']    = Helper::convertDateBrToMysql($ticketForm['renewal_alert']);
 		}
 		if(TicketStatus::statusFinished($request->get('status_id'))){
 			$ticketForm['completed_at'] = date('Y-m-d H:i:s');

@@ -9,7 +9,9 @@
                         <h4 class="card-title">&nbsp;</h4>
                         <div class="ml-auto">
                             <div class="btn-group">
-
+                                <a href="#" class="btn btn-primary" id="btnExport">
+                                    <span class="fa fa-plus"></span> <b>CSV</b>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -29,6 +31,7 @@
                                 <th>Status</th>
                                 <th>Entidade</th>
                                 <th title="Ultima data de atualização">Data</th>
+                                <th title="Data de vencimento">Vencimento</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">
@@ -37,11 +40,11 @@
                                     </spa>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                    <input id="fistel" type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                            placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <select class="fieldSearch form-control text-primary ">
+                                    <select id="uf" class="fieldSearch form-control text-primary ">
                                         <option value="">Todos</option>
                                         <option value="AC">AC</option>
                                         <option value="AL">AL</option>
@@ -73,11 +76,11 @@
                                     </select>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                    <input id="municipio" type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                            placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <select class="fieldSearch form-control text-primary ">
+                                    <select id="servico" class="fieldSearch form-control text-primary ">
                                         <option value="">Todos</option>
                                         <option value="FM">FM</option>
                                         <option value="GTVD">GTVD</option>
@@ -90,15 +93,15 @@
                                     </select>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                    <input id="canal" type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                            placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                    <input id="frequencia" type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                            placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <select class="fieldSearch form-control text-primary ">
+                                    <select id="finalidade" class="fieldSearch form-control text-primary ">
                                         <option value="">(Todos)</option>
                                         <option value="Comercial">Comercial</option>
                                         <option value="Educativo">Educativo</option>
@@ -107,7 +110,7 @@
                                     </select>
                                 </th>
                                 <th role="row">
-                                    <select class="fieldSearch form-control text-primary ">
+                                    <select id="classe" class="fieldSearch form-control text-primary ">
                                         <option value="">Todos</option>
                                         <option value="A">A</option>
                                         <option value="A1">A1</option>
@@ -124,15 +127,19 @@
                                     </select>
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                    <input  id="status" type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                            placeholder="Buscar">
                                 </th>
                                 <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                    <input  id="entidade" type="text" autocomplete="off" class="fieldSearch form-control text-primary"
                                            placeholder="Buscar">
                                 </th>
                                 <th role="row">
                                     ---
+                                </th>
+                                <th role="row">
+                                    <input id="vencimento" type="text" autocomplete="off" class="fieldSearch form-control text-primary"
+                                           placeholder="Buscar">
                                 </th>
                             </tr>
                             </thead>
@@ -167,6 +174,76 @@
                 $('#emissoraModal').modal('toggle')
             });
 
+        }
+        $("#btnExport").click(function () {
+            exportFilter()
+        });
+        function downloadFile(urlToSend) {
+            var req = new XMLHttpRequest();
+            req.open("GET", urlToSend, true);
+            req.responseType = "blob";
+            req.onload = function (event) {
+                console.log('event', event.currentTarget)
+                if (req.readyState === req.DONE) {
+                    if (req.status === 200) {
+                        var blob = req.response;
+                        var type = 'xlsx';
+                        if ($('#myonoffswitch:checked').val() == undefined) {
+                            type = 'csv';
+                        }
+                        var fileName = 'file.' + type; //if you have the fileName header available
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = fileName;
+                        link.click();
+                        $('#cover-spin').hide();
+                    } else{
+                        toastr.error('Erro', 'Erro ao processar seu arquivo. Filtre os resultados para gerar um arquivo menor');
+                    }
+                }
+            };
+
+            req.send();
+        }
+        var exportFilter = function () {
+            var data = {};
+            if ($('#fistel').val()) {
+                data.fistel = $('#fistel').val();
+            }
+            if ($('#uf').val()) {
+                data.uf = $('#uf').val();
+            }
+            if ($('#municipio').val()) {
+                data.municipio = $('#municipio').val();
+            }
+            if ($('#servico').val()) {
+                data.servico = $('#servico').val();
+            }
+            if ($('#canal').val()) {
+                data.canal = $('#canal').val();
+            }
+            if ($('#frequencia').val()) {
+                data.frequencia = $('#frequencia').val();
+            }
+            if ($('#finalidade').val()) {
+                data.finalidade = $('#finalidade').val();
+            }
+            if ($('#classe').val()) {
+                data.classe = $('#classe').val();
+            }
+            if ($('#status').val()) {
+                data.status = $('#status').val();
+            }
+            if ($('#entidade').val()) {
+                data.entidade = $('#entidade').val();
+            }
+            if ($('#vencimento').val()) {
+                data.vencimento = $('#vencimento').val();
+            }
+
+            data._token = $("input[name='_token']").val();
+            data.export = true;
+            return downloadFile('/console/anatel/emissoras?' + $.param(data));
         }
         $(document).ready(function () {
             $(".select2").select2({
@@ -271,6 +348,10 @@
                     },
                     {
                         data: "updated_at", 'name': 'updated_at', render: function (data) {
+                            return data ? data : '---';
+                        }
+                    }, {
+                        data: "entidade.habilitacao_datavalfreq", 'name': 'entidade.habilitacao_datavalfreq', render: function (data) {
                             return data ? data : '---';
                         }
                     },

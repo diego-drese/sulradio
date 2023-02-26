@@ -43,9 +43,26 @@ class Client extends Model {
 	}
 	public static function getUsersByEmissora($id) {
 		return Cache::tags(['sulradio'])->remember('users_by_emissora-'.$id, 10, function () use($id){
-			$emissora = Emissora::getByIdOnly($id);
+			$emissora       = Emissora::getByIdOnly($id);
 			if($emissora && $emissora->client_id){
-				return UserSulRadio::client($emissora->client_id)->where('active', 1)->get();
+                $users          = [];
+                $userAppend     = [];
+                $userByEmissora = UserSulRadio::getUsersByEmissoraId($id, $emissora->client_id);
+                $userByClient   = UserSulRadio::getUsersClientId($emissora->client_id);
+                foreach ($userByEmissora as $user){
+                    if(!isset($userAppend[$user->id])){
+                        $userAppend[$user->id]=true;
+                        $users[] = $user;
+                    }
+                }
+                foreach ($userByClient as $user){
+                    if(!$user->broadcast && !isset($userAppend[$user->id])){
+                        $userAppend[$user->id]=true;
+                        $users[] = $user;
+                    }
+                }
+
+				return $users;
 			}
 			return [];
 		});

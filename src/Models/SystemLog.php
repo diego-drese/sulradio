@@ -27,6 +27,7 @@ class SystemLog extends Model {
 	const TYPE_MOVE_TICKET = 12;
     const TYPE_DEADLINE = 13;
     const TYPE_PROTOCOL_DEADLINE = 14;
+    const TYPE_RENEWAL_ALERT = 15;
 	const TYPE_UNDEFINED = 99;
 
 	const ZONE_TICKET = 1;
@@ -48,6 +49,7 @@ class SystemLog extends Model {
 		self::TYPE_MOVE_TICKET => 'Dados de ticket movido',
 		self::TYPE_DEADLINE => 'Alerta de Prazo Execução',
 		self::TYPE_PROTOCOL_DEADLINE => 'Alerta de Prazo Protocolo',
+		self::TYPE_RENEWAL_ALERT => 'Alerta de Prazo Vencimento',
 		self::TYPE_UNDEFINED => 'Indefinido',
 		];
 	const ZONE_TEXT = [self::ZONE_TICKET => 'Ticket', self::ZONE_SEAD => 'SEAD', self::ZONE_UNDEFINED=> 'Indefinido',];

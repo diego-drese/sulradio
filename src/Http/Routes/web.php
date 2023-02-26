@@ -81,7 +81,13 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::post('/plan', 'Oka6\SulRadio\Http\Controllers\PlanController@store')->name('plan.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Planos , salva novo']);
 	Route::get('/plan/{id}', 'Oka6\SulRadio\Http\Controllers\PlanController@edit')->name('plan.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Planos editar']);
 	Route::post('/plan/{id}', 'Oka6\SulRadio\Http\Controllers\PlanController@update')->name('plan.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Planos, salva edição']);
-	
+
+    Route::get('/municipio', 'Oka6\SulRadio\Http\Controllers\MunicipioController@index')->name('municipio.index')->where(['iconAdmin' => 'mdi mdi-city', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Município", 'nameAdmin' => 'Município', 'isDefaultAdmin' => '1']);
+    Route::get('/municipio/create', 'Oka6\SulRadio\Http\Controllers\MunicipioController@create')->name('municipio.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'municipio.index', 'nameAdmin' => 'Município novo',]);
+    Route::post('/municipio', 'Oka6\SulRadio\Http\Controllers\MunicipioController@store')->name('municipio.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Município , salva novo']);
+    Route::get('/municipio/{id}', 'Oka6\SulRadio\Http\Controllers\MunicipioController@edit')->name('municipio.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'municipio.index', 'nameAdmin' => 'Município editar']);
+    Route::post('/municipio/{id}', 'Oka6\SulRadio\Http\Controllers\MunicipioController@update')->name('municipio.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'municipio.index', 'nameAdmin' => 'Município, salva edição']);
+
 	Route::get('/document-type', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@index')->name('document.type.index')->where(['iconAdmin' => 'mdi mdi-file-document', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Tipos de documentos", 'nameAdmin' => 'Tipos de documentos', 'isDefaultAdmin' => '1']);
 	Route::get('/document-type/create', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@create')->name('document.type.create')->where(['iconAdmin' => 'fas fa-plus-square', 'parentRouteNameAdmin' => 'document.type.index', 'nameAdmin' => 'Tipos de documentos novo',]);
 	Route::post('/document-type', 'Oka6\SulRadio\Http\Controllers\DocumentTypeController@store')->name('document.type.store')->where(['iconAdmin' => 'fas fa-plus-square', 'nameAdmin' => 'Tipos de documentos , salva novo']);

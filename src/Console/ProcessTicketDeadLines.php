@@ -70,6 +70,15 @@ class ProcessTicketDeadLines extends Command {
                     TicketParticipant::notifyParticipants($ticket, $userLogged, TicketNotification::TYPE_PROTOCOL_DEADLINE, null , $day);
                 }
             }
+
+        }
+        /** Renew alert */
+        $proccessDays           = [3650, 2555,1825,1460, 1095, 730, 365,180, 90,60, 45, 30, 20, 15, 10, 5, 4, 3, 2, 1];
+        foreach ($proccessDays as $day){
+            $tickets = Ticket::getRenewalAlert($day);
+            foreach ($tickets as $ticket){
+                TicketParticipant::notifyParticipants($ticket, $userLogged, TicketNotification::TYPE_RENEWAL_ALERT, null , $day);
+            }
         }
 	}
 }

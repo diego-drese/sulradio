@@ -113,7 +113,8 @@ class ClientController extends SulradioController {
 		return $this->renderView('SulRadio::backend.client.user.index', ['client'=>Client::getById($clientId)]);
 	}
 	public function userCreate(UserSulRadio $data, $clientId) {
-		return $this->renderView('SulRadio::backend.client.user.create', ['data' => $data, 'client'=>Client::getById($clientId), 'profiles' => Profile::getProfilesByTypes(Config::get('sulradio.profile_type'))]);
+        $client = Client::getById($clientId);
+		return $this->renderView('SulRadio::backend.client.user.create', ['data' => $data, 'client'=>$client, 'profiles' => Profile::getProfilesByTypes(Config::get('sulradio.profile_type')),  'broadcast'=> Emissora::getByArrayId(json_decode($client->broadcast))]);
 	}
 	public function userStore(Request $request, $clientId) {
 		$dataForm = $request->all();
@@ -139,6 +140,7 @@ class ClientController extends SulradioController {
 		$dataForm['user_created_id']        = (int)$user->id;
 		$dataForm['user_updated_id']        = (int)$user->id;
 		$dataForm['user_updated_at']        = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+        $dataForm['broadcast']              = isset($dataForm['broadcast']) ? $dataForm['broadcast'] : [];
 		UserSulRadio::create($dataForm);
 		$this->notifyUser($clientId, $dataForm['id']);
 		toastr()->success('Usuário criado com sucesso', 'Sucesso');
@@ -178,9 +180,10 @@ class ClientController extends SulradioController {
 	}
 	
 	public function userEdit(Request $request, $clientId, $userId) {
-		$data = UserSulRadio::getBy_Id($userId);
-        $emissoraId = $request->get('emissora_id');
-		return $this->renderView('SulRadio::backend.client.user.edit', ['emissoraId'=>$emissoraId, 'data' => $data, 'client'=>Client::getById($clientId), 'profiles' => Profile::getProfilesByTypes(Config::get('sulradio.profile_type'))]);
+        $client         = Client::getById($clientId);
+		$data           = UserSulRadio::getBy_Id($userId);
+        $emissoraId     = $request->get('emissora_id');
+		return $this->renderView('SulRadio::backend.client.user.edit', ['emissoraId'=>$emissoraId, 'data' => $data, 'client'=>$client, 'profiles' => Profile::getProfilesByTypes(Config::get('sulradio.profile_type')), 'broadcast'=> Emissora::getByArrayId(json_decode($client->broadcast))]);
 	}
 	public function userUpdate(Request $request, $clientId, $userId) {
 		$dataForm = $request->all();
@@ -199,6 +202,7 @@ class ClientController extends SulradioController {
         $dataForm['receive_notification']   = (int)isset($dataForm['receive_notification']) && $dataForm['receive_notification'] ? 1 : 0;
 		$dataForm['user_updated_id']        = (int)$user->id;
 		$dataForm['user_updated_at']        = MongoUtils::convertDatePhpToMongo(date('Y-m-d H:i:s'));
+        $dataForm['broadcast']              = isset($dataForm['broadcast']) ? $dataForm['broadcast'] : [];
 
 		$userUpdate                         = UserSulRadio::getBy_Id($userId);
 

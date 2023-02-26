@@ -3,7 +3,7 @@
 namespace Oka6\SulRadio\Models;
 
 
-use Illuminate\Database\Eloquent\Model;use function GuzzleHttp\json_decode;
+use Illuminate\Database\Eloquent\Model;
 
 class Emissora extends Model {
 	const TABLE = 'emissora';
@@ -94,11 +94,15 @@ class Emissora extends Model {
 
 	public function scopeFilterClient($query, $user) {
 		if($user->client_id){
-			$client = Client::getById($user->client_id);
-			$query->whereIn('emissoraID', json_decode($client->broadcast));
+            if($user->broadcast && !empty($user->broadcast) && count($user->broadcast)){
+                $query->whereIn('emissoraID', $user->broadcast);
+            }else{
+                $client = Client::getById($user->client_id);
+                $query->whereIn('emissoraID', json_decode($client->broadcast));
+            }
 		}
-		$userHasClient = UserHasClient::getEmissorasWithCache($user->id);
 
+		$userHasClient = UserHasClient::getEmissorasWithCache($user->id);
 		if(count($userHasClient)){
 			$query->whereIn('emissoraID', $userHasClient);
 		}

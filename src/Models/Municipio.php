@@ -14,6 +14,7 @@ class Municipio extends Model {
 	];
 	protected $connection = 'sulradio';
 	protected $table = 'municipio';
+    protected $primaryKey = 'municipioID';
 	public function usesTimestamps() : bool{
 		return false;
 	}
@@ -22,6 +23,10 @@ class Municipio extends Model {
 			->join('uf', 'uf.ufID', 'municipio.ufID')
 			->first();
 	}
+    public function scopeWithUf($query) {
+        $query->leftJoin('uf', 'uf.ufID', 'municipio.ufID');
+        return $query;
+    }
 	
 	
 }

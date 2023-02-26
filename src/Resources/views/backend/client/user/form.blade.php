@@ -136,7 +136,23 @@
             <span class="help-block">{{$errors->first('active')}}</span>
         @endif
     </div>
+    <div class="col-md-12 form-group {{$errors->has('emissoras') ? 'text-danger' : ''}} ">
+        <label for="description">Emissoras(Deixar vazio para todas)</label>
+        <div class="input-group mb-3">
+            <select name="broadcast[]" id="broadcast" class="form-control select2" multiple>
+                @foreach($broadcast as $value)
+                    <option value="{{$value->emissoraID}}" {{in_array($value->emissoraID, old('broadcast', $data->exists() &&  is_array($data->broadcast) ?  $data->broadcast : [])) ? 'selected' : ''}}>{{$value->desc_servico.'-'.$value->razao_social."({$value->desc_municipio} {$value->desc_uf})"}}</option>
+                @endforeach
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="mdi mdi-radio"></i></span>
+            </div>
+        </div>
 
+        @if($errors->has('broadcast_user'))
+            <span class="help-block">{{$errors->first('broadcast_user')}}</span>
+        @endif
+    </div>
     <div class="col-md-12 form-group {{$errors->has('description') ? 'text-danger' : ''}} ">
         <label for="description">Observações</label>
         <textarea rows="7" name="description" class="form-control"
@@ -191,7 +207,7 @@
             reverse: false, onKeyPress: function (value, event, currentField, options) {
             }
         });
-        $("#plan_id").select2({
+        $("#plan_id, #broadcast").select2({
             width: 'calc(100% - 38px)',
             placeholder: 'Selecione',
             allowClear: true

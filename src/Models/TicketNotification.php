@@ -32,6 +32,7 @@ class TicketNotification extends Model {
 	const TYPE_TRACKER_URL = 6;
 	const TYPE_DEADLINE = 7;
 	const TYPE_PROTOCOL_DEADLINE = 8;
+	const TYPE_RENEWAL_ALERT = 9;
 	const TYPE_UNDEFINED = 99;
 
 	protected $table = 'ticket_notification';

@@ -179,6 +179,19 @@
         @if($errors->has('end_forecast'))
             <span class="help-block">{{$errors->first('end_forecast')}}</span>
         @endif
+        @if($hasAdmin)
+            <label for="end_forecast">Vencimento </label>
+            <div class="input-group mb-3">
+                <input type="text" name="renewal_alert" id="renewal_alert" class="form-control" placeholder="Vencimento"
+                       value="{{old('renewal_alert', $data->exists() && $data->renewal_alert ? $data->renewal_alert : null)}}">
+                <div class="input-group-append">
+                    <span class="input-group-text"><i class="mdi mdi-calendar-clock"></i></span>
+                </div>
+            </div>
+            @if($errors->has('renewal_alert'))
+                <span class="help-block">{{$errors->first('renewal_alert')}}</span>
+            @endif
+        @endif
         <label for="send_deadline" title="Controle de envio de alertas dos prazos">Notificar Prazos</label>
         <div class="input-group mb-3 bt-switch ">
             <input id="send_deadline" name="send_deadline" type="checkbox" title="Notifica usuários envolvidos com os prazos estabelecidos"
@@ -266,7 +279,7 @@
         $('#send_deadline').on('switchChange.bootstrapSwitch', function (){
             validateDate();
         })
-        $('#start_forecast, #end_forecast').daterangepicker({
+        $('#start_forecast, #end_forecast, #renewal_alert').daterangepicker({
             singleDatePicker: true,
             autoUpdateInput: false,
             locale: {

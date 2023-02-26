@@ -1,5 +1,5 @@
 @extends('SulRadio::backend.layout.main')
-@section('title', 'Planos')
+@section('title', 'Municípios')
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -10,7 +10,7 @@
                         <div class="ml-auto">
                             <div class="btn-group">
                                 @if($hasAdd)
-                                    <a href="{{route('plan.create')}}" class="btn btn-primary">
+                                    <a href="{{route('municipio.create')}}" class="btn btn-primary">
                                         <span class="fa fa-plus"></span> <b>Adicionar</b>
                                     </a>
                                 @endif
@@ -18,19 +18,13 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="table_plans" class="table table-striped table-bordered" role="grid"
+                        <table id="table_municipio" class="table table-striped table-bordered" role="grid"
                                aria-describedby="file_export_info">
                             <thead>
                             <tr>
                                 <th style="width: 120px">Ações</th>
                                 <th>Nome</th>
-                                <th>Max Upload</th>
-                                <th>Max Estações</th>
-                                <th>Max Usuários</th>
-                                <th>Frequência</th>
-                                <th>Valor</th>
-                                <th>Ativo</th>
-
+                                <th>UF</th>
                             </tr>
                             <tr>
                                 <th style="width: 60px">
@@ -41,30 +35,9 @@
                                 <th role="row">
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
                                 </th>
-
-                                <th>
-                                    ---
+                                <th role="row">
+                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
                                 </th>
-                                <th>
-                                    ---
-                                </th>
-                                <th>
-                                    ---
-                                </th>
-                                <th>
-                                    ---
-                                </th>
-                                <th>
-                                    ---
-                                </th>
-                                <th>
-                                    <select class="form-control fieldSearch">
-                                        <option value="">Todos</option>
-                                        <option value="1">Sim</option>
-                                        <option value="0">Não</option>
-                                    </select>
-                                </th>
-
                             </tr>
                             </thead>
                             <tbody>
@@ -85,7 +58,7 @@
     <script>
         var hasEdit = '{{$hasEdit}}';
         $(document).ready(function () {
-            var table_plans = $('#table_plans').DataTable({
+            var table_municipio = $('#table_municipio').DataTable({
                 language: {
                     "sEmptyTable": "Nenhum registro encontrado",
                     "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -120,14 +93,14 @@
                         var searchCols = settings.aoPreSearchCols;
                         if (searchCols && searchCols.length) {
                             for (var i = 0; i < searchCols.length; i++) {
-                                $('#table_plans thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
+                                $('#table_municipio thead tr:eq(1) th:eq(' + i + ') .fieldSearch').val(searchCols[i]['sSearch']);
                             }
                         }
                         console.log(settings.aoPreSearchCols, data);
                     }, 50);
                 },
                 ajax: {
-                    url: '{{ route('plan.index') }}',
+                    url: '{{ route('municipio.index') }}',
                     type: 'GET',
                     data: function (d) {
                         d._token = $("input[name='_token']").val();
@@ -144,40 +117,23 @@
                                 return edit_button
                         }
                     },
-                    {data: "name", 'name': 'name'},
-                    {data: "max_upload", 'name': 'max_upload', render : function (data){
-                        return data+'GB';
-                    }},
-                    {data: "max_broadcast", 'name': 'max_broadcast'},
-                    {data: "max_user", 'name': 'max_user'},
-                    {data: "frequency", 'name': 'frequency', render : function (data){
-                            return data+' dias';
-                    }},
-                    {data: "value", 'name': 'value'},
-                    {data: "is_active", 'name': 'is_active',
-                        render: function (data, display, row) {
-                            if (data == "1") {
-                                return '<span class="badge badge-success mr-1 ">SIM</span>';
-                            } else if (data == '0') {
-                                return '<span class="badge badge-danger mr-1 ">NÃO</span>';
-                            }
-                            return '---';
-                        }
-                    },
+                    {data: "desc_municipio", 'name': 'desc_municipio'},
+                    {data: "uf_extenso", 'name': 'uf_extenso'},
+
 
                 ]
             });
 
-            $('#table_plans thead tr:eq(1) th').each(function (i) {
+            $('#table_municipio thead tr:eq(1) th').each(function (i) {
                 $('.fieldSearch', this).on('keyup change', function () {
-                    if (table_plans.column(i).search() !== this.value) {
-                        table_plans.column(i).search(this.value, true).draw();
+                    if (table_municipio.column(i).search() !== this.value) {
+                        table_municipio.column(i).search(this.value, true).draw();
                     }
                 });
             });
 
             $('#clearFilter').click(function () {
-                table_plans.state.clear();
+                table_municipio.state.clear();
                 window.location.reload();
             })
         });

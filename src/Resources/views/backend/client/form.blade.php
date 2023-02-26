@@ -225,7 +225,7 @@
         <div class="input-group mb-3">
             <select name="broadcast[]" id="broadcast" class="form-control" multiple>
                 @foreach($broadcast as $value)
-                    <option value="{{$value->emissoraID}}" selected>{{$value->desc_servico.'-'.$value->nome_fantasia."({$value->desc_municipio} {$value->desc_uf})"}}</option>
+                    <option value="{{$value->emissoraID}}" selected>{{$value->desc_servico.'-'.$value->razao_social."({$value->desc_municipio} {$value->desc_uf})"}}</option>
                 @endforeach
             </select>
             <div class="input-group-append">

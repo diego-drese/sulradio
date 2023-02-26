@@ -15,6 +15,7 @@ class Uf extends Model {
 	];
 	protected $connection = 'sulradio';
 	protected $table = 'uf';
+    protected $primaryKey = 'ufID';
 	public function usesTimestamps() : bool{
 		return false;
 	}
