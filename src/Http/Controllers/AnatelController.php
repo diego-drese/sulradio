@@ -39,7 +39,7 @@ class AnatelController extends SulradioController {
                             'frequencia'    => isset($data['frequencia']) ? $data['frequencia'] : null,
                             'finalidade'    => $data['entidade']['finalidade'],
                             'classe'        => isset($data['classe']) ? $data['classe'] : null,
-                            'status'        => isset($data['status']) ? $data['status'] : null,
+                            'status'        => isset($data['state']) ? $data['state'] : null,
                             'Entidade'      => $data['entidade']['entidade_nome_entidade'],
                             'data'          => $data['updated_at'],
                             'vencimento'    => $data['entidade']['habilitacao_datavalfreq'],
@@ -51,7 +51,9 @@ class AnatelController extends SulradioController {
                     Log::info('SubscriptionController make csv', ['lines_append'=>$registersCount]);
                     $dataTable      = $this->dataTable($request);
                 }
-                return (new FastExcel($list))->download("file.csv");
+                $fastExcel = new FastExcel();
+                $fastExcel->configureCsv(';');
+                return ($fastExcel->data($list))->download("file.csv");
             }catch (\Exception $e){
                 return response('Erro ao processar seu arquivo. Filtre os resultados para gerar um arquivo menor', 500);
             }
@@ -111,7 +113,7 @@ class AnatelController extends SulradioController {
             $query->where('classe', $classe);
         }
         if($status){
-            $query->where('status', 'LIKE', "%{$status}%");
+            $query->where('state', 'LIKE', "%{$status}%");
         }
         if($entidade){
             $query->where('entidade.entidade_nome_entidade', 'LIKE', "%{$entidade}%");

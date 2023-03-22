@@ -335,7 +335,7 @@
                         }
                     },
                     {
-                        data: "status", 'name': 'status', render: function (data) {
+                        data: "state", 'name': 'state', render: function (data) {
                             return data ? data : '---';
                         }
                     },

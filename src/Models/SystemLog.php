@@ -76,8 +76,8 @@ class SystemLog extends Model {
 	protected static function makeQueryLastNotifications($id , $zone, $hasAdmin=false){
 		$query = self::where('user_id', $id)
 			->where('zone', $zone)
-			->orderBy('status', 'ASC')
-			->orderBy('created_at', 'DESC');
+            ->orderBy('created_at', 'DESC')
+			->orderBy('status', 'ASC');
 		if(!$hasAdmin){
 			$query->where('only_root', 0);
 		}
@@ -144,9 +144,9 @@ class SystemLog extends Model {
 			case self::TYPE_TRANSFER_AGENT:
             case self::TYPE_DEADLINE:
             case self::TYPE_PROTOCOL_DEADLINE:
+            case self::TYPE_SEND_EMAIL_NOTIFICATION:
 				$data['content'] = $content;
 			break;
-			case self::TYPE_SEND_EMAIL_NOTIFICATION:
 			case self::TYPE_SAVE_UPLOAD:
 			case self::TYPE_DELETE_UPLOAD:
 			case self::TYPE_SAVE_TRACKER_URL:
