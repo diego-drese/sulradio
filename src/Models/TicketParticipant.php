@@ -59,16 +59,16 @@ class TicketParticipant extends Model {
 			$contentLog = 'Usuário '.$userLogged->name. ' atualizou o ticket '. $ticket->id;
 			$logType = SystemLog::TYPE_UPDATE;
 		}else if($typeNotification==TicketNotification::TYPE_DEADLINE){
-			$contentLog = 'Ticket com prazo de execuçao['.$ticket->start_forecast.'] encontado dentro do prazo estabelicido. ['.$daysDeadLine.']dias para iniciar';
+			$contentLog = 'Ticket com prazo de execuçao['.$ticket->start_forecast.'] encontado dentro do prazo estabelecido. ['.$daysDeadLine.']dias para iniciar';
 			$logType = SystemLog::TYPE_DEADLINE;
 		}else if($typeNotification==TicketNotification::TYPE_PROTOCOL_DEADLINE){
-            $contentLog = 'Ticket com protocolo de entrega['.$ticket->end_forecast.'] encontado dentro do prazo estabelicido. ['.$daysDeadLine.']dias para o prazo do protocolo';
+            $contentLog = 'Ticket com protocolo de entrega['.$ticket->end_forecast.'] encontado dentro do prazo estabelecido. ['.$daysDeadLine.']dias para o prazo do protocolo';
             $logType = SystemLog::TYPE_PROTOCOL_DEADLINE;
 		}else if($typeNotification==TicketNotification::TYPE_RENEWAL_ALERT){
-            $contentLog = 'Ticket com vencimento['.$ticket->renewal_alert.'] encontado dentro do prazo estabelicido. ['.$daysDeadLine.']dias para o prazo do vencimento';
+            $contentLog = 'Ticket com vencimento['.$ticket->renewal_alert.'] encontado dentro do prazo estabelecido. ['.$daysDeadLine.']dias para o prazo do vencimento';
             $logType = SystemLog::TYPE_RENEWAL_ALERT;
 		}else if($typeNotification==TicketNotification::TYPE_COMMENT_CLIENT){
-			$contentLog = 'Usuário '.$userLogged->name. ' respondeu a um comentário '. $ticket->id;
+			$contentLog = 'Usuário '.$userLogged->name. ' respondeu a um comentário enviado por email.'. $ticket->id;
 			$logType = SystemLog::TYPE_SEND_EMAIL_NOTIFICATION;
             $forceNotification=true;
 		}else{
