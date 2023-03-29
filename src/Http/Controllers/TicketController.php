@@ -386,7 +386,6 @@ class TicketController extends SulradioController {
 		SystemLog::insertLogTicket(SystemLog::TYPE_SEND_EMAIL_CLIENT, $contentLog, $comment->ticket_id, $userLogged->id);
 		return response()->json(['message'=>'success'], 200);
 	}
-
 	protected function makeParameters($extraParameter = null) {
 		$user = Auth::user();
 		$users = UserSulRadio::whereNull('client_id')

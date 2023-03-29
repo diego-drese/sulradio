@@ -166,6 +166,13 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
 	Route::get('/sulradio-users/{id}', 'Oka6\SulRadio\Http\Controllers\UsersController@edit')->name('sulradio.user.edit')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'sulradio.user.index', 'nameAdmin' => 'Usuários sead editar']);
 	Route::post('/sulradio-users/{id}', 'Oka6\SulRadio\Http\Controllers\UsersController@update')->name('sulradio.user.update')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'plan.index', 'nameAdmin' => 'Usuários sead, salva edição']);
 
+    Route::get('/ticket-management', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@index')->name('ticket.management.index')->where(['iconAdmin' => 'mdi mdi-ticket', 'parentRouteNameAdmin' => 'Sulradio', 'menuAdmin' => "Tickets Gerência", 'nameAdmin' => 'Tickets Gerência', 'isDefaultAdmin' => '1']);
+    Route::get('/ticket-management-delete', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@deleteTickets')->name('ticket.management.delete')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Delete']);
+    Route::post('/ticket-change-status', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeStatus')->name('ticket.management.change.status')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change status']);
+    Route::post('/ticket-change-participant', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeParticipant')->name('ticket.management.change.participant')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change participant']);
+    Route::post('/ticket-change-category', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeCategory')->name('ticket.management.change.category')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change Category']);
+
+
 });
 
 Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function () {
