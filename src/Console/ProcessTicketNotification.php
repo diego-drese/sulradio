@@ -61,7 +61,7 @@ class ProcessTicketNotification extends Command {
                     if(!isset($userSendNotification[$keyMap])){
                         $notification->status = TicketNotification::STATUS_PROCESSED;
                         if ($notification->type == TicketNotification::TYPE_UPDATE) {
-                            $this->sendEmailTypeUpdate($notification);
+                            //$this->sendEmailTypeUpdate($notification);
                         }else if ($notification->type == TicketNotification::TYPE_COMMENT) {
                             $this->sendEmailTypeComment($notification, TicketNotification::TYPE_COMMENT);
                         }else if ($notification->type == TicketNotification::TYPE_TRACKER_URL) {
