@@ -171,6 +171,7 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
     Route::post('/ticket-change-status', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeStatus')->name('ticket.management.change.status')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change status']);
     Route::post('/ticket-change-participant', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeParticipant')->name('ticket.management.change.participant')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change participant']);
     Route::post('/ticket-change-category', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeCategory')->name('ticket.management.change.category')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change Category']);
+    Route::post('/ticket-change-requester', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeRequester')->name('ticket.management.change.requester')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change Requester']);
 
 
 });

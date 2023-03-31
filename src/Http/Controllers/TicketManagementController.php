@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Oka6\Admin\Http\Library\ResourceAdmin;
+use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Models\Client;
 use Oka6\SulRadio\Models\Emissora;
@@ -117,7 +118,8 @@ class TicketManagementController extends SulradioController {
             SystemLog::insertLogTicket(SystemLog::TYPE_UPDATE, "Ticket[{$ticket->id}] foi modificado para os status[{$status}]", null, $user->id);
         }
         return response()->json(['mens'=>"Tickets atualizados com sucesso"]);
-    }public function changecategory(Request $request){
+    }
+    public function changecategory(Request $request){
         $user           = Auth::user();
         $hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
         $query          = $this->makeQuery($request, $user, $hasAdmin);
@@ -127,6 +129,20 @@ class TicketManagementController extends SulradioController {
             $ticket->category_id = $category;
             $ticket->save();
             SystemLog::insertLogTicket(SystemLog::TYPE_UPDATE, "Ticket[{$ticket->id}] foi modificado para a categoria[{$category}]", null, $user->id);
+        }
+        return response()->json(['mens'=>"Tickets atualizados com sucesso"]);
+    }
+    public function changeRequester(Request $request){
+        $user           = Auth::user();
+        $hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+        $query          = $this->makeQuery($request, $user, $hasAdmin);
+        $tickets        = $query->get();
+        $requesterId    = $request->get('change_requester_id');
+        $owner          = User::getByIdStatic($requesterId);
+        foreach ($tickets as $ticket){
+            $ticket->owner_id = $requesterId;
+            $ticket->save();
+            SystemLog::insertLogTicket(SystemLog::TYPE_UPDATE, "Ticket[{$ticket->id}] foi modificado o solicitante para [{$requesterId}] [{$owner->name}]", null, $user->id);
         }
         return response()->json(['mens'=>"Tickets atualizados com sucesso"]);
     }
@@ -164,6 +180,9 @@ class TicketManagementController extends SulradioController {
         }
         if($request->get('emissora_id')){
             $query->where('emissora_id',  $request->get('emissora_id'));
+        }
+        if($request->get('requester_id')){
+            $query->where('owner_id',  $request->get('requester_id'));
         }
         if($request->get('participants_id')){
             $query->whereIn('ticket_participant.user_id',  $request->get('participants_id'));

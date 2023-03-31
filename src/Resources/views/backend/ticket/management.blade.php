@@ -64,7 +64,7 @@
                                 <span class="input-group-text "><i class="mdi mdi-alert-box"></i></span>
                             </div>
                         </div>
-                        <div class="col-9">
+                        <div class="col-6">
                             <label for="emissora_id">Emissora</label>
                             <div class="input-group mb-3">
                                 <select name="emissora_id" id="emissora_id" class="form-control">
@@ -74,11 +74,25 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div class="col-3">
+                            <label for="participants_id">Solicitante</label>
+                            <div class="input-group mb-3">
+                                <select name="requester_id" id="requester_id" class="form-control select2">
+                                    <option value="">Selecione</option>
+                                    @foreach($users as $value)
+                                        <option value="{{$value->id}}"> {{$value->name.' '.$value->lastname}} </option>
+                                    @endforeach
+                                </select>
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <label for="participants_id">Responsável</label>
                             <div class="input-group mb-3">
                                 <select name="participants_id" id="participants_id" class="form-control select2" multiple>
+
                                     @foreach($users as $value)
                                         <option value="{{$value->id}}"> {{$value->name.' '.$value->lastname}} </option>
                                     @endforeach
@@ -93,6 +107,7 @@
                             <button  class="btn btn-info" id="changeCategory">Categoria</button>
                             <button  class="btn btn-dark" id="changeStatus">Status</button>
                             <button  class="btn btn-warning" id="changeParticipant">Responsáveis</button>
+                            <button  class="btn btn-orange" id="changeRequester">Solicitante</button>
                         </div>
                     </div>
                 </div>
@@ -209,6 +224,37 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="modal fade" id="changeRequesterModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Mudar solicitante do ticket</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="mdi mdi-account-circle mb-2">Seleciona o solicitante</h5>
+                                <div class="input-group mb-3">
+                                    <select name="change_requester_id" id="change_requester_id" class="form-control select2">
+                                        <option value="">Selecione</option>
+                                        @foreach($users as $value)
+                                            <option value="{{$value->id}}"> {{$value->name.' '.$value->lastname}} </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="actionChangeRequester">Mudar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -266,6 +312,7 @@
                 d.active            = $("select[name='active']").val();
                 d.status_id         = $("select[name='status_id']").val();
                 d.emissora_id       = $("select[name='emissora_id']").val();
+                d.requester_id      = $("select[name='requester_id']").val();
                 d.participants_id   = $("select[name='participants_id']").val();
                 return d;
             }
@@ -362,11 +409,11 @@
                    table_ticket.draw();
                }
             })
-            $('#category_id, #active, #status_id, #emissora_id,#participants_id').change(function (){
+            $('#category_id, #active, #status_id, #emissora_id, #participants_id, #requester_id').change(function (){
                 table_ticket.draw();
             });
 
-            $("#participants_id,#change_participants_id").select2({
+            $("#participants_id, #requester_id, #change_participants_id, #change_requester_id").select2({
                 width: 'calc(100% - 38px)'
             });
 
@@ -539,6 +586,48 @@
                         url: '{{route('ticket.management.change.participant')}}',
                         type: "POST",
                         data: parseFilter( {_token:$('input[name="_token"]').val(), 'participants':$('#change_participants_id').val()}),
+                        dataType: "json",
+                        beforeSend: function() {
+                            swal.fire({
+                                html: '<h5>Atualizando aguarde...</h5>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function (data) {
+                            swal("Sucesso!", "Tickets atualizados com sucesso", "success").then(() => {
+                                table_ticket.draw();
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            swal("Erro!", xhr.responseJSON.message, "error");
+                        }
+                    });
+                });
+            });
+
+            $('#changeRequester').click(function (){
+                $('#changeRequesterModal').modal('show');
+            });
+            $('#actionChangeRequester').click(function (){
+                if($('#change_requester_id').val().length<1){
+                    swal("Atenção!", "Selecione o solicitante", "warning");
+                    return;
+                }
+                swal({
+                    title: "Você têm certeza?",
+                    text: 'Essa ação irá modificar '+table_ticket.page.info().recordsTotal+' ticket(s) para o solicitante escolhido',
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim!",
+                    cancelButtonText: "Cancelar!",
+                }).then((isConfirm) => {
+                    if (isConfirm.dismiss==='cancel') return;
+                    $.ajax({
+                        url: '{{route('ticket.management.change.requester')}}',
+                        type: "POST",
+                        data: parseFilter( {_token:$('input[name="_token"]').val(), 'change_requester_id':$('#change_requester_id').val()}),
                         dataType: "json",
                         beforeSend: function() {
                             swal.fire({
