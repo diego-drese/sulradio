@@ -56,8 +56,8 @@ class ProcessTicketNotification extends Command {
 			while ($try < $emailCount) {
 				$this->emailFrom = Helper::sendEmailRandom($tries);
 				try {
-                    //$keyMap = $notification->ticket_id.'-'.$notification->type.'-'.$notification->agent_current_id;
-                    $keyMap = $notification->ticket_id.'-'.$notification->agent_current_id;
+                    $keyMap = $notification->ticket_id.'-'.$notification->type.'-'.$notification->agent_current_id;
+                    //$keyMap = $notification->ticket_id.'-'.$notification->agent_current_id;
                     if(!isset($userSendNotification[$keyMap])){
                         $notification->status = TicketNotification::STATUS_PROCESSED;
                         if ($notification->type == TicketNotification::TYPE_UPDATE) {
