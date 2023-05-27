@@ -66,7 +66,7 @@ class AtoNotification extends Model {
 	}
 
 	public static function add($emissora, $ato, $userLogged) {
-        $usersClients       =  UserSulRadio::query()->client($emissora->client_id)->get();
+        $usersClients       =  Client::getUsersByEmissora($emissora->emissoraID);
         foreach ($usersClients as $user){
             if($user->active){
                 self::create(
@@ -93,6 +93,6 @@ class AtoNotification extends Model {
 
 		return $notifications;
 	}
-	
-	
+
+
 }
