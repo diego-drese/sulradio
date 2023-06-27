@@ -118,7 +118,7 @@
                         }
                     },
                     {data: "desc_municipio", 'name': 'desc_municipio'},
-                    {data: "uf_extenso", 'name': 'uf_extenso'},
+                    {data: "uf_extenso", 'name': 'uf.uf_extenso'},
 
 
                 ]
