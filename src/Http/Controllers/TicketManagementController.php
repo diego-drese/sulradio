@@ -146,6 +146,31 @@ class TicketManagementController extends SulradioController {
         }
         return response()->json(['mens'=>"Tickets atualizados com sucesso"]);
     }
+    public function changeShowClient(Request $request){
+        $user           = Auth::user();
+        $hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+        $query          = $this->makeQuery($request, $user, $hasAdmin);
+        $tickets        = $query->get();
+        foreach ($tickets as $ticket){
+            $ticket->show_client = 1;
+            $ticket->save();
+            SystemLog::insertLogTicket(SystemLog::TYPE_UPDATE, "Ticket[{$ticket->id}] foi alterada para mostrar para o cliente", null, $user->id);
+        }
+        return response()->json(['mens'=>"Tickets atualizados com sucesso"]);
+    }
+
+    public function changeHideClient(Request $request){
+        $user           = Auth::user();
+        $hasAdmin       = ResourceAdmin::hasResourceByRouteName('ticket.admin');
+        $query          = $this->makeQuery($request, $user, $hasAdmin);
+        $tickets        = $query->get();
+        foreach ($tickets as $ticket){
+            $ticket->show_client = 0;
+            $ticket->save();
+            SystemLog::insertLogTicket(SystemLog::TYPE_UPDATE, "Ticket[{$ticket->id}] foi alterada para não mostrar para o cliente", null, $user->id);
+        }
+        return response()->json(['mens'=>"Tickets atualizados com sucesso"]);
+    }
 
     protected function makeQuery(Request $request, $user, $hasAdmin ){
         $query      = Ticket::query()

@@ -103,11 +103,13 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <button id="remove" class="btn btn-danger">Remover</button>
+                            <button  class="btn btn-danger" id="remove">Remover</button>
                             <button  class="btn btn-info" id="changeCategory">Categoria</button>
                             <button  class="btn btn-dark" id="changeStatus">Status</button>
                             <button  class="btn btn-warning" id="changeParticipant">Responsáveis</button>
                             <button  class="btn btn-orange" id="changeRequester">Solicitante</button>
+                            <button  class="btn btn-info" id="showClient">Exibir cliente</button>
+                            <button  class="btn btn-danger" id="hideClient">Não Exibir cliente</button>
                         </div>
                     </div>
                 </div>
@@ -127,6 +129,7 @@
                                 <th>Prazo&nbsp;Protocolo</th>
                                 <th>Responsáveis</th>
                                 <th>Solicitante</th>
+                                <th>Mostra Cliente</th>
                             </tr>
 
                             </thead>
@@ -393,6 +396,9 @@
                         }},
                     {data: "participants", 'name': 'ticket_participant.user_id',searchable: false, orderable:false },
                     {data: "user_name", 'name': 'ticket.owner_id', searchable: false, orderable: false},
+                    {data: "show_client", 'name': 'show_client', render:function (data, display, row){
+                            return !data ? '<b style="color:#d9534f">Não</b>' : '<b style="color:#4caf50">Sim</b>';
+                        }},
                 ]
             });
             var totalRecords = 0;
@@ -470,6 +476,75 @@
                         },
                         success: function (data) {
                             swal("Sucesso!", "Tickets removidos com sucesso", "success").then(() => {
+                                table_ticket.draw();
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            swal("Erro!", xhr.responseJSON.message, "error");
+                        }
+                    });
+                });
+            });
+
+            $('#showClient').click(function (){
+                swal({
+                    title: "Você têm certeza?",
+                    text: 'Essa ação irá habilitar a visualização de '+table_ticket.page.info().recordsTotal+' ticket(s).',
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim!",
+                    cancelButtonText: "Cancelar!",
+                }).then((isConfirm) => {
+                    if (isConfirm.dismiss==='cancel') return;
+                    $.ajax({
+                        url: '{{route('ticket.management.show.client')}}',
+                        type: "POST",
+                        data: parseFilter( {_token:$('input[name="_token"]').val()}),
+                        dataType: "json",
+                        beforeSend: function() {
+                            swal.fire({
+                                html: '<h5>Ajustando aguarde...</h5>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function (data) {
+                            swal("Sucesso!", "Tickets habilitados para os clientes.", "success").then(() => {
+                                table_ticket.draw();
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            swal("Erro!", xhr.responseJSON.message, "error");
+                        }
+                    });
+                });
+            });
+            $('#hideClient').click(function (){
+                swal({
+                    title: "Você têm certeza?",
+                    text: 'Essa ação irá desabilitar a visualização de'+table_ticket.page.info().recordsTotal+' ticket(s).',
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim!",
+                    cancelButtonText: "Cancelar!",
+                }).then((isConfirm) => {
+                    if (isConfirm.dismiss==='cancel') return;
+                    $.ajax({
+                        url: '{{route('ticket.management.hide.client')}}',
+                        type: "POST",
+                        data: parseFilter( {_token:$('input[name="_token"]').val()}),
+                        dataType: "json",
+                        beforeSend: function() {
+                            swal.fire({
+                                html: '<h5>Ajustando aguarde...</h5>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function (data) {
+                            swal("Sucesso!", "Tickets desabilitados para os clientes.", "success").then(() => {
                                 table_ticket.draw();
                             });
                         },
