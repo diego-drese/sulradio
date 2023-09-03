@@ -16,7 +16,7 @@
                             </div>
                         </div>
 
-                        <div class="col-5">
+                        <div class="col-4">
                             <label for="name">Assunto </label>
                             <div class="input-group mb-3">
                                 <input type="text" name="subject" id="subject" class="form-control text-uppercase" placeholder="Assunto">
@@ -25,7 +25,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="category_id">Categoria</label>
                             <div class="input-group mb-3">
                                 <select name="category_id" id="category_id" class="form-control">
@@ -50,6 +50,18 @@
                                 </select>
                                     <span class="input-group-text "><i class="fas fa-check-circle"></i></span>
                                 </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="show_client">Mostra Cliente</label>
+                            <div class="input-group mb-3">
+                                <select name="show_client" id="show_client" class="form-control">
+                                    <option value="">Selecione</option>
+                                    <option value="1">Sim</option>
+                                    <option value="0">Não</option>
+
+                                </select>
+                                <span class="input-group-text "><i class="fas fa-check-circle"></i></span>
+                            </div>
                         </div>
 
                         <div class="col-3">
@@ -313,6 +325,7 @@
                 d.subject           = $("input[name='subject']").val();
                 d.category_id       = $("select[name='category_id']").val();
                 d.active            = $("select[name='active']").val();
+                d.show_client       = $("select[name='show_client']").val();
                 d.status_id         = $("select[name='status_id']").val();
                 d.emissora_id       = $("select[name='emissora_id']").val();
                 d.requester_id      = $("select[name='requester_id']").val();
@@ -415,7 +428,7 @@
                    table_ticket.draw();
                }
             })
-            $('#category_id, #active, #status_id, #emissora_id, #participants_id, #requester_id').change(function (){
+            $('#category_id, #active, #show_client, #status_id, #emissora_id, #participants_id, #requester_id').change(function (){
                 table_ticket.draw();
             });
 

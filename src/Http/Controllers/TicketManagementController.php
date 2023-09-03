@@ -197,6 +197,9 @@ class TicketManagementController extends SulradioController {
         if($request->get('active')=='1'){
             $query->whereNull('completed_at');
         }
+        if($request->get('show_client')=='1' || $request->get('show_client')=='0'){
+            $query->where('show_client', $request->get('show_client'));
+        }
         if($request->get('active')=='-1'){
             $query->whereNotNull('completed_at');
         }
