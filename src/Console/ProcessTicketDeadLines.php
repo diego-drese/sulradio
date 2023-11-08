@@ -46,7 +46,7 @@ class ProcessTicketDeadLines extends Command {
 
 	public function handle() {
 		Log::info('ProcessTicketDeadLines, start process');
-        $proccessDays           = [60, 45, 30, 20, 15, 10, 5, 4, 3, 2, 1];
+        $proccessDays           = [ 395, 365, 180, 90, 60, 45, 30, 20, 15, 10, 5, 4, 3, 2, 1];
         $statusDeadline         = TicketStatus::getStatusDeadLine(TicketStatus::STATUS_DEADLINE);
         $statusProtocolDeadline = TicketStatus::getStatusDeadLine(TicketStatus::STATUS_PROTOCOL_DEADLINE);
         if(!$statusDeadline){
@@ -73,7 +73,7 @@ class ProcessTicketDeadLines extends Command {
 
         }
         /** Renew alert */
-        $proccessDays           = [3650, 2555,1825,1460, 1095, 730, 365,180, 90,60, 45, 30, 20, 15, 10, 5, 4, 3, 2, 1];
+        $proccessDays           = [3650, 2555, 1825, 1460, 1095, 730, 365, 180, 90, 60, 45, 30, 20, 15, 10, 5, 4, 3, 2, 1];
         foreach ($proccessDays as $day){
             $tickets = Ticket::getRenewalAlert($day);
             foreach ($tickets as $ticket){
