@@ -45,7 +45,7 @@ class TicketController extends SulradioController {
 			->withUf()
 			->groupBy('ticket.id');
 			/** Filters */
-			if($request->get('active')=='1'){
+           if($request->get('active')=='1'){
 				$query->whereNull('completed_at');
 			}else{
 				$query->whereNotNull('completed_at');

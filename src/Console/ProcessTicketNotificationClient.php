@@ -5,14 +5,8 @@ namespace Oka6\SulRadio\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Oka6\Admin\Models\User;
-use Oka6\SulRadio\Mail\TicketComment;
 use Oka6\SulRadio\Mail\TicketCommentClient;
-use Oka6\SulRadio\Mail\TicketCreate;
-use Oka6\SulRadio\Mail\TicketTransfer;
-use Oka6\SulRadio\Mail\TicketUpdate;
 use Oka6\SulRadio\Models\Ticket;
-use Oka6\SulRadio\Models\TicketNotification;
 use Oka6\SulRadio\Models\TicketNotificationClient;
 use Oka6\SulRadio\Models\TicketNotificationClientUser;
 
@@ -54,9 +48,6 @@ class ProcessTicketNotificationClient extends Command {
 
 	public function getTicket($id){
 		return Ticket::withSelectDataTable()
-			->withStatus()
-			->WithPriority()
-			->withCategory()
 			->withEmissora()
 			->withServico()
 			->withLocalidade()
@@ -66,10 +57,23 @@ class ProcessTicketNotificationClient extends Command {
 	}
 	public function sendEmail($notification){
 		$usersToNotify  = TicketNotificationClientUser::getByTicketNotificationClientId($notification->id, false, false);
+        $ticket = Ticket::query()
+            ->withSelectDataTable()
+            ->withStatus()
+            ->withPriority()
+            ->withCategory()
+            ->withEmissora()
+            ->withServico()
+            ->withLocalidade()
+            ->withUf()
+            ->where('ticket.id', $notification->ticket_id)
+            ->first();
+
+        $subject= $ticket->subject.' - '.$ticket->desc_servico.'-'.$ticket->emissora;
 		foreach ($usersToNotify as $userToNotify){
 			$userToNotify->comment = $notification->comment;
 			try {
-				Mail::to($userToNotify->user_email)->send(new TicketCommentClient($userToNotify, $notification->attach));
+				Mail::to($userToNotify->user_email)->send(new TicketCommentClient($userToNotify, $notification->attach, $subject));
 				$status = TicketNotificationClientUser::STATUS_SENT;
 				$notification->total_send++;
 			}catch (\Exception $e){

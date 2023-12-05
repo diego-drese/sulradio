@@ -90,9 +90,6 @@ class TicketNotificationClient extends Model {
 	public static function getByCommentId($id) {
 		return self::where('comment_id', $id)->first();
 	}
-
-
-	
 	public static function getToNotify() {
 		$notifications = self::where('status', self::STATUS_WAITING)
 			->where('updated_at', '<', Carbon::now()->subMinutes(3)->toDateTimeString())

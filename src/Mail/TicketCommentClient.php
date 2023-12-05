@@ -17,10 +17,11 @@ class TicketCommentClient extends Mailable {
 	 */
 	protected $data;
 	protected $attach;
-
-	public function __construct($data, $attach=[]) {
+    protected $subjectEmail;
+	public function __construct($data, $attach=[], $subjectEmail=null) {
 		$this->data = $data;
 		$this->attach = $attach;
+        $this->subjectEmail= $subjectEmail;
 	}
 
 	/**
@@ -29,7 +30,12 @@ class TicketCommentClient extends Mailable {
 	 * @return $this
 	 */
 	public function build() {
-		$message = $this->subject('Sead Sulradio')->markdown('SulRadio::backend.emails.ticket-comment-client',['data' => $this->data]);
+        if($this->subjectEmail){
+            $message = $this->subject($this->subjectEmail)->markdown('SulRadio::backend.emails.ticket-comment-client',['data' => $this->data]);
+        }else{
+            $message = $this->subject('Sead Sulradio')->markdown('SulRadio::backend.emails.ticket-comment-client',['data' => $this->data]);
+        }
+
 		foreach ($this->attach as $attach) {
 			//$fileUrl = Storage::disk('spaces')->temporaryUrl('tickets/'.$attach->file_name, now()->addMinutes(5));
 			$message->attachFromStorageDisk('spaces', 'tickets/'.$attach->file_name);
