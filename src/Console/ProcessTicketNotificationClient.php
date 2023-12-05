@@ -73,7 +73,9 @@ class ProcessTicketNotificationClient extends Command {
 		foreach ($usersToNotify as $userToNotify){
 			$userToNotify->comment = $notification->comment;
 			try {
-				Mail::to($userToNotify->user_email)->send(new TicketCommentClient($userToNotify, $notification->attach, $subject));
+                Mail::to($userToNotify->user_email)
+                    ->bcc('sulradio@sulradio.com.br')
+                    ->send(new TicketCommentClient($userToNotify, $notification->attach, $subject));
 				$status = TicketNotificationClientUser::STATUS_SENT;
 				$notification->total_send++;
 			}catch (\Exception $e){
@@ -89,6 +91,7 @@ class ProcessTicketNotificationClient extends Command {
 			}
 			$userToNotify->save();
 		}
+
 		unset($notification->attach);
 		$notification->status = TicketNotificationClient::STATUS_SEND;
 		$notification->send_date_at = date('Y-m-d H:i:s');
