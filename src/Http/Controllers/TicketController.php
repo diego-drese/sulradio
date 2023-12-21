@@ -146,9 +146,7 @@ class TicketController extends SulradioController {
 	}
 	public function edit($id) {
 		$user       = Auth::user();
-
         $hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
-
 		$data       = Ticket::withSelectDataTable()
 			->withParticipants($user, $hasAdmin)
 			->withStatus()
@@ -163,8 +161,8 @@ class TicketController extends SulradioController {
 		if(!$data){
 			return redirect(route('admin.page403get'));
 		}
-		$emissora = Emissora::getById($data->emissora_id, $user);
-		$participants = TicketParticipant::getUserByTicketId($id);
+		$emissora       = Emissora::getById($data->emissora_id, $user);
+		$participants   = TicketParticipant::getUserByTicketId($id);
 
 		return $this->renderView('SulRadio::backend.ticket.edit', ['data' => $data, 'emissora'=>$emissora, 'participants'=>$participants, 'hasAdmin'=>$hasAdmin]);
 	}
@@ -389,6 +387,7 @@ class TicketController extends SulradioController {
 	protected function makeParameters($extraParameter = null) {
 		$user = Auth::user();
 		$users = UserSulRadio::whereNull('client_id')
+            ->where('active', 1)
 			->when((isset($user->users_ticket) && count($user->users_ticket)), function ($query) use($user) {
 				$usersAllow = $user->users_ticket;
 				$usersAllow[]=(int)$user->id;
