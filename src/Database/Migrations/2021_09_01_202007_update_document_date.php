@@ -9,15 +9,19 @@ class UpdateDocumentDate extends Migration {
 	protected $connection = 'sulradio';
 	
 	public function up() {
-		Schema::connection($this->connection)
-			->table('document', function(Blueprint $table) {
-				$table->timestamp('date_document')->nullable()->index();
-			});
+        if(Schema::connection($this->connection)->hasTable('document')) {
+            Schema::connection($this->connection)
+                ->table('document', function (Blueprint $table) {
+                    $table->timestamp('date_document')->nullable()->index();
+                });
+        }
 	}
 	
 	public function down() {
-		Schema::connection($this->connection)->table('document', function (Blueprint $table) {
-			$table->dropColumn('date_document');
-		});
+        if(Schema::connection($this->connection)->hasTable('document')) {
+            Schema::connection($this->connection)->table('document', function (Blueprint $table) {
+                $table->dropColumn('date_document');
+            });
+        }
 	}
 }

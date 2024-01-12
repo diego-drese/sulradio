@@ -13,10 +13,12 @@ class UpdateTicketRenewalAlertTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)
-			->table('ticket', function( $table) {
-				$table->timestamp('renewal_alert')->nullable()->index();
-			});
+        if(Schema::connection($this->connection)->hasTable('ticket')) {
+            Schema::connection($this->connection)
+                ->table('ticket', function ($table) {
+                    $table->timestamp('renewal_alert')->nullable()->index();
+                });
+        }
 	}
 	
 	/**
@@ -25,9 +27,11 @@ class UpdateTicketRenewalAlertTable extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		Schema::connection($this->connection)->table('ticket_status', function (Blueprint $table) {
-			$table->dropColumn('renewal_alert');
-		});
+        if(Schema::connection($this->connection)->hasTable('ticket')) {
+            Schema::connection($this->connection)->table('ticket', function (Blueprint $table) {
+                $table->dropColumn('renewal_alert');
+            });
+        }
 	}
 	
 }

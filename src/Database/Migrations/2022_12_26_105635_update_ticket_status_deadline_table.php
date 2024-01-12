@@ -13,11 +13,12 @@ class UpdateTicketStatusDeadlineTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)
-			->table('ticket_status', function( $table) {
-				$table->enum('send_deadline', ['deadline', 'protocol_deadline'])->nullable()->index();
-			});
-		
+        if(Schema::connection($this->connection)->hasTable('ticket_status')) {
+            Schema::connection($this->connection)
+                ->table('ticket_status', function ($table) {
+                    $table->enum('send_deadline', ['deadline', 'protocol_deadline'])->nullable()->index();
+                });
+        }
 	}
 	
 	/**
@@ -26,9 +27,11 @@ class UpdateTicketStatusDeadlineTable extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		Schema::connection($this->connection)->table('ticket_status', function (Blueprint $table) {
-			$table->dropColumn('send_deadline');
-		});
+        if(Schema::connection($this->connection)->hasTable('ticket_status')) {
+            Schema::connection($this->connection)->table('ticket_status', function (Blueprint $table) {
+                $table->dropColumn('send_deadline');
+            });
+        }
 	}
 	
 }

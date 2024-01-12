@@ -13,11 +13,12 @@ class UpdateTicketClientTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)
-			->table('ticket', function( $table) {
-				$table->tinyInteger('show_client')->defaut(0)->index();
-			});
-		
+        if(Schema::connection($this->connection)->hasTable('ticket')) {
+            Schema::connection($this->connection)
+                ->table('ticket', function ($table) {
+                    $table->tinyInteger('show_client')->defaut(0)->index();
+                });
+        }
 	}
 	
 	/**
@@ -26,9 +27,11 @@ class UpdateTicketClientTable extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		Schema::connection($this->connection)->table('ticket', function (Blueprint $table) {
-			$table->dropColumn('show_client');
-		});
+        if(Schema::connection($this->connection)->hasTable('ticket')) {
+            Schema::connection($this->connection)->table('ticket', function (Blueprint $table) {
+                $table->dropColumn('show_client');
+            });
+        }
 	}
 	
 }

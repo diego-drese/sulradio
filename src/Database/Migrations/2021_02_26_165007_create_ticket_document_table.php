@@ -13,18 +13,20 @@ class CreateTicketDocumentTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)->create('ticket_document', function (Blueprint $table) {
-			$table->increments('id');
-			$table->integer('ticket_id')->index();
-			$table->integer('user_id')->index();
-			$table->tinyInteger('removed')->index()->default(0);
-			$table->string('file_name', 191)->nullable();
-			$table->string('file_name_original', 191)->nullable();
-			$table->string('file_type', 191)->nullable();;
-			$table->string('file_preview', 191)->nullable();;
-			$table->string('file_size', 191)->nullable();;
-			$table->timestamps();
-		});
+        if(!Schema::connection($this->connection)->hasTable('ticket_document')) {
+            Schema::connection($this->connection)->create('ticket_document', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('ticket_id')->index();
+                $table->integer('user_id')->index();
+                $table->tinyInteger('removed')->index()->default(0);
+                $table->string('file_name', 191)->nullable();
+                $table->string('file_name_original', 191)->nullable();
+                $table->string('file_type', 191)->nullable();;
+                $table->string('file_preview', 191)->nullable();;
+                $table->string('file_size', 191)->nullable();;
+                $table->timestamps();
+            });
+        }
 		
 	}
 	

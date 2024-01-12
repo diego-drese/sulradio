@@ -13,10 +13,12 @@ class UpdateTicketCommentTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)
-			->table('ticket_comment', function( $table) {
-				$table->tinyInteger('send_client')->nullable()->defaut('0')->index();
-			});
+        if(Schema::connection($this->connection)->hasTable('ticket_comment')) {
+            Schema::connection($this->connection)
+                ->table('ticket_comment', function ($table) {
+                    $table->tinyInteger('send_client')->nullable()->defaut('0')->index();
+                });
+        }
 		
 	}
 	
@@ -26,9 +28,11 @@ class UpdateTicketCommentTable extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		Schema::connection($this->connection)->table('ticket_comment', function (Blueprint $table) {
-			$table->dropColumn('send_client');
-		});
+        if(Schema::connection($this->connection)->hasTable('ticket_comment')) {
+            Schema::connection($this->connection)->table('ticket_comment', function (Blueprint $table) {
+                $table->dropColumn('send_client');
+            });
+        }
 	}
 	
 }

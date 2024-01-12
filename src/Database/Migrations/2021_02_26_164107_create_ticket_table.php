@@ -13,23 +13,24 @@ class CreateTicketTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)->create('ticket', function (Blueprint $table) {
-			$table->increments('id');
-			$table->string('subject', 191);
-			$table->longText('content');
-			$table->longText('html');
-			$table->integer('status_id')->index();
-			$table->integer('priority_id')->index();
-			$table->integer('owner_id')->index(); //Quem criou
-			$table->integer('agent_id')->index()->nullable();//Responsavel
-			$table->integer('category_id')->index();
-			$table->integer('emissora_id')->index()->nullable();
-			$table->timestamp('start_forecast')->index()->nullable();
-			$table->timestamp('end_forecast')->index()->nullable();
-			$table->timestamp('completed_at')->index()->nullable();
-			$table->timestamps();
-		});
-		
+        if(!Schema::connection($this->connection)->hasTable('ticket')) {
+            Schema::connection($this->connection)->create('ticket', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('subject', 191);
+                $table->longText('content');
+                $table->longText('html');
+                $table->integer('status_id')->index();
+                $table->integer('priority_id')->index();
+                $table->integer('owner_id')->index(); //Quem criou
+                $table->integer('agent_id')->index()->nullable();//Responsavel
+                $table->integer('category_id')->index();
+                $table->integer('emissora_id')->index()->nullable();
+                $table->timestamp('start_forecast')->index()->nullable();
+                $table->timestamp('end_forecast')->index()->nullable();
+                $table->timestamp('completed_at')->index()->nullable();
+                $table->timestamps();
+            });
+        }
 	}
 	
 	/**

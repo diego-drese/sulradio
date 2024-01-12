@@ -9,15 +9,19 @@ class UpdateDocumentTable extends Migration {
 	protected $connection = 'sulradio';
 	
 	public function up() {
-		Schema::connection($this->connection)
-			->table('document', function(Blueprint $table) {
-				$table->integer('document_folder_id')->nullable()->index();
-			});
+        if(Schema::connection($this->connection)->hasTable('document')) {
+            Schema::connection($this->connection)
+                ->table('document', function (Blueprint $table) {
+                    $table->integer('document_folder_id')->nullable()->index();
+                });
+        }
 	}
 	
 	public function down() {
-		Schema::connection($this->connection)->table('document', function (Blueprint $table) {
-			$table->dropColumn('document_folder_id');
-		});
+        if(Schema::connection($this->connection)->hasTable('document')) {
+            Schema::connection($this->connection)->table('document', function (Blueprint $table) {
+                $table->dropColumn('document_folder_id');
+            });
+        }
 	}
 }

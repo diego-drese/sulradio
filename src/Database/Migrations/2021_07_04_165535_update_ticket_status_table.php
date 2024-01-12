@@ -13,11 +13,12 @@ class UpdateTicketStatusTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)
-			->table('ticket_status', function( $table) {
-				$table->tinyInteger('update_completed_at')->defaut(0)->index();
-			});
-		
+        if(Schema::connection($this->connection)->hasTable('ticket_status')) {
+            Schema::connection($this->connection)
+                ->table('ticket_status', function ($table) {
+                    $table->tinyInteger('update_completed_at')->defaut(0)->index();
+                });
+        }
 	}
 	
 	/**
@@ -26,9 +27,11 @@ class UpdateTicketStatusTable extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		Schema::connection($this->connection)->table('ticket_status', function (Blueprint $table) {
-			$table->dropColumn('update_completed_at');
-		});
+        if(Schema::connection($this->connection)->hasTable('ticket_status')) {
+            Schema::connection($this->connection)->table('ticket_status', function (Blueprint $table) {
+                $table->dropColumn('update_completed_at');
+            });
+        }
 	}
 	
 }

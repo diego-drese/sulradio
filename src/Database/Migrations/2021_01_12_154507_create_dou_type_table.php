@@ -13,11 +13,13 @@ class CreateDouTypeTable extends Migration {
 	 */
 	protected $connection = 'sulradio_mongo';
 	public function up() {
-		Schema::connection($this->connection)->create('dou_type', function (Blueprint $table) {
-			$table->background('id');
-			$table->background('name');
-			$table->background('slug');
-		});
+        if(!Schema::connection($this->connection)->hasTable('dou_type')) {
+            Schema::connection($this->connection)->create('dou_type', function (Blueprint $table) {
+                $table->background('id');
+                $table->background('name');
+                $table->background('slug');
+            });
+        }
 		
 	}
 	

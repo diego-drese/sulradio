@@ -13,11 +13,12 @@ class UpdateTicketDeadlineTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)
-			->table('ticket', function( $table) {
-				$table->tinyInteger('send_deadline')->nullable()->defaut(1)->index();
-			});
-		
+        if(Schema::connection($this->connection)->hasTable('ticket')) {
+            Schema::connection($this->connection)
+                ->table('ticket', function ($table) {
+                    $table->tinyInteger('send_deadline')->nullable()->defaut(1)->index();
+                });
+        }
 	}
 	
 	/**
@@ -26,9 +27,11 @@ class UpdateTicketDeadlineTable extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		Schema::connection($this->connection)->table('ticket', function (Blueprint $table) {
-			$table->dropColumn('send_deadline');
-		});
+        if(Schema::connection($this->connection)->hasTable('ticket')) {
+            Schema::connection($this->connection)->table('ticket', function (Blueprint $table) {
+                $table->dropColumn('send_deadline');
+            });
+        }
 	}
 	
 }

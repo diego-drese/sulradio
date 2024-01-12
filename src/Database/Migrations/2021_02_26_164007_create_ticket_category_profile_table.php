@@ -13,14 +13,16 @@ class CreateTicketCategoryProfileTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)->create('ticket_category_profile', function (Blueprint $table) {
-			$table->increments('id');
-			$table->integer('ticket_category_id')->index();
-			$table->integer('profile_id')->index();
-			$table->integer('user_id')->index();
-			$table->integer('user_id_removed')->index()->default(0);
-			$table->timestamps();
-		});
+        if(!Schema::connection($this->connection)->hasTable('ticket_category_profile')) {
+            Schema::connection($this->connection)->create('ticket_category_profile', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('ticket_category_id')->index();
+                $table->integer('profile_id')->index();
+                $table->integer('user_id')->index();
+                $table->integer('user_id_removed')->index()->default(0);
+                $table->timestamps();
+            });
+        }
 		
 	}
 	

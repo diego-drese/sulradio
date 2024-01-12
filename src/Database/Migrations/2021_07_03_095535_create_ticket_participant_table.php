@@ -13,12 +13,14 @@ class CreateTicketParticipantTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)->create('ticket_participant', function (Blueprint $table) {
-			$table->increments('id');
-			$table->integer('user_id')->index();
-			$table->integer('ticket_id')->index();
-			$table->timestamps();
-		});
+        if(!Schema::connection($this->connection)->hasTable('ticket_participant')) {
+            Schema::connection($this->connection)->create('ticket_participant', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('user_id')->index();
+                $table->integer('ticket_id')->index();
+                $table->timestamps();
+            });
+        }
 		
 	}
 	

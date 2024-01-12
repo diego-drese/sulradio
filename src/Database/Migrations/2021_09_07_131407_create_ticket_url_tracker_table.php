@@ -13,18 +13,20 @@ class CreateTicketUrlTrackerTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)->create('ticket_url_tracker', function (Blueprint $table) {
-			$table->increments('id');
-			$table->integer('ticket_id')->index();
-			$table->string('name', 191);
-			$table->string('description', 191)->nullable();
-			$table->text('url');
-			$table->timestamp('last_modify')->index()->nullable();
-			$table->timestamp('last_tracker')->index()->nullable();
-			$table->text('hash')->nullable();
-			$table->integer('status')->index()->default(1); //1=Active 0=Inactive
-			$table->timestamps();
-		});
+        if(!Schema::connection($this->connection)->hasTable('ticket_url_tracker')) {
+            Schema::connection($this->connection)->create('ticket_url_tracker', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('ticket_id')->index();
+                $table->string('name', 191);
+                $table->string('description', 191)->nullable();
+                $table->text('url');
+                $table->timestamp('last_modify')->index()->nullable();
+                $table->timestamp('last_tracker')->index()->nullable();
+                $table->text('hash')->nullable();
+                $table->integer('status')->index()->default(1); //1=Active 0=Inactive
+                $table->timestamps();
+            });
+        }
 		
 	}
 	

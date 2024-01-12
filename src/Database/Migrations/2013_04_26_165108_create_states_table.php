@@ -19,22 +19,27 @@ class CreateStatesTable extends Migration {
 	
 	
 	private function createCountries() {
-		Schema::connection($this->connection)->create('countries', function (Blueprint $table) {
-			$table->background('id');
-			$table->background('title');
-		});
+        if(!Schema::connection($this->connection)->hasTable('countries')){
+            Schema::connection($this->connection)->create('countries', function (Blueprint $table) {
+                $table->background('id');
+                $table->background('title');
+            });
+        }
+
 	}
 	
 	private function createStates() {
-		Schema::connection($this->connection)->create('states', function (Blueprint $table) {
-			$table->background('id');
-			$table->background('title');
-			$table->background('country_id');
-			$table->background('letter');
-			$table->background('iso');
-			$table->background('slug');
-			$table->background('population');
-		});
+        if(!Schema::connection($this->connection)->hasTable('states')) {
+            Schema::connection($this->connection)->create('states', function (Blueprint $table) {
+                $table->background('id');
+                $table->background('title');
+                $table->background('country_id');
+                $table->background('letter');
+                $table->background('iso');
+                $table->background('slug');
+                $table->background('population');
+            });
+        }
 	}
 	
 	/**

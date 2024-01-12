@@ -13,13 +13,15 @@ class CreateTicketCommentTable extends Migration {
 	 */
 	protected $connection = 'sulradio';
 	public function up() {
-		Schema::connection($this->connection)->create('ticket_comment', function (Blueprint $table) {
-			$table->increments('id');
-			$table->longText('html');
-			$table->integer('user_id')->index();
-			$table->integer('ticket_id')->index();
-			$table->timestamps();
-		});
+        if(!Schema::connection($this->connection)->hasTable('ticket_comment')) {
+            Schema::connection($this->connection)->create('ticket_comment', function (Blueprint $table) {
+                $table->increments('id');
+                $table->longText('html');
+                $table->integer('user_id')->index();
+                $table->integer('ticket_id')->index();
+                $table->timestamps();
+            });
+        }
 		
 	}
 	
