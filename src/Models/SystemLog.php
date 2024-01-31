@@ -4,6 +4,7 @@ namespace Oka6\SulRadio\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Oka6\SulRadio\Helpers\Helper;
 
 class SystemLog extends Model {
@@ -75,11 +76,15 @@ class SystemLog extends Model {
 	public static function getById( $id ) {
 		return self::where('id', $id)->first();
 	}
-	protected static function makeQueryLastNotifications($id , $zone, $hasAdmin=false){
-		$query = self::where('user_id', $id)
-			->where('zone', $zone)
+	protected static function makeQueryLastNotifications($id , $zone, $hasAdmin=false, $update=false){
+        $query = self::where('user_id', $id)
+            ->where('zone', $zone)
             ->orderBy('created_at', 'DESC')
-			->orderBy('status', 'ASC');
+            ->orderBy('status', 'ASC');
+
+        if(!$update){
+            $query->from(DB::raw("system_log FORCE INDEX(system_log_user_id_index)"));
+        }
 		if(!$hasAdmin){
 			$query->where('only_root', 0);
 		}
@@ -87,8 +92,9 @@ class SystemLog extends Model {
 	}
 
 	protected static function getLastNotifications( $id , $zone, $hasAdmin=false) {
-		$query = self::makeQueryLastNotifications($id , $zone, $hasAdmin);
-		$result = $query->paginate(10);
+		$query          = self::makeQueryLastNotifications($id , $zone, $hasAdmin);
+        $result         = new \stdClass();
+        $result->items  = $query->limit(5)->get();
 		$result->total_unread = self::makeQueryLastNotifications($id , $zone, $hasAdmin)->where('status', 1)->count();
 		return $result;
 	}
@@ -123,7 +129,7 @@ class SystemLog extends Model {
 	}
 
 	public static function updateToRead($userID, $zone){
-		$query = self::makeQueryLastNotifications($userID, $zone);
+		$query = self::makeQueryLastNotifications($userID, $zone, false, true );
 		return $query->update(['status'=>self::STATUS_READ]);
 	}
 

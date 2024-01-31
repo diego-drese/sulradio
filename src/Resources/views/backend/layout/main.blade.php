@@ -23,7 +23,7 @@
 					</li>
 					<li>
 						<div class="message-center notifications ps-container ps-theme-default" data-ps-id="a1e071c9-8d97-69d6-1de3-39e36537aebe" style="min-width: 300px;">
-						@foreach($notifications->items() as $item)
+						@foreach($notifications->items as $item)
 							<!-- Message -->
 								<a href="{{$item->ticket_id ? route('ticket.ticket',[$item->ticket_id]) : 'javascript:void(0)'}}" class="message-item">
 									@if($item->type==\Oka6\SulRadio\Models\SystemLog::TYPE_COMMENT)
