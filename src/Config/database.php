@@ -41,10 +41,10 @@ return [
 		'prefix' => '',
 		'strict' => false,
 		'options' => [
-			'db' => 'admin' // sets the authentication database required by mongo 3
+			'database' => 'admin' // sets the authentication database required by mongo 3
 		],
         'dump' =>[
-
+            'mongodb_user_auth'=>'admin'
         ]
 	]
 ];
