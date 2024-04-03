@@ -19,20 +19,20 @@ return [
 			'from_name'     => 'from@example.com',
 			'provider'      => 'mailtrap',
         ],
-		'sulradio@outlook.com' => [
-			'username'      => 'sulradio@outlook.com',
-			'email'         => 'sulradio@outlook.com',
-			'pass'          => '040816Srd',
+		'no-reply@sulradio.com.br' => [
+			'username'      => 'MS_wk5FOi@sulradio.com.br',
+			'email'         => 'no-reply@sulradio.com.br',
+			'pass'          => 'OLXAquJiMULTWrcX',
 			'from_name'     => 'Sead',
-			'provider'      => 'outlook',
-		],'sead.sulradio@outlook.com' => [
-			'username'      => 'sead.sulradio@outlook.com',
-			'email'         => 'sead.sulradio@outlook.com',
-			'pass'          => '040816Srd',
-			'from_name'     => 'Sead',
-			'provider'      => 'outlook',
+			'provider'      => 'mailersend',
 		],
-
+        'nao-responda@sulradio.com.br' => [
+			'username'      => 'MS_wk5FOi@sulradio.com.br',
+			'email'         => 'nao-responda@sulradio.com.br',
+			'pass'          => 'OLXAquJiMULTWrcX',
+			'from_name'     => 'Sead',
+			'provider'      => 'mailersend',
+		]
     ],
 
     'provider' => [
@@ -40,8 +40,14 @@ return [
             'host'      => 'smtp.mailtrap.io',
             'port'      => '2525',
             'encryption' => 'tls',
-        ],'outlook' => [
+        ],
+        'outlook' => [
             'host'      => 'smtp.office365.com',
+            'port'      => '587',
+            'encryption' => 'tls',
+        ],
+        'mailersend' => [
+            'host'      => 'smtp.mailersend.net',
             'port'      => '587',
             'encryption' => 'tls',
         ]

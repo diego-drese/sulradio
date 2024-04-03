@@ -185,7 +185,11 @@ class Helper {
 	}
 
 	public static function sendEmailRandom($tries=null){
-		return self::getEmails($tries)->random();
+        $emails = self::getEmails($tries);
+        if(count($emails)>1){
+            return $emails->random();
+        }
+        return $emails;
 	}
 	
 }

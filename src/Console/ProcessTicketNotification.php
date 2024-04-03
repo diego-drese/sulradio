@@ -48,22 +48,19 @@ class ProcessTicketNotification extends Command {
 	public function handle() {
 		Log::info('ProcessTicketNotification, start process');
 		$notifications = TicketNotification::getToNotify();
-		$emailCount=Helper::getEmailCount();
-		$userSendNotification=[];
+		$emailCount = Helper::getEmailCount();
+		$userSendNotification = [];
 		$tries=[];
-        $errorSendEmail = false;
 		foreach ($notifications as $notification){
 			$try=count($tries);
 			while ($try < $emailCount) {
 				$this->emailFrom = Helper::sendEmailRandom($tries);
 				try {
-                    $errorSendEmail=false;
                     $keyMap = $notification->ticket_id.'-'.$notification->type.'-'.$notification->agent_current_id;
-                    //$keyMap = $notification->ticket_id.'-'.$notification->agent_current_id;
                     if(!isset($userSendNotification[$keyMap])){
                         $notification->status = TicketNotification::STATUS_PROCESSED;
                         if ($notification->type == TicketNotification::TYPE_UPDATE) {
-                            //$this->sendEmailTypeUpdate($notification);
+                            $notification->status = TicketNotification::STATUS_IGNORED;
                         }else if ($notification->type == TicketNotification::TYPE_COMMENT) {
                             $this->sendEmailTypeComment($notification, TicketNotification::TYPE_COMMENT);
                         }else if ($notification->type == TicketNotification::TYPE_TRACKER_URL) {
@@ -85,6 +82,7 @@ class ProcessTicketNotification extends Command {
                         $notification->status = TicketNotification::STATUS_IGNORED;
                         Log::info('ProcessTicketNotification, ignoring send email', ['keyMap'=>$keyMap, 'notification'=>$notification]);
                     }
+                    sleep(1);
                     $notification->save();
                     $try = $emailCount;
 
@@ -99,17 +97,19 @@ class ProcessTicketNotification extends Command {
 				} catch (\Exception $e) {
 					$try++;
 					$tries[] = $this->emailFrom['email'];
-                    $errorSendEmail=true;
 					Log::error('ProcessTicketNotification, retry send email', ['notification_id'=>$notification->id, 'try' => $try, 'e' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'tries'=>$tries]);
 				}
 			}
-
-            if($errorSendEmail){
-                $notification->status = TicketNotification::STATUS_WAITING;
-                $notification->save();
-                Log::error('ProcessTicketNotification, update status to retry', ['notification_id'=>$notification->id, 'try' => $try, 'tries'=>$tries, 'error_send_email'=>$errorSendEmail]);
-            }
 		}
+
+        //** Ajusta todos os processos que deram erro */
+        $updatedProcessing = TicketNotification::where('status', TicketNotification::STATUS_PROCESSING)->count();
+        if($updatedProcessing){
+            TicketNotification::where('status', TicketNotification::STATUS_PROCESSING)->update([
+                'status'=>TicketNotification::STATUS_WAITING
+            ]);
+            Log::error('ProcessTicketNotification, update error notification', ['total'=>$updatedProcessing]);
+        }
 	}
 
 	public function getTicket($id){
