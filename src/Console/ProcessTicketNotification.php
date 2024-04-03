@@ -100,6 +100,7 @@ class ProcessTicketNotification extends Command {
 					Log::error('ProcessTicketNotification, retry send email', ['notification_id'=>$notification->id, 'try' => $try, 'e' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'tries'=>$tries]);
 				}
 			}
+            $tries=[];
 		}
 
         //** Ajusta todos os processos que deram erro */
@@ -110,6 +111,7 @@ class ProcessTicketNotification extends Command {
             ]);
             Log::error('ProcessTicketNotification, update error notification', ['total'=>$updatedProcessing]);
         }
+        Log::info('ProcessTicketNotification, end process');
 	}
 
 	public function getTicket($id){
