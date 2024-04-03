@@ -189,7 +189,7 @@ class Helper {
         if(count($emails)>1){
             return $emails->random();
         }
-        return $emails;
+        return $emails->first();
 	}
 	
 }
