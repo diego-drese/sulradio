@@ -42,8 +42,8 @@ class ProcessTicketNotificationClient extends Command {
 		$notifications = TicketNotificationClient::getToNotify();
 		foreach ($notifications as $notification){
 			$this->sendEmail($notification);
-
 		}
+        Log::info('ProcessTicketNotificationClient, end process');
 	}
 
 	public function getTicket($id){
@@ -72,17 +72,12 @@ class ProcessTicketNotificationClient extends Command {
         $subject= $ticket->subject.' - '.$ticket->desc_servico.'-'.$ticket->emissora;
 		foreach ($usersToNotify as $userToNotify){
 			$userToNotify->comment = $notification->comment;
-			try {
-                Mail::to($userToNotify->user_email)
-                    ->bcc('sulradio@sulradio.com.br')
-                    ->send(new TicketCommentClient($userToNotify, $notification->attach, $subject));
-				$status = TicketNotificationClientUser::STATUS_SENT;
-				$notification->total_send++;
-			}catch (\Exception $e){
-				Log::error('ProcessTicketNotificationClient sendEmail', ['e'=>$e->getMessage(), 'file'=>$e->getFile(), 'line'=>$e->getLine()]);
-				$status = TicketNotificationClientUser::STATUS_ERROR;
-			}
-			$userToNotify->status = $status;
+            $try = 0;
+            while ($try<5){
+                $this->callSMTP($notification, $userToNotify, $subject, $try);
+                sleep(2);
+            }
+
 			if(isset($userToNotify->attach)){
 				unset($userToNotify->attach);
 			}
@@ -97,5 +92,22 @@ class ProcessTicketNotificationClient extends Command {
 		$notification->send_date_at = date('Y-m-d H:i:s');
 		$notification->save();
 	}
+
+    public function callSMTP(&$notification, $userToNotify, $subject, &$try){
+        $try++;
+        try {
+            Mail::to($userToNotify->user_email)
+                ->bcc('sulradio@sulradio.com.br')
+                ->send(new TicketCommentClient($userToNotify, $notification->attach, $subject));
+            $userToNotify->status = TicketNotificationClientUser::STATUS_SENT;
+            $notification->total_send++;
+            $try=10;
+        }catch (\Exception $e){
+            Log::error('ProcessTicketNotificationClient sendEmail', ['e'=>$e->getMessage(), 'file'=>$e->getFile(), 'line'=>$e->getLine()]);
+            $userToNotify->status = TicketNotificationClientUser::STATUS_ERROR;
+        }
+
+    }
+
 }
 
