@@ -30,6 +30,7 @@ class SystemLog extends Model {
     const TYPE_PROTOCOL_DEADLINE = 14;
     const TYPE_RENEWAL_ALERT = 15;
     const TYPE_DELETE_TICKET = 16;
+    const TYPE_SEND_EMAIL = 17;
 	const TYPE_UNDEFINED = 99;
 
 	const ZONE_TICKET = 1;
@@ -52,6 +53,7 @@ class SystemLog extends Model {
 		self::TYPE_DELETE_TICKET => 'Ticket deletado',
 		self::TYPE_DEADLINE => 'Alerta de Prazo Execução',
 		self::TYPE_PROTOCOL_DEADLINE => 'Alerta de Prazo Protocolo',
+		self::TYPE_SEND_EMAIL => 'Email Enviado',
 		self::TYPE_RENEWAL_ALERT => 'Alerta de Prazo Vencimento',
 		self::TYPE_UNDEFINED => 'Indefinido',
 		];
@@ -162,12 +164,11 @@ class SystemLog extends Model {
 			case self::TYPE_VIEW:
 			case self::TYPE_MOVE_TICKET:
 			case self::TYPE_DELETE_TICKET:
+            case self::TYPE_SEND_EMAIL:
 				$data['content'] = $content;
 				$data['only_root'] = 1;
 			break;
 		}
 		return self::create($data);
 	}
-
-
 }
