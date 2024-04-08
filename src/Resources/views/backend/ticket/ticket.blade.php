@@ -125,6 +125,12 @@
                                     <h6>Criado em</h6>
                                     <h6 class="text-info">{{$data->created_at->setTimezone('America/Sao_Paulo')->format('d/m/Y H:i')}}</h6>
                                 </li>
+                                @if($data->renewal_alert)
+                                    <li class="list-group-item">
+                                        <h6>Vencimento</h6>
+                                        <h6 class="text-info text-danger">{{$data->renewal_alert}}</h6>
+                                    </li>
+                                @endif
                             </ul>
 
 
@@ -133,7 +139,7 @@
                             <ul class="list-group">
                                 <li class="list-group-item">
                                     <h6>Emissora</h6>
-                                    <h6 class="text-info"> {!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}</h6>
+                                    <h6 class="text-info textAdjust"  data-toggle="tooltip" data-placement="top" title="{!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}"> {!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}</h6>
                                 </li>
                                 <li class="list-group-item">
                                     <h6>Prazo Execução</h6>
@@ -147,22 +153,16 @@
                                     <h6>Exibe para o cliente</h6>
                                     <h6 class="text-info">{!! $data->show_client? '<b class="text-success">Sim</b>': '<b class="text-danger">Não</b>' !!}</h6>
                                 </li>
-                            </ul>
-                        </div>
-                        <div class="col-12">
-                            @if($hasAdmin || in_array($user->id, $participants->pluck('id')->toArray()) || $user->id==$data->owner_id)
-                                <ul class="list-group">
-                                    <li class="list-group-item">
+                                @if($hasAdmin || in_array($user->id, $participants->pluck('id')->toArray()) || $user->id==$data->owner_id)
+                                <li class="list-group-item">
                                     <a href="{{route('ticket.edit', [$data->id])}}" class="btn btn-sm btn-secondary">
                                         Editar
                                     </a>
-                                    </li>
-                                </ul>
-                            @endif
+                                </li>
+                                @endif
+                            </ul>
                         </div>
-
                     </div>
-
                 </div>
 
             </div>
@@ -264,8 +264,6 @@
                                     </div>
                                 @endforeach
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -602,7 +600,12 @@
         .list-group .document-removed::marker{
             content: "";
         }
-
+        .textAdjust{
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 95%;
+        }
 
     </style>
 @endsection

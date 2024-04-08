@@ -7,8 +7,9 @@ O Vencimento é [{{$days}}] dias.
     <li>Categoria: <b style="color: {{$data->category_color}}">{{$data->category_name}}</b></li>
     <li>Status: <b style="color: {{$data->status_color}}">{{$data->status_name}}</b></li>
     <li>Emissora: <b>{{$data->emissora ?? "---"}}</b></li>
+    <li>Vencimento :<b style="color: #EB1110">{{$data->renewal_alert}}</b> </li>
     <li>Prazo Execução :<b>{{$data->start_forecast}}</b> </li>
-    <li>Prazo Protocolo :<b style="color: #EB1110">{{$data->end_forecast}}</b> </li>
+    <li>Prazo Protocolo :<b>{{$data->end_forecast}}</b> </li>
 </ul>
 <div class="subcopy"></div>
 <div>
