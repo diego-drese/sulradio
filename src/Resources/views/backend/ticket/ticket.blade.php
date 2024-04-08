@@ -139,7 +139,7 @@
                             <ul class="list-group">
                                 <li class="list-group-item">
                                     <h6>Emissora</h6>
-                                    <h6 class="text-info textAdjust"  data-toggle="tooltip" data-placement="top" title="{!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}"> {!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}</h6>
+                                    <h6 class="text-info textAdjust" data-trigger="click" data-toggle="tooltip" data-placement="top" title="{!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}"> {!! $data->emissora ? $data->desc_servico.'-'.$data->emissora."({$data->desc_municipio} {$data->desc_uf})" : '-----' !!}</h6>
                                 </li>
                                 <li class="list-group-item">
                                     <h6>Prazo Execução</h6>
@@ -605,8 +605,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 95%;
+            cursor: pointer;
         }
-
+        .bs-tooltip-auto[x-placement^=top] .arrow, .bs-tooltip-top .arrow{
+            bottom: -5px;
+        }
     </style>
 @endsection
 @section('script_footer_end')
