@@ -75,7 +75,7 @@ class ProcessTicketNotificationClient extends Command {
             $try = 0;
             while ($try<5){
                 $this->callSMTP($notification, $userToNotify, $subject, $try);
-                sleep(2);
+                sleep(30);
             }
 
 			if(isset($userToNotify->attach)){
