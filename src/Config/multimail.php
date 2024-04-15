@@ -19,15 +19,6 @@ return [
 			'from_name'     => 'from@example.com',
 			'provider'      => 'mailtrap',
         ],
-
-		'no-reply@sulradio.com.br' => [
-			'username'      => 'MS_wk5FOi@sulradio.com.br',
-			'email'         => 'no-reply@sulradio.com.br',
-			'pass'          => 'OLXAquJiMULTWrcX',
-			'from_name'     => 'Sead',
-			'provider'      => 'mailersend',
-		],
-
         'sulradio@outlook.com' => [
             'username'      => 'sulradio@outlook.com',
             'email'         => 'sulradio@outlook.com',

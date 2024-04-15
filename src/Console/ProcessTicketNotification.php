@@ -4,8 +4,9 @@ namespace Oka6\SulRadio\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use IWasHereFirst2\LaravelMultiMail\Facades\MultiMail;
 use Oka6\Admin\Models\User;
+use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Mail\TicketComment;
 use Oka6\SulRadio\Mail\TicketCreate;
 use Oka6\SulRadio\Mail\TicketDeadline;
@@ -20,43 +21,88 @@ use Oka6\SulRadio\Models\TicketNotification;
 
 
 class ProcessTicketNotification extends Command {
-	/**
-	 * The name and signature of the console command.
-	 *
-	 * @var string
-	 */
-	protected $signature = 'Sulradio:ProcessTicketNotification';
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'Sulradio:ProcessTicketNotification';
 
-	/**
-	 * The console command description.
-	 *
-	 * @var string
-	 */
-	protected $description  = 'Process notifications from ticket';
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description  = 'Process notifications from ticket';
 
 
-	protected $userSendNotification = null;
-	/**
-	 * Create a new command instance.
-	 *
-	 * @return void
-	 */
-	public function __construct() {
-		parent::__construct();
-	}
+    protected $emailFrom = null;
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct() {
+        parent::__construct();
+    }
 
-	public function handle() {
-		Log::info('ProcessTicketNotification, start process');
+    public function handle() {
+        Log::info('ProcessTicketNotification, start process');
         $notifications = TicketNotification::getToNotify();
-		foreach ($notifications as $notification){
-            $sent = false;
-            while (!$sent){
-                $sent = $this->sendEmail($notification);
-                if(!$sent){
-                    Log::info('ProcessTicketNotification, retry againg in 30s', []);
-                    sleep(30);
+        $emailCount = Helper::getEmailCount();
+        $userSendNotification = [];
+        $tries=[];
+        foreach ($notifications as $notification){
+            $try=count($tries);
+            while ($try < $emailCount) {
+                $this->emailFrom = Helper::sendEmailRandom($tries);
+                try {
+                    $keyMap = $notification->ticket_id.'-'.$notification->type.'-'.$notification->agent_current_id;
+                    if(!isset($userSendNotification[$keyMap])){
+                        $notification->status = TicketNotification::STATUS_PROCESSED;
+                        if ($notification->type == TicketNotification::TYPE_UPDATE) {
+                            $notification->status = TicketNotification::STATUS_IGNORED;
+                        }else if ($notification->type == TicketNotification::TYPE_COMMENT) {
+                            $this->sendEmailTypeComment($notification, TicketNotification::TYPE_COMMENT);
+                        }else if ($notification->type == TicketNotification::TYPE_TRACKER_URL) {
+                            $this->sendEmailTypeComment($notification, TicketNotification::TYPE_TRACKER_URL);
+                        } else if ($notification->type == TicketNotification::TYPE_DEADLINE) {
+                            $this->sendEmailTypeDeadline($notification);
+                        } else if ($notification->type == TicketNotification::TYPE_PROTOCOL_DEADLINE) {
+                            $this->sendEmailTypeProtocolDeadline($notification);
+                        }else if ($notification->type == TicketNotification::TYPE_RENEWAL_ALERT) {
+                            $this->sendEmailTypeRenewalAlert($notification);
+                        } else if ($notification->type == TicketNotification::TYPE_NEW) {
+                            $this->sendEmailTypeNew($notification);
+                        } else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
+                            $this->sendEmailTypeCommentClient($notification);
+                        } else if ($notification->type == TicketNotification::TYPE_TRANSFER_AGENT) {
+                            $this->sendEmailTypeTransfer($notification);
+                        }
+                        Log::info('ProcessTicketNotification, email sent', ['notification'=>$notification->id, 'type'=>$notification->type]);
+                    }else{
+                        $notification->status = TicketNotification::STATUS_IGNORED;
+                        Log::info('ProcessTicketNotification, ignoring send email', ['keyMap'=>$keyMap, 'notification'=>$notification]);
+                    }
+                    $notification->save();
+                    $try = $emailCount;
+
+                    if ($notification->type == TicketNotification::TYPE_TRACKER_URL){
+                        /** Check send all notifications */
+                        if(!TicketNotification::checkAllNotifications($notification->comment_id)){
+                            \Oka6\SulRadio\Models\TicketComment::where('id', $notification->comment_id)->delete();
+                        }
+                    }else{
+                        $userSendNotification[$keyMap]=true;
+                    }
+                } catch (\Exception $e) {
+                    $try++;
+                    $tries[] = $this->emailFrom['email'];
+                    Log::error('ProcessTicketNotification, retry send email', ['notification_id'=>$notification->id, 'try' => $try, 'e' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'tries'=>$tries]);
+                    sleep(15);
                 }
             }
+            $tries=[];
         }
 
         //** Ajusta todos os processos que deram erro */
@@ -68,203 +114,159 @@ class ProcessTicketNotification extends Command {
             Log::error('ProcessTicketNotification, update error notification', ['total'=>$updatedProcessing]);
         }
         Log::info('ProcessTicketNotification, end process');
-	}
-    public function sendEmail($notification){
-        try {
-            $keyMap = $notification->ticket_id.'-'.$notification->type.'-'.$notification->agent_current_id;
-            if(!isset($this->userSendNotification[$keyMap])){
-                $notification->status = TicketNotification::STATUS_PROCESSED;
-                if ($notification->type == TicketNotification::TYPE_UPDATE) {
-                    $notification->status = TicketNotification::STATUS_IGNORED;
-                }else if ($notification->type == TicketNotification::TYPE_COMMENT) {
-                    $this->sendEmailTypeComment($notification, TicketNotification::TYPE_COMMENT);
-                }else if ($notification->type == TicketNotification::TYPE_TRACKER_URL) {
-                    $this->sendEmailTypeComment($notification, TicketNotification::TYPE_TRACKER_URL);
-                } else if ($notification->type == TicketNotification::TYPE_DEADLINE) {
-                    $this->sendEmailTypeDeadline($notification);
-                } else if ($notification->type == TicketNotification::TYPE_PROTOCOL_DEADLINE) {
-                    $this->sendEmailTypeProtocolDeadline($notification);
-                }else if ($notification->type == TicketNotification::TYPE_RENEWAL_ALERT) {
-                    $this->sendEmailTypeRenewalAlert($notification);
-                } else if ($notification->type == TicketNotification::TYPE_NEW) {
-                    $this->sendEmailTypeNew($notification);
-                } else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
-                    $this->sendEmailTypeCommentClient($notification);
-                } else if ($notification->type == TicketNotification::TYPE_TRANSFER_AGENT) {
-                    $this->sendEmailTypeTransfer($notification);
-                }
-                Log::info('ProcessTicketNotification, email sent', ['notification'=>$notification->id, 'type'=>$notification->type]);
-            }else{
-                $notification->status = TicketNotification::STATUS_IGNORED;
-                Log::info('ProcessTicketNotification, ignoring send email', ['keyMap'=>$keyMap, 'notification'=>$notification]);
-            }
-            $notification->save();
-            if ($notification->type == TicketNotification::TYPE_TRACKER_URL){
-                /** Check send all notifications */
-                if(!TicketNotification::checkAllNotifications($notification->comment_id)){
-                    \Oka6\SulRadio\Models\TicketComment::where('id', $notification->comment_id)->delete();
-                }
-            }else{
-                $this->userSendNotification[$keyMap]=true;
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            Log::error('ProcessTicketNotification, retry send email', ['notification_id'=>$notification->id, 'e' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile()]);
-            return false;
-        }
     }
-	public function getTicket($id){
-		return Ticket::withSelectDataTable()
-			->withStatus()
-			->WithPriority()
-			->withCategory()
-			->withEmissora()
-			->withServico()
-			->withLocalidade()
-			->withUf()
-			->where('ticket.id', $id)
-			->first();
-	}
 
-	public function sendEmailTypeNew($notification){
-		$currentAgent   = User::getByIdStatic($notification->agent_current_id);
-		$owner          = User::getByIdStatic($notification->user_logged);
-		$ticket         = $this->getTicket($notification->ticket_id);
-		$ticket->owner  = $owner;
-		$ticket->agent  = $currentAgent;
-		if($ticket->emissora){
-			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
-		}
-		Mail::to($currentAgent->email)->send(new TicketCreate($ticket));
-        $content = "Novo ticket, enviado para o email[{$currentAgent->email}]";
+    public function getTicket($id){
+        return Ticket::withSelectDataTable()
+            ->withStatus()
+            ->WithPriority()
+            ->withCategory()
+            ->withEmissora()
+            ->withServico()
+            ->withLocalidade()
+            ->withUf()
+            ->where('ticket.id', $id)
+            ->first();
+    }
+
+    public function sendEmailTypeNew($notification){
+        $currentAgent   = User::getByIdStatic($notification->agent_current_id);
+        $owner          = User::getByIdStatic($notification->user_logged);
+        $ticket         = $this->getTicket($notification->ticket_id);
+        $ticket->owner  = $owner;
+        $ticket->agent  = $currentAgent;
+        if($ticket->emissora){
+            $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+        }
+        MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCreate($ticket));
+        $content = "Novo ticket, enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
-	}
+    }
 
     public function sendEmailTypeDeadline($notification){
-		$currentAgent   = User::getByIdStatic($notification->agent_current_id);
-		$owner          = User::getByIdStatic($notification->user_logged);
-		$ticket         = $this->getTicket($notification->ticket_id);
-		$ticket->owner  = $owner;
-		$ticket->agent  = $currentAgent;
-		if($ticket->emissora){
-			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
-		}
-		Mail::to($currentAgent->email)->send(new TicketDeadline($ticket));
-        $content = "Aviso de data de vencimento, enviado para o email[{$currentAgent->email}]";
+        $currentAgent   = User::getByIdStatic($notification->agent_current_id);
+        $owner          = User::getByIdStatic($notification->user_logged);
+        $ticket         = $this->getTicket($notification->ticket_id);
+        $ticket->owner  = $owner;
+        $ticket->agent  = $currentAgent;
+        if($ticket->emissora){
+            $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+        }
+        MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketDeadline($ticket));
+        $content = "Aviso de data de vencimento, enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
-	}
+    }
 
     public function sendEmailTypeProtocolDeadline($notification){
-		$currentAgent   = User::getByIdStatic($notification->agent_current_id);
-		$owner          = User::getByIdStatic($notification->user_logged);
-		$ticket         = $this->getTicket($notification->ticket_id);
-		$ticket->owner  = $owner;
-		$ticket->agent  = $currentAgent;
-		if($ticket->emissora){
-			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
-		}
-		Mail::to($currentAgent->email)->send(new TicketProtocolDeadline($ticket));
-        $content = "Aviso de data de vencimento de protocolo, enviado para o email[{$currentAgent->email}]";
+        $currentAgent   = User::getByIdStatic($notification->agent_current_id);
+        $owner          = User::getByIdStatic($notification->user_logged);
+        $ticket         = $this->getTicket($notification->ticket_id);
+        $ticket->owner  = $owner;
+        $ticket->agent  = $currentAgent;
+        if($ticket->emissora){
+            $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+        }
+        MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketProtocolDeadline($ticket));
+        $content = "Aviso de data de vencimento de protocolo, enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
-	}
+    }
 
     public function sendEmailTypeRenewalAlert($notification){
-		$currentAgent   = User::getByIdStatic($notification->agent_current_id);
-		$owner          = User::getByIdStatic($notification->user_logged);
-		$ticket         = $this->getTicket($notification->ticket_id);
-		$ticket->owner  = $owner;
-		$ticket->agent  = $currentAgent;
-		if($ticket->emissora){
-			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
-		}
-		Mail::to($currentAgent->email)->send(new TicketRenewalAlert($ticket));
-	}
+        $currentAgent   = User::getByIdStatic($notification->agent_current_id);
+        $owner          = User::getByIdStatic($notification->user_logged);
+        $ticket         = $this->getTicket($notification->ticket_id);
+        $ticket->owner  = $owner;
+        $ticket->agent  = $currentAgent;
+        if($ticket->emissora){
+            $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+        }
+        MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketRenewalAlert($ticket));
+    }
 
-	public function sendEmailTypeComment($notification, $type){
-		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
-		$userLogged         = User::getByIdStatic($notification->user_logged);
-		$comment            = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
-		$ticket             = $this->getTicket($notification->ticket_id);
-		if($comment){
-			$comment->agent         = $currentAgent;
-			$comment->userLogged    = $userLogged;
-			$comment->emissora      = null;
-			$comment->subject       = $ticket->subject;
-			$comment->type          = $type;
-			if($ticket->emissora){
-				$comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
-			}
-			Mail::to($currentAgent->email)->send(new TicketComment($comment));
-            $content = "Commentário id[{$comment->id}] enviado pela para o email[{$currentAgent->email}]";
+    public function sendEmailTypeComment($notification, $type){
+        $currentAgent       = User::getByIdStatic($notification->agent_current_id);
+        $userLogged         = User::getByIdStatic($notification->user_logged);
+        $comment            = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
+        $ticket             = $this->getTicket($notification->ticket_id);
+        if($comment){
+            $comment->agent         = $currentAgent;
+            $comment->userLogged    = $userLogged;
+            $comment->emissora      = null;
+            $comment->subject       = $ticket->subject;
+            $comment->type          = $type;
+            if($ticket->emissora){
+                $comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+            }
+            MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketComment($comment));
+            $content = "Commentário id[{$comment->id}] enviado pela caixa:[{$this->emailFrom['email']} para o email[{$currentAgent->email}]";
             SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
-		}else{
-			Log::error('ProcessTicketNotification sendEmailTypeComment, comment not found', ['notification'=>$notification]);
-		}
-	}
-	public function sendEmailTypeCommentClient($notification){
-		$userLogged         = User::getByIdStatic($notification->user_logged);
-		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
-		$comment            = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
-		$clientUser         = \Oka6\SulRadio\Models\TicketNotificationClient::getById($comment->ticket_notification_client_id);
-		$ticket             = $this->getTicket($clientUser->ticket_id);
-		$comment->agent     = $currentAgent;
-		$comment->userLogged= $userLogged;
-		$comment->ticket_id = $clientUser->ticket_id;
-		$comment->emissora  = null;
-		$comment->subject   = $ticket->subject;
-		if($ticket->emissora){
-			$comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
-		}
-		Mail::to($currentAgent->email)->send(new TicketCommentFromClient($comment));
-        $content = "Commentário do cliente id[{$comment->id}] enviado para o email[{$currentAgent->email}]";
+        }else{
+            Log::error('ProcessTicketNotification sendEmailTypeComment, comment not found', ['notification'=>$notification]);
+        }
+    }
+    public function sendEmailTypeCommentClient($notification){
+        $userLogged         = User::getByIdStatic($notification->user_logged);
+        $currentAgent       = User::getByIdStatic($notification->agent_current_id);
+        $comment            = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
+        $clientUser         = \Oka6\SulRadio\Models\TicketNotificationClient::getById($comment->ticket_notification_client_id);
+        $ticket             = $this->getTicket($clientUser->ticket_id);
+        $comment->agent     = $currentAgent;
+        $comment->userLogged= $userLogged;
+        $comment->ticket_id = $clientUser->ticket_id;
+        $comment->emissora  = null;
+        $comment->subject   = $ticket->subject;
+        if($ticket->emissora){
+            $comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+        }
+        MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketCommentFromClient($comment));
+        $content = "Commentário do cliente id[{$comment->id}] enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
-	}
+    }
 
-	public function sendEmailTypeUpdate($notification){
-		$userLogged         = User::getByIdStatic($notification->user_logged);
-		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
-		$owner              = User::getByIdStatic($notification->owner_id);
-		$ticket             = $this->getTicket($notification->ticket_id);
-		$ticket->owner      = $owner;
-		$ticket->agent      = $currentAgent;
-		$ticket->userLogged = $userLogged;
-		if($ticket->emissora){
-			$ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
-		}
-		Mail::to($currentAgent->email)->send(new TicketUpdate($ticket));
-        $content = "Edição de ticket enviado para o email[{$currentAgent->email}]";
+    public function sendEmailTypeUpdate($notification){
+        $userLogged         = User::getByIdStatic($notification->user_logged);
+        $currentAgent       = User::getByIdStatic($notification->agent_current_id);
+        $owner              = User::getByIdStatic($notification->owner_id);
+        $ticket             = $this->getTicket($notification->ticket_id);
+        $ticket->owner      = $owner;
+        $ticket->agent      = $currentAgent;
+        $ticket->userLogged = $userLogged;
+        if($ticket->emissora){
+            $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
+        }
+        MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketUpdate($ticket));
+        $content = "Edição de ticket enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
-	}
+    }
 
-	public function sendEmailTypeTransfer($notification){
-		$userLogged         = User::getByIdStatic($notification->user_logged);
-		$currentAgent       = User::getByIdStatic($notification->agent_current_id);
-		$oldAgent           = User::getByIdStatic($notification->agent_old_id);
-		$owner              = User::getByIdStatic($notification->owner_id);
+    public function sendEmailTypeTransfer($notification){
+        $userLogged         = User::getByIdStatic($notification->user_logged);
+        $currentAgent       = User::getByIdStatic($notification->agent_current_id);
+        $oldAgent           = User::getByIdStatic($notification->agent_old_id);
+        $owner              = User::getByIdStatic($notification->owner_id);
 
-		$ticket             = $this->getTicket($notification->ticket_id);
-		$ticket->owner      = $owner;
-		$ticket->oldAgent   = $oldAgent;
-		$ticket->agent      = $currentAgent;
-		$ticket->userLogged = $userLogged;
+        $ticket             = $this->getTicket($notification->ticket_id);
+        $ticket->owner      = $owner;
+        $ticket->oldAgent   = $oldAgent;
+        $ticket->agent      = $currentAgent;
+        $ticket->userLogged = $userLogged;
 
-		$ticket->sentTo   = 'CurrentAgent';
-		Mail::to($currentAgent->email)->send(new TicketTransfer($ticket));
-        $content = "Tranferencia de ticket enviado para o email[{$currentAgent->email}]";
+        $ticket->sentTo   = 'CurrentAgent';
+        MultiMail::to($currentAgent->email)->from($this->emailFrom['email'])->send(new TicketTransfer($ticket));
+        $content = "Tranferencia de ticket enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
 
-		$ticket->sentTo   = 'OldAgent';
-		Mail::to($oldAgent->email)->send(new TicketTransfer($ticket));
-        $content = "Tranferencia de ticket enviado para o email[{$oldAgent->email}]";
+        $ticket->sentTo   = 'OldAgent';
+        MultiMail::to($oldAgent->email)->from($this->emailFrom['email'])->send(new TicketTransfer($ticket));
+        $content = "Tranferencia de ticket enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$oldAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $oldAgent->id);
 
-		if($notification->user_logged!=$notification->owner_id){
-			$ticket->sentTo   = 'Owner';
-			Mail::to($owner->email)->send(new TicketTransfer($ticket));
-            $content = "Tranferencia de ticket enviado para o email[{$owner->email}]";
+        if($notification->user_logged!=$notification->owner_id){
+            $ticket->sentTo   = 'Owner';
+            MultiMail::to($owner->email)->from($this->emailFrom['email'])->send(new TicketTransfer($ticket));
+            $content = "Tranferencia de ticket enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$owner->email}]";
             SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $owner->id);
-		}
-	}
+        }
+    }
 }
 
