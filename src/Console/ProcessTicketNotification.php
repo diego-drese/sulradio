@@ -93,7 +93,6 @@ class ProcessTicketNotification extends Command {
                 }
             } catch (\Exception $e) {
                 $try++;
-                $tries[] = $this->emailFrom['email'];
                 Log::error('ProcessTicketNotification, retry send email', ['notification_id'=>$notification->id, 'try' => $try, 'e' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'tries'=>$tries]);
                 sleep(15);
             }
@@ -133,7 +132,7 @@ class ProcessTicketNotification extends Command {
             $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
         }
         Mail::to($currentAgent->email)->send(new TicketCreate($ticket));
-        $content = "Novo ticket, enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
+        $content = "Novo ticket, enviado para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
     }
 
@@ -147,7 +146,7 @@ class ProcessTicketNotification extends Command {
             $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
         }
         Mail::to($currentAgent->email)->send(new TicketDeadline($ticket));
-        $content = "Aviso de data de vencimento, enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
+        $content = "Aviso de data de vencimento, enviado para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
     }
 
@@ -161,7 +160,7 @@ class ProcessTicketNotification extends Command {
             $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
         }
         Mail::to($currentAgent->email)->send(new TicketProtocolDeadline($ticket));
-        $content = "Aviso de data de vencimento de protocolo, enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
+        $content = "Aviso de data de vencimento de protocolo, enviado para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
     }
 
@@ -192,7 +191,7 @@ class ProcessTicketNotification extends Command {
                 $comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
             }
             Mail::to($currentAgent->email)->send(new TicketComment($comment));
-            $content = "Commentário id[{$comment->id}] enviado pela caixa:[{$this->emailFrom['email']} para o email[{$currentAgent->email}]";
+            $content = "Commentário id[{$comment->id}] enviado  para o email[{$currentAgent->email}]";
             SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
         }else{
             Log::error('ProcessTicketNotification sendEmailTypeComment, comment not found', ['notification'=>$notification]);
@@ -213,7 +212,7 @@ class ProcessTicketNotification extends Command {
             $comment->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
         }
         Mail::to($currentAgent->email)->send(new TicketCommentFromClient($comment));
-        $content = "Commentário do cliente id[{$comment->id}] enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
+        $content = "Commentário do cliente id[{$comment->id}] enviado  para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
     }
 
@@ -229,7 +228,7 @@ class ProcessTicketNotification extends Command {
             $ticket->emissora = $ticket->desc_servico.'-'.$ticket->emissora.'('.$ticket->desc_municipio.' '.$ticket->desc_uf.')';
         }
         Mail::to($currentAgent->email)->send(new TicketUpdate($ticket));
-        $content = "Edição de ticket enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
+        $content = "Edição de ticket enviado  para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
     }
 
@@ -247,18 +246,18 @@ class ProcessTicketNotification extends Command {
 
         $ticket->sentTo   = 'CurrentAgent';
         Mail::to($currentAgent->email)->send(new TicketTransfer($ticket));
-        $content = "Tranferencia de ticket enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$currentAgent->email}]";
+        $content = "Tranferencia de ticket enviado  para o email[{$currentAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $currentAgent->id);
 
         $ticket->sentTo   = 'OldAgent';
         Mail::to($oldAgent->email)->send(new TicketTransfer($ticket));
-        $content = "Tranferencia de ticket enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$oldAgent->email}]";
+        $content = "Tranferencia de ticket enviado  para o email[{$oldAgent->email}]";
         SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $oldAgent->id);
 
         if($notification->user_logged!=$notification->owner_id){
             $ticket->sentTo   = 'Owner';
             Mail::to($owner->email)->send(new TicketTransfer($ticket));
-            $content = "Tranferencia de ticket enviado pela caixa:[{$this->emailFrom['email']}] para o email[{$owner->email}]";
+            $content = "Tranferencia de ticket enviado  para o email[{$owner->email}]";
             SystemLog::insertLog(SystemLog::ZONE_SEAD, SystemLog::TYPE_SEND_EMAIL, $content, $notification->ticket_id, $owner->id);
         }
     }
