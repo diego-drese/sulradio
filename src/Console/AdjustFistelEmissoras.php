@@ -5,7 +5,6 @@ namespace Oka6\SulRadio\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use IWasHereFirst2\LaravelMultiMail\Facades\MultiMail;
 use Oka6\Admin\Models\User;
 use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Mail\TicketComment;

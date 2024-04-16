@@ -34,9 +34,6 @@ class SulRadioServiceProvider extends ServiceProvider {
 			__DIR__ . '/Config/profile_type.php', 'sulradio.profile_type'
 		);
 
-		$this->mergeConfigFrom(
-			__DIR__ . '/Config/multimail.php', 'multimail'
-		);
 		if (file_exists($file = __DIR__.'/Helpers/helper_function.php')) {
 			require $file;
 		}

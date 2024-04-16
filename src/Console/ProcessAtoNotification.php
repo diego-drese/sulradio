@@ -4,7 +4,7 @@ namespace Oka6\SulRadio\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use IWasHereFirst2\LaravelMultiMail\Facades\MultiMail;
+use Illuminate\Support\Facades\Mail;
 use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Models\Ato;
 use Oka6\SulRadio\Models\AtoNotification;
@@ -66,9 +66,8 @@ class ProcessAtoNotification extends Command {
                         'url'=>$ato->ato_url,
                     ];
 
-                    MultiMail::to($user->email)
+                    Mail::to($user->email)
                         ->bcc(['sulradio@sulradio.com.br','alfio@sulradio.com.br'])
-                        ->from($this->emailFrom['email'])
                         ->send(new AtoNotificationMail($data));
                     $try                        = $emailCount;
                     $notification->status       = AtoNotification::STATUS_SEND;
