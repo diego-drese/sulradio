@@ -91,8 +91,8 @@ class ProcessTrackerUrl extends Command {
 		$dom        = new \DOMDocument('1.0', 'UTF-8');
 		$dom->recover = true;
 		$dom->strictErrorChecking = false;
-
-		@$dom->loadHTMLFile($url);
+        $proxy = 'https://scraper.sulradio.com.br?url='.$url;
+		@$dom->loadHTMLFile($proxy);
 		switch ($domain){
 			case 'sei.anatel.gov.br':
 			case 'sei.mctic.gov.br':

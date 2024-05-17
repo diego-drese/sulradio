@@ -91,6 +91,8 @@ class ProcessTicketNotification extends Command {
                 }else{
                     $userSendNotification[$keyMap]=true;
                 }
+                /** Wait 1sec to send another email */
+                sleep(1);
             } catch (\Exception $e) {
                 $try++;
                 Log::error('ProcessTicketNotification, retry send email', ['notification_id'=>$notification->id, 'try' => $try, 'e' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'tries'=>$tries]);

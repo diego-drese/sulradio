@@ -158,6 +158,7 @@ class TicketController extends SulradioController {
 			->withUf()
 			->where('ticket.id', $id)
 			->first();
+
 		if(!$data){
 			return redirect(route('admin.page403get'));
 		}
