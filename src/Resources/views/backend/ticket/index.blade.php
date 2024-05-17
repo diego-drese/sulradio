@@ -29,6 +29,7 @@
                                 <th>Status</th>
                                 <th>Emissora</th>
                                 <th>Atualizado</th>
+                                <th>Prazo Vencimento</th>
                                 <th>Prazo&nbsp;Protocolo</th>
                                 <th>Responsáveis</th>
                                 <th>Solicitante</th>
@@ -61,6 +62,9 @@
                                 </th>
                                 <th role="row">
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
+                                </th>
+                                <th role="row">
+                                    ---
                                 </th>
                                 <th role="row">
                                     ---
@@ -191,7 +195,7 @@
                         return d;
                     }
                 },
-                "order": [[ 6, "desc" ]],
+                "order": [[ 5, "desc" ]],
                 columns: [
                     {
                         data: null, searchable: false, orderable: false, render: function (data) {
@@ -215,6 +219,21 @@
                     }},
                     {data: "emissora_nome", 'name': 'emissora.razao_social'},
                     {data: "updated_at", 'name': 'ticket.updated_at'},
+                    {data: "renewal_alert", 'name': 'ticket.renewal_alert', render:function (data, display, row){
+                            if(!data){
+                                return '---';
+                            }
+                            var now = moment();
+                            var endForest = moment(data, "DD/MM/YYYY");
+                            var days = endForest.diff(now, 'days');
+                            if(days<180){
+                                return '<b class="text-danger">'+data+'</b>'
+                            }else if(days<365){
+                                return '<b class="text-warning">'+data+'</b>'
+                            }else{
+                                return '<b class="text-success">'+data+'</b>'
+                            }
+                        }},
                     {data: "end_forecast", 'name': 'ticket.end_forecast', render:function (data, display, row){
                             if(!data){
                                 return '---';
