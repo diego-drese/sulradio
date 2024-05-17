@@ -116,10 +116,8 @@ class ProcessTrackerUrl extends Command {
 				}
 				Log::info('ProcessTrackerUrl parseDomain', ['url'=>$url]);
 				return $html;
-			break;
 			default;
 				return $dom->saveXML($dom->getElementsByTagName('body'));
-			break;
 		}
 
 	}

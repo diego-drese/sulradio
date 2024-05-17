@@ -55,9 +55,16 @@
                                             $col = 'answer_file_'.$i;
                                             if($ticketNotificationClientUser->$col){
                                                 $document = \Oka6\SulRadio\Models\TicketDocument::where('id',$ticketNotificationClientUser->$col)->first();
-                                                echo '<li class="list-group-item text-left">';
-                                                echo ' <a href="'.route('document.download.ticket', $ticketNotificationClientUser->$col).'" >'.$document->file_name_original.'</a>';
-                                                echo ' </li>';
+                                                if($document){
+                                                    echo '<li class="list-group-item text-left">';
+                                                    echo ' <a href="'.route('document.download.ticket', $ticketNotificationClientUser->$col).'" >'.$document->file_name_original.'</a>';
+                                                    echo ' </li>';
+                                                }else{
+                                                    echo '<li class="list-group-item text-left">';
+                                                    echo 'Documento não encontrado. Coluna['.$col.']';
+                                                    echo ' </li>';
+                                                }
+
                                             }
 
                                         }
