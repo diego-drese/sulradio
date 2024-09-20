@@ -41,7 +41,7 @@ return [
 		'prefix' => '',
 		'strict' => false,
 		'options' => [
-			'database' => 'admin' // sets the authentication database required by mongo 3
+			'database' => env('SULRADIO_MONGO_DB_NAME', 'sulradio') 
 		],
         'dump' =>[
             'mongodb_user_auth'=>'admin'
