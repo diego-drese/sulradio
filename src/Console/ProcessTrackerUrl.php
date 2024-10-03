@@ -92,7 +92,7 @@ class ProcessTrackerUrl extends Command {
 		$dom->recover = true;
 		$dom->strictErrorChecking = false;
         $proxy = 'https://scraper.sulradio.com.br?url='.$url;
-		@$dom->loadHTMLFile($proxy);
+		@$dom->loadHTMLFile($url);
 		switch ($domain){
 			case 'sei.anatel.gov.br':
 			case 'sei.mctic.gov.br':
@@ -114,7 +114,7 @@ class ProcessTrackerUrl extends Command {
 					$tblHistorico = preg_replace("/<input type=.*?>(.*?)/","", $tblHistorico);
 					$html.=$tblHistorico;
 				}
-				Log::info('ProcessTrackerUrl parseDomain', ['url'=>$url]);
+				Log::info('ProcessTrackerUrl parseDomain', ['url'=>$url, '']);
 				return $html;
 			default;
 				return $dom->saveXML($dom->getElementsByTagName('body'));
