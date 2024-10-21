@@ -45,7 +45,7 @@ return [
 			'database' => env('SULRADIO_MONGO_DB_NAME', 'sulradio') 
 		],
         'dump' =>[
-            'mongodb_user_auth'=>'admin'
+            'mongodb_user_auth'=> env('SULRADIO_MONGO_DB_NAME', 'sulradio')
         ]
 	]
 ];
