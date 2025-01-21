@@ -25,76 +25,105 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mdi mdi-comment-text-outline"> Comentários</h4>
-                    <ul class="list-unstyled m-t-10 border-bottom comment-content">
-                    @foreach($comments as $comment)
-                            <div class="border p-2 m-t-5">
-                                <li class="media comment">
-                                    @if($comment->user_picture)
-                                        <img class="avatar-default m-r-15" src="{{$comment->user_picture}}" style="width: 60px;height: 60px;padding: 0;">
-                                    @else
-                                        <img class="avatar-default m-r-15" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg" style="width: 60px;height: 60px;padding: 0;">
-                                    @endif
-                                    <br>
-                                    <div class="media-body collapse"  id="command-{{$comment->id}}" aria-expanded="false">
-                                        <h5 class="mt-0 mb-1"><b>{{$comment->user_name}}</b> -  {{$comment->created_at}}</h5>
-                                        <div id="comment-{{$comment->id}}">
-                                            {!! $comment->html !!}
+                <div class="card-body" style="overflow: auto; word-break: break-word;">
+                    <table id="tableComment" class="table table-striped table-bordered dataTable no-footer" role="grid">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th style="display: none;">ID</th>
+                                <th class="p-2">
+                                    <h4 class="card-title mdi mdi-comment-text-outline">Comentários</h4>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($comments as $comment)
+                            <tr>
+                                <td style="display: none;">{{$comment->id}}</td>
+                                <td>
+                                    <div class="media comment border p-2 m-t-5" style="display: flex; flex-direction: column;">
+                                        <!-- Imagem e Conteúdo -->
+                                        <div style="display: flex; align-items: flex-start; gap: 15px; width: 100%;">
+                                            <!-- Imagem -->
+                                            <div style="width: 60px;">
+                                                @if($comment->user_picture)
+                                                    <img class="avatar-default" src="{{$comment->user_picture}}" style="width: 60px; height: 60px; padding: 0;">
+                                                @else
+                                                    <img class="avatar-default" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg" style="width: 60px; height: 60px; padding: 0;">
+                                                @endif
+                                            </div>
+                                            <!-- Conteúdo -->
+                                            <div class="media-body collapse" id="command-{{$comment->id}}" aria-expanded="false" style="flex-grow: 1;">
+                                                <h5 class="mt-0 mb-1">
+                                                    <b>{{$comment->user_name}}</b> - {{$comment->created_at}}
+                                                </h5>
+                                                <div id="comment-{{$comment->id}}">
+                                                    {!! $comment->html !!}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Botões de Ação -->
+                                        <div class="openComment m-t-5 m-b-5">
+                                            <a role="button" class="collapsed" data-toggle="collapse" href="#command-{{$comment->id}}" aria-expanded="false" aria-controls="command-{{$comment->id}}"></a>
+                                            @if($comment->send_client)
+                                                <span class="text-danger mdi mdi-send client-notified mouse-pointer" id="notify-comment-{{$comment->notification->id}}">
+                                                    Cliente Notificado
+                                                </span>
+                                            @elseif(($hasAdmin || $hasSendNotification) && count($usersEmissora))
+                                                <span class="text-success mdi mdi-send mouse-pointer client-notify" data-toggle="modal" data-target="#sendEmailModal" id="send-comment-{{$comment->id}}">
+                                                    Notificar Cliente
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
-                                </li>
-
-                                <div class="openComment m-t-5 m-b-5">
-                                    <a role="button" class="collapsed" data-toggle="collapse" href="#command-{{$comment->id}}" aria-expanded="false" aria-controls="command-{{$comment->id}}"> </a>
-                                    @if($comment->send_client)
-                                        <span class="text-danger mdi mdi-send client-notified mouse-pointer" id="notify-comment-{{$comment->notification->id}}"> Cliente Notificado</span>
-                                    @elseif(($hasAdmin || $hasSendNotification) && count($usersEmissora))
-                                        <span class="text-success mdi mdi-send  mouse-pointer client-notify" data-toggle="modal" data-target="#sendEmailModal" id="send-comment-{{$comment->id}}"> Notificar Cliente</span>
-                                    @endif
-                                </div>
-
-                            @if(isset($comment->notification) && !empty($comment->notification->answered))
-                                <ul class="list-unstyled m-t-10 p-l-10 bg-light">
-                                    @foreach($comment->notification->answered as $answered)
-                                        <li class="media comment border-top p-t-10 p-b-10 bg-light">
-                                            @if($answered->user_picture)
-                                                <img class="avatar-default m-r-15" src="{{$answered->user_picture}}" style="width: 60px;height: 60px;padding: 0;">
-                                            @else
-                                                <img class="avatar-default m-r-15" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg" style="width: 60px;height: 60px;padding: 0;">
-                                            @endif
-                                            <div class="media-body">
-                                                <h5 class="mt-0 mb-1"><b>{{$answered->user_name}}</b> <i>{{$answered->user_email}}</i></h5>
-                                                <h6 class="mt-0 mb-1"><b>{{$answered->status}}</b> {{$answered->updated_at}} </h6>
-                                                @if($answered->answer)
-                                                    <h6 class="card-title mdi mdi-comment-text-outline"> Resposta</h6>
-                                                    <div class="bg-white overflow-auto p-2 list-group-item">
-                                                        {!! $answered->answer !!}
-                                                    </div>
-                                                @else
-                                                    <div>
-                                                        Aguardando resposta.
-                                                    </div>
-                                                @endif
-                                                @foreach($answered->attach as $key=>$attach)
-                                                    @if($key==0)
-                                                        <h6 class="card-title mdi mdi-attachment m-t-10"> Anexos do cliente</h6>
-                                                        <ul class="list-group bg-whitep-2">
-                                                    @endif
-                                                    <li class="list-group-item text-left" >
-                                                        <a target="_blank" href="{{route('document.download.ticket', [$attach->id])}}">{{$attach->file_name}}</a>
+                                    <!-- Respostas Clientes -->
+                                    @if(isset($comment->notification) && !empty($comment->notification->answered))
+                                        <div class="border-left border-right border-bottom bg-white">
+                                            <h4 class="card-title mdi mdi-comment-text-outline p-2 p-b-0 m-b-0">Respostas Clientes</h4>
+                                            <ul class="list-unstyled m-t-10 p-l-10">
+                                                @foreach($comment->notification->answered as $answered)
+                                                    <li class="media comment border-top p-t-10 p-b-10 bg-light">
+                                                        @if($answered->user_picture)
+                                                            <img class="avatar-default m-r-15" src="{{$answered->user_picture}}" style="width: 60px;height: 60px;padding: 0;">
+                                                        @else
+                                                            <img class="avatar-default m-r-15" src="/vendor/oka6/admin/assets/images/users/user_avatar.svg" style="width: 60px;height: 60px;padding: 0;">
+                                                        @endif
+                                                        <div class="media-body">
+                                                            <h5 class="mt-0 mb-1" style="font-size: 0.8rem;"><b>{{ucwords(strtolower($answered->user_name))}}</b> <i>{{$answered->user_email}}</i></h5>
+                                                            <h6 class="mt-0 mb-1"><b>{{$answered->status}}</b> {{$answered->updated_at}} </h6>
+                                                            @if($answered->answer)
+                                                                <h6 class="card-title mdi mdi-comment-text-outline"> Resposta</h6>
+                                                                <div class="bg-white overflow-auto p-2 list-group-item">
+                                                                    {!! $answered->answer !!}
+                                                                </div>
+                                                            @else
+                                                                <div>
+                                                                    Aguardando resposta.
+                                                                </div>
+                                                            @endif
+                                                            @foreach($answered->attach as $key=>$attach)
+                                                                @if($key==0)
+                                                                    <h6 class="card-title mdi mdi-attachment m-t-10"> Anexos do cliente</h6>
+                                                                    <ul class="list-group bg-whitep-2">
+                                                                        @endif
+                                                                        <li class="list-group-item text-left" >
+                                                                            <a target="_blank" href="{{route('document.download.ticket', [$attach->id])}}">{{$attach->file_name}}</a>
+                                                                        </li>
+                                                                        @if(!isset($answered->attach[$key+1]))
+                                                                    </ul>
+                                                        @endif
+                                                        @endforeach
                                                     </li>
-                                                    @if(!isset($answered->attach[$key+1]))
-                                                        </ul>
-                                                    @endif
                                                 @endforeach
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                            </div>
-                    @endforeach
-                    </ul>
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+
+                    </table>
+
                 </div>
             </div>
 
@@ -104,8 +133,6 @@
 
                 <div class="card-body">
                     <h4 class="card-title">Informações.</h4>
-
-
                     <div class="row">
                         <div class="col-6">
                             <ul class="list-group">
@@ -512,6 +539,7 @@
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/dropzone.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/sweetalert2.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/bootstrap-switch.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
     <style>
         .note-toolbar-wrapper{height: inherit!important;}
         .note-toolbar{z-index: 5}
@@ -617,7 +645,43 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/dropzone.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/sweetalert2.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/bootstrap-switch.js')}}></script>
+    <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
     <script>
+        var table_ticket = $('#tableComment').DataTable({
+            language: {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Busca",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            },
+            autoWidth: false,
+            orderCellsTop: false,
+            searching: false,
+            stateSave: false,
+            ordering: false,
+            order: [[0, 'desc']],
+            "lengthMenu": [ [2, 4, 8, 20, 50, -1], [2, 4, 8, 20, 50, "All"] ],
+            "pageLength": 4
+
+        });
+
         var urlDownload='{{route('document.download.ticket',[':id'])}}';
         $(".bt-switch input[type='checkbox']").bootstrapSwitch();
         $('#documents-active').on('switchChange.bootstrapSwitch', function (event, state) {
@@ -672,7 +736,6 @@
                 cancelButtonText: "Cancelar!",
             }).then((isConfirm) => {
                 if (isConfirm.dismiss==='cancel') return;
-
                 $.ajax({
                     url: '{{route('document.archived.ticket')}}',
                     type: "POST",
