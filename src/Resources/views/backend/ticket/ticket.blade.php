@@ -2,7 +2,7 @@
 @section('title', $data->subject)
 @section('content')
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-8" id="comments-table">
             <div class="card">
                 <div class="card-body">
                     {!! $data->html !!}
@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-body" style="overflow: auto; word-break: break-word;">
+                <div class="card-body" style="overflow: auto; word-break: break-word;" >
                     <table id="tableComment" class="table table-striped table-bordered dataTable no-footer" role="grid">
                         <thead class="bg-primary text-white">
                             <tr>
@@ -647,329 +647,340 @@
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/bootstrap-switch.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
     <script>
-        var table_ticket = $('#tableComment').DataTable({
-            language: {
-                "sEmptyTable": "Nenhum registro encontrado",
-                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
-                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
-                "sInfoPostFix": "",
-                "sInfoThousands": ".",
-                "sLengthMenu": "_MENU_ por página",
-                "sLoadingRecords": "Carregando...",
-                "sProcessing": "Processando...",
-                "sZeroRecords": "Nenhum registro encontrado",
-                "sSearch": "Busca",
-                "oPaginate": {
-                    "sNext": "Próximo",
-                    "sPrevious": "Anterior",
-                    "sFirst": "Primeiro",
-                    "sLast": "Último"
+        $(document).ready(function () {
+            var table = document.getElementById('comments-table');
+            var tableWidth = table.offsetWidth;
+            console.log('Antes de carregar', tableWidth);
+            // Seleciona todos os <td> que contêm comentários
+            const comments = document.querySelectorAll('.comment');
+            comments.forEach(function (el) {
+                el.style.maxWidth = tableWidth-74 + 'px';
+                el.style.overflowX = 'auto';
+            });
+            var table_ticket = $('#tableComment').DataTable({
+                language: {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "_MENU_ por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Busca",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
                 },
-                "oAria": {
-                    "sSortAscending": ": Ordenar colunas de forma ascendente",
-                    "sSortDescending": ": Ordenar colunas de forma descendente"
-                }
-            },
-            autoWidth: false,
-            orderCellsTop: false,
-            searching: false,
-            stateSave: false,
-            ordering: false,
-            order: [[0, 'desc']],
-            "lengthMenu": [ [2, 4, 8, 20, 50, -1], [2, 4, 8, 20, 50, "All"] ],
-            "pageLength": 4
+                autoWidth: false,
+                orderCellsTop: false,
+                searching: false,
+                stateSave: false,
+                ordering: false,
+                order: [[0, 'desc']],
+                "lengthMenu": [ [2, 4, 8, 20, 50, -1], [2, 4, 8, 20, 50, "All"] ],
+                "pageLength": 4
 
-        });
+            });
 
-        var urlDownload='{{route('document.download.ticket',[':id'])}}';
-        $(".bt-switch input[type='checkbox']").bootstrapSwitch();
-        $('#documents-active').on('switchChange.bootstrapSwitch', function (event, state) {
-            if($("#documents-active").is(':checked')) {
-                $('.document-removed').hide();
-                $('.document-active').show();
-            } else {
-                $('.document-removed').show();
-                $('.document-active').hide();
-            }
-        });
-        var hideAllPopovers = function() {
-            $('.client-notified-info').each(function() {
-                if($(this).attr('aria-describedby')){
-                    $(this).trigger('click')
+            var urlDownload='{{route('document.download.ticket',[':id'])}}';
+            $(".bt-switch input[type='checkbox']").bootstrapSwitch();
+            $('#documents-active').on('switchChange.bootstrapSwitch', function (event, state) {
+                if($("#documents-active").is(':checked')) {
+                    $('.document-removed').hide();
+                    $('.document-active').show();
+                } else {
+                    $('.document-removed').show();
+                    $('.document-active').hide();
                 }
             });
-        };
-        $('.summernote').summernote({
-            height: 250,
-            codemirror: { // codemirror options
-                theme: 'monokai'
-            }
-        });
-
-        var submitComment = false;
-        $('#saveComment').click(function (){
-            if(!submitComment){
-                var url= '{{route('ticket.comment', [$data->id])}}';
-                $('#form-comment').attr('action', url).submit();
-                submitComment=true;
-            }
-        });
-        var sweet_loader = '<div class="sweet_loader"><svg viewBox="0 0 140 140" width="140" height="140"><g class="outline"><path d="m 70 28 a 1 1 0 0 0 0 84 a 1 1 0 0 0 0 -84" stroke="rgba(0,0,0,0.1)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></g><g class="circle"><path d="m 70 28 a 1 1 0 0 0 0 84 a 1 1 0 0 0 0 -84" stroke="#71BBFF" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dashoffset="200" stroke-dasharray="300"></path></g></svg></div>';
-
-        $('#toArchived').click(function (){
-            var removeIds = [] ;
-            $("input:checkbox[class=toArchived]:checked").each(function(){
-                removeIds.push($(this).val());
-            });
-            if(removeIds.length<1){
-                swal("Atenção!", "Seleciona o menos um item para arquivar", "warning");
-                return false;
-            }
-            swal({
-                title: "Você têm certeza?",
-                text: 'Essa ação irá arquivar '+removeIds.length+' arquivo(s)',
-                type: "error",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Sim!",
-                cancelButtonText: "Cancelar!",
-            }).then((isConfirm) => {
-                if (isConfirm.dismiss==='cancel') return;
-                $.ajax({
-                    url: '{{route('document.archived.ticket')}}',
-                    type: "POST",
-                    data: {_token:$('input[name="_token"]').val(), 'documents':removeIds},
-                    dataType: "json",
-                    beforeSend: function() {
-                        swal.fire({
-                            html: '<h5>Arquivando Aguarde...</h5>',
-                            showConfirmButton: false,
-                            allowOutsideClick: false
-                        });
-                    },
-                    success: function (data) {
-                        swal("Sucesso!", "Arquivos arquivados com sucesso", "success").then(() => {
-                            document.location.reload(true);
-                        });
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        swal("Erro!", xhr.responseJSON.message, "error");
+            var hideAllPopovers = function() {
+                $('.client-notified-info').each(function() {
+                    if($(this).attr('aria-describedby')){
+                        $(this).trigger('click')
                     }
                 });
+            };
+            $('.summernote').summernote({
+                height: 250,
+                codemirror: { // codemirror options
+                    theme: 'monokai'
+                }
             });
-        });
 
-        $('#toRemove').click(function (){
-            var removeIds = [] ;
-            $("input:checkbox[class=toRemove]:checked").each(function(){
-                removeIds.push($(this).val());
+            var submitComment = false;
+            $('#saveComment').click(function (){
+                if(!submitComment){
+                    var url= '{{route('ticket.comment', [$data->id])}}';
+                    $('#form-comment').attr('action', url).submit();
+                    submitComment=true;
+                }
             });
-            if(removeIds.length<1){
-                swal("Atenção!", "Seleciona o menos um item para remover", "warning");
-                return false;
-            }
-            swal({
-                title: "Você têm certeza?",
-                text: 'Essa ação irá remover '+removeIds.length+' arquivo(s), essa ação é irreversivel.',
-                type: "error",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Sim!",
-                cancelButtonText: "Cancelar!",
-            }).then((isConfirm) => {
-                if (isConfirm.dismiss==='cancel') return;
-                $.ajax({
-                    url: '{{route('document.delete.ticket')}}',
-                    type: "POST",
-                    data: {_token:$('input[name="_token"]').val(), 'documents':removeIds},
-                    dataType: "json",
-                    beforeSend: function() {
-                        swal.fire({
-                            html: '<h5>Removendo aguarde...</h5>',
-                            showConfirmButton: false,
-                            allowOutsideClick: false
-                        });
-                    },
-                    success: function (data) {
-                        swal("Sucesso!", "Arquivos removidos com sucesso", "success").then(() => {
-                            document.location.reload(true);
-                        });
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        swal("Erro!", xhr.responseJSON.message, "error");
-                    }
+            var sweet_loader = '<div class="sweet_loader"><svg viewBox="0 0 140 140" width="140" height="140"><g class="outline"><path d="m 70 28 a 1 1 0 0 0 0 84 a 1 1 0 0 0 0 -84" stroke="rgba(0,0,0,0.1)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></g><g class="circle"><path d="m 70 28 a 1 1 0 0 0 0 84 a 1 1 0 0 0 0 -84" stroke="#71BBFF" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dashoffset="200" stroke-dasharray="300"></path></g></svg></div>';
+
+            $('#toArchived').click(function (){
+                var removeIds = [] ;
+                $("input:checkbox[class=toArchived]:checked").each(function(){
+                    removeIds.push($(this).val());
                 });
-            });
-        });
-
-        var endTicket = false;
-        $('#endTicket').click(function (){
-            if(!endTicket){
-                var url= '{{route('ticket.end', [$data->id])}}';
-                $('#form-comment').attr('action', url).submit();
-                endTicket=true;
-            }
-        });
-
-
-        $('.client-notify').click(function (){
-            var id= this.id;
-            var comment = $('#comment-'+id.split('-')[2]).html();
-            $('#sendEmailModal #modal-comment').summernote('code', comment);
-            $('#sendEmailModal').modal('toggle');
-            $('#sendEmail').attr('data-comment-id', id.split('-')[2]);
-        });
-
-        $('.client-notified').click(function (){
-            var url='{{route('ticket.notification.client', [':id'])}}';
-            var id= this.id.split('-')[2];
-            url = url.replace(':id', id);
-
-            $.ajax({
-                url: url,
-                type: "GET",
-                data: {},
-                dataType: "json",
-                success: function (data) {
-                    $('#modal-comment-sent').html(data.ticketNotificationClient.comment);
-                    $('#modal-users-sent table tbody').html('');
-                    $('#modal-attachment-sent table tbody').html('');
-                    var tableTbody='';
-                    for(var i=0; i<data.users.length; i++){
-                        tableTbody+="<tr>"
-                            tableTbody+="<td>"
-                                tableTbody+=data.users[i].user_name;
-                            tableTbody+="</td>"
-                            tableTbody+="<td>"
-                                tableTbody+=data.users[i].user_email;
-                            tableTbody+="</td>"
-                            tableTbody+="<td>"
-                                tableTbody+=data.users[i].status;
-                            tableTbody+="</td>"
-                        tableTbody+="</tr>"
-                    }
-                    $('#modal-users-sent table tbody').html(tableTbody);
-
-                    tableTbody='';
-                    for(var i=0; i<data.attach.length; i++){
-                        tableTbody+="<tr>"
-                            tableTbody+="<td>"
-                                tableTbody+='<a target="_blank" href="'+urlDownload.replace(':id',data.attach[i].id)+'">'+data.attach[i].file_name_original+'</a>';
-                            tableTbody+="</td>"
-                            tableTbody+="<td>"
-                                tableTbody+=data.attach[i].file_type;
-                            tableTbody+="</td>"
-                            tableTbody+="<td>"
-                                if(data.attach[i].removed){
-                                    tableTbody+='<span class="label label-danger">Sim</span>';
-                                }else{
-                                    tableTbody+='<span class="label label-success">Não</span>';
-                                }
-                            tableTbody+="</td>"
-                        tableTbody+="</tr>"
-                    }
-                    $('#modal-attachment-sent table tbody').html(tableTbody);
-                    $('#sentEmailModal').modal('toggle');
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    swal("Erro!", xhr.responseJSON.message, "error");
-                }
-            });
-
-        });
-
-        $('#sendEmail').click(function (){
-            var commentId = $(this).attr('data-comment-id');
-            var users = Array
-                    .from(document.querySelectorAll('input[name="users"]'))
-                    .filter((checkbox) => checkbox.checked)
-                    .map((checkbox) => checkbox.value);
-            var attachment = Array
-                    .from(document.querySelectorAll('input[name="attachment"]'))
-                    .filter((checkbox) => checkbox.checked)
-                    .map((checkbox) => checkbox.value);
-
-            var attachmentSize = Array
-                    .from(document.querySelectorAll('input[name="attachment"]'))
-                    .filter((checkbox) => checkbox.checked)
-                    .map((checkbox) => $(checkbox).attr('data-size'));
-
-            if(users.length<1){
-                toastr.info('Selecione ao menos um usuário para envio', "Informações", {timeOut: 6000});
-                return false;
-            }
-            if(attachmentSize.length){
-                var size = 0;
-                for (var i=0; i<attachmentSize.length; i++){
-                    size+= Number(attachmentSize[i].replace('KB', ""));
-                }
-                if(size>15728640){
-                    toastr.info('Limite de anexos excedidos, é possível enviar somente 15Mb ', "Informações", {timeOut: 6000});
+                if(removeIds.length<1){
+                    swal("Atenção!", "Seleciona o menos um item para arquivar", "warning");
                     return false;
                 }
-            }
-            var comment = $("#modal-comment").val();
-            var text="Voce selecionou "+users.length+" usuário(s) e "+attachment.length+' anexo(s) para o envio desse comentário. Essa ação nao pode ser desfeita.';
-
-            swal({
-                title: "Você têm certeza?",
-                text: text,
-                type: "error",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Sim!",
-                cancelButtonText: "Cancelar!",
-            }).then((isConfirm) => {
-                if (isConfirm.dismiss==='cancel') return;
-                var url='{{route('ticket.comment.send.email')}}';
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: {_token:$('input[name="_token"]').val(), 'comment_id':commentId, 'comment':comment, 'users':users, 'attachment':attachment},
-                    dataType: "json",
-                    success: function (data) {
-                        swal("Sucesso!", "Email agendado com sucesso.", "success").then(() => {
-                            location.reload();
-                        });
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        swal("Erro!", xhr.responseJSON.message, "error");
-                    }
+                swal({
+                    title: "Você têm certeza?",
+                    text: 'Essa ação irá arquivar '+removeIds.length+' arquivo(s)',
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim!",
+                    cancelButtonText: "Cancelar!",
+                }).then((isConfirm) => {
+                    if (isConfirm.dismiss==='cancel') return;
+                    $.ajax({
+                        url: '{{route('document.archived.ticket')}}',
+                        type: "POST",
+                        data: {_token:$('input[name="_token"]').val(), 'documents':removeIds},
+                        dataType: "json",
+                        beforeSend: function() {
+                            swal.fire({
+                                html: '<h5>Arquivando Aguarde...</h5>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function (data) {
+                            swal("Sucesso!", "Arquivos arquivados com sucesso", "success").then(() => {
+                                document.location.reload(true);
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            swal("Erro!", xhr.responseJSON.message, "error");
+                        }
+                    });
                 });
             });
 
-        });
+            $('#toRemove').click(function (){
+                var removeIds = [] ;
+                $("input:checkbox[class=toRemove]:checked").each(function(){
+                    removeIds.push($(this).val());
+                });
+                if(removeIds.length<1){
+                    swal("Atenção!", "Seleciona o menos um item para remover", "warning");
+                    return false;
+                }
+                swal({
+                    title: "Você têm certeza?",
+                    text: 'Essa ação irá remover '+removeIds.length+' arquivo(s), essa ação é irreversivel.',
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim!",
+                    cancelButtonText: "Cancelar!",
+                }).then((isConfirm) => {
+                    if (isConfirm.dismiss==='cancel') return;
+                    $.ajax({
+                        url: '{{route('document.delete.ticket')}}',
+                        type: "POST",
+                        data: {_token:$('input[name="_token"]').val(), 'documents':removeIds},
+                        dataType: "json",
+                        beforeSend: function() {
+                            swal.fire({
+                                html: '<h5>Removendo aguarde...</h5>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function (data) {
+                            swal("Sucesso!", "Arquivos removidos com sucesso", "success").then(() => {
+                                document.location.reload(true);
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            swal("Erro!", xhr.responseJSON.message, "error");
+                        }
+                    });
+                });
+            });
 
-        var cancelSubscripton = function (url, text ,id) {
-            swal({
-                title: "Você têm certeza?",
-                text: text,
-                type: "error",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Sim!",
-                cancelButtonText: "Cancelar!",
-            }).then((isConfirm) => {
-                if (isConfirm.dismiss==='cancel') return;
+            var endTicket = false;
+            $('#endTicket').click(function (){
+                if(!endTicket){
+                    var url= '{{route('ticket.end', [$data->id])}}';
+                    $('#form-comment').attr('action', url).submit();
+                    endTicket=true;
+                }
+            });
+
+
+            $('.client-notify').click(function (){
+                var id= this.id;
+                var comment = $('#comment-'+id.split('-')[2]).html();
+                $('#sendEmailModal #modal-comment').summernote('code', comment);
+                $('#sendEmailModal').modal('toggle');
+                $('#sendEmail').attr('data-comment-id', id.split('-')[2]);
+            });
+
+            $('.client-notified').click(function (){
+                var url='{{route('ticket.notification.client', [':id'])}}';
+                var id= this.id.split('-')[2];
+                url = url.replace(':id', id);
+
                 $.ajax({
                     url: url,
                     type: "GET",
                     data: {},
                     dataType: "json",
                     success: function (data) {
-                        swal("Sucesso!", "Arquivo removido com sucesso", "success").then(() => {
-                            document.location.reload(true);
-                        });
+                        $('#modal-comment-sent').html(data.ticketNotificationClient.comment);
+                        $('#modal-users-sent table tbody').html('');
+                        $('#modal-attachment-sent table tbody').html('');
+                        var tableTbody='';
+                        for(var i=0; i<data.users.length; i++){
+                            tableTbody+="<tr>"
+                            tableTbody+="<td>"
+                            tableTbody+=data.users[i].user_name;
+                            tableTbody+="</td>"
+                            tableTbody+="<td>"
+                            tableTbody+=data.users[i].user_email;
+                            tableTbody+="</td>"
+                            tableTbody+="<td>"
+                            tableTbody+=data.users[i].status;
+                            tableTbody+="</td>"
+                            tableTbody+="</tr>"
+                        }
+                        $('#modal-users-sent table tbody').html(tableTbody);
+
+                        tableTbody='';
+                        for(var i=0; i<data.attach.length; i++){
+                            tableTbody+="<tr>"
+                            tableTbody+="<td>"
+                            tableTbody+='<a target="_blank" href="'+urlDownload.replace(':id',data.attach[i].id)+'">'+data.attach[i].file_name_original+'</a>';
+                            tableTbody+="</td>"
+                            tableTbody+="<td>"
+                            tableTbody+=data.attach[i].file_type;
+                            tableTbody+="</td>"
+                            tableTbody+="<td>"
+                            if(data.attach[i].removed){
+                                tableTbody+='<span class="label label-danger">Sim</span>';
+                            }else{
+                                tableTbody+='<span class="label label-success">Não</span>';
+                            }
+                            tableTbody+="</td>"
+                            tableTbody+="</tr>"
+                        }
+                        $('#modal-attachment-sent table tbody').html(tableTbody);
+                        $('#sentEmailModal').modal('toggle');
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         swal("Erro!", xhr.responseJSON.message, "error");
                     }
                 });
-            });
-        }
 
-        $(document).ready(function () {
+            });
+
+            $('#sendEmail').click(function (){
+                var commentId = $(this).attr('data-comment-id');
+                var users = Array
+                    .from(document.querySelectorAll('input[name="users"]'))
+                    .filter((checkbox) => checkbox.checked)
+                    .map((checkbox) => checkbox.value);
+                var attachment = Array
+                    .from(document.querySelectorAll('input[name="attachment"]'))
+                    .filter((checkbox) => checkbox.checked)
+                    .map((checkbox) => checkbox.value);
+
+                var attachmentSize = Array
+                    .from(document.querySelectorAll('input[name="attachment"]'))
+                    .filter((checkbox) => checkbox.checked)
+                    .map((checkbox) => $(checkbox).attr('data-size'));
+
+                if(users.length<1){
+                    toastr.info('Selecione ao menos um usuário para envio', "Informações", {timeOut: 6000});
+                    return false;
+                }
+                if(attachmentSize.length){
+                    var size = 0;
+                    for (var i=0; i<attachmentSize.length; i++){
+                        size+= Number(attachmentSize[i].replace('KB', ""));
+                    }
+                    if(size>15728640){
+                        toastr.info('Limite de anexos excedidos, é possível enviar somente 15Mb ', "Informações", {timeOut: 6000});
+                        return false;
+                    }
+                }
+                var comment = $("#modal-comment").val();
+                var text="Voce selecionou "+users.length+" usuário(s) e "+attachment.length+' anexo(s) para o envio desse comentário. Essa ação nao pode ser desfeita.';
+
+                swal({
+                    title: "Você têm certeza?",
+                    text: text,
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim!",
+                    cancelButtonText: "Cancelar!",
+                }).then((isConfirm) => {
+                    if (isConfirm.dismiss==='cancel') return;
+                    var url='{{route('ticket.comment.send.email')}}';
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: {_token:$('input[name="_token"]').val(), 'comment_id':commentId, 'comment':comment, 'users':users, 'attachment':attachment},
+                        dataType: "json",
+                        success: function (data) {
+                            swal("Sucesso!", "Email agendado com sucesso.", "success").then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            swal("Erro!", xhr.responseJSON.message, "error");
+                        }
+                    });
+                });
+
+            });
+
+            var cancelSubscripton = function (url, text ,id) {
+                swal({
+                    title: "Você têm certeza?",
+                    text: text,
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim!",
+                    cancelButtonText: "Cancelar!",
+                }).then((isConfirm) => {
+                    if (isConfirm.dismiss==='cancel') return;
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        data: {},
+                        dataType: "json",
+                        success: function (data) {
+                            swal("Sucesso!", "Arquivo removido com sucesso", "success").then(() => {
+                                document.location.reload(true);
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            swal("Erro!", xhr.responseJSON.message, "error");
+                        }
+                    });
+                });
+            }
+
+
+
             Dropzone.prototype.defaultOptions.dictDefaultMessage = "Arraste os arquivos aqui para enviar";
             Dropzone.prototype.defaultOptions.dictFallbackMessage = "Seu navegador não suporta uploads de arquivos arrastar e soltar.";
             Dropzone.prototype.defaultOptions.dictFallbackText = "Use o formulário substituto abaixo para enviar seus arquivos como antigamente.";
