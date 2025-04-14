@@ -712,7 +712,20 @@
             };
             $('.summernote').summernote({
                 height: 250,
-                codemirror: { // codemirror options
+                fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48', '64', '82', '150'],
+                toolbar: [
+                    ['style', ['style']],                        // Ícone de estilo inicial (pincel)
+                    ['font', ['bold', 'underline', 'italic']],   // Negrito, Sublinhado, Itálico
+                    ['fontname', ['fontname']],                  // Tipo da fonte (ex: Rubik)
+                    ['fontsize', ['fontsize']],                  // Tamanho da fonte (adicionado aqui)
+                    ['color', ['color']],                        // Cor da fonte e fundo
+                    ['para', ['ul', 'ol', 'paragraph']],         // Listas e parágrafos
+                    ['table', ['table']],                        // Tabela
+                    ['insert', ['link', 'picture', 'video']],    // Inserir link, imagem, vídeo
+                    ['view', ['fullscreen', 'codeview', 'help']] // Visualização e ajuda
+                ],
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Rubik', 'Times New Roman'],
+                codemirror: {
                     theme: 'monokai'
                 }
             });
