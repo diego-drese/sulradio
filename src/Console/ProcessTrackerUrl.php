@@ -11,6 +11,7 @@ use Oka6\SulRadio\Models\TicketComment;
 use Oka6\SulRadio\Models\TicketNotification;
 use Oka6\SulRadio\Models\TicketParticipant;
 use Oka6\SulRadio\Models\TicketUrlTracker;
+use DateTime;
 
 
 class ProcessTrackerUrl extends Command {
@@ -39,28 +40,33 @@ class ProcessTrackerUrl extends Command {
 	public function processUrls($urls, $notify=true){
 		foreach ($urls as $url){
 			$url->last_tracker = date('Y-m-d H:i:s');
-			$html = $this->parseDomain($url->url);
-			if(!$html){
+            $maxDate = $this->parseDomain($url->url);
+			if(!$maxDate){
 				$url->save();
 				continue;
 			}
-			$hash = md5($html);
-			if($hash!=$url->hash){
-				$url->hash = $hash;
-				$url->last_modify = date('Y-m-d H:i:s');
-				$user   = User::getByIdStatic(-1);
-				$commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>';
-				$comment = TicketComment::create([
-					'html'=>$commentText,
-					'user_id'=>$user->id,
-					'ticket_id'=>$url->ticket_id
-				]);
-				if($notify){
-					/** Notifica todos os participantes */
-					$ticket = Ticket::getById($url->ticket_id);
-					TicketParticipant::notifyParticipants($ticket, $user,TicketNotification::TYPE_TRACKER_URL, $comment->id);
-				}
-			}
+            if($maxDate && $url->last_modify < $maxDate){
+                Log::info('ProcessTrackerUrl, process changed', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'last_modify'=>$url->last_modify, 'max_date'=>$maxDate, 'id'=>$url->id]);
+                $url->hash = md5($url->url);
+                $url->last_modify = $maxDate;
+
+                $user   = User::getByIdStatic(-1);
+                $commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>';
+                $comment = TicketComment::create([
+                    'html'=>$commentText,
+                    'user_id'=>$user->id,
+                    'ticket_id'=>$url->ticket_id
+                ]);
+                if($notify){
+                    /** Notifica todos os participantes */
+                    $ticket = Ticket::getById($url->ticket_id);
+                    TicketParticipant::notifyParticipants($ticket, $user,TicketNotification::TYPE_TRACKER_URL, $comment->id);
+                }
+            }elseif($maxDate && $url->last_modify > $maxDate){
+                Log::info('ProcessTrackerUrl, adjust database', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'last_modify'=>$url->last_modify, 'max_date'=>$maxDate, 'id'=>$url->id]);
+                $url->last_modify = $maxDate;
+            }
+
 			$url->save();
 		}
 	}
@@ -81,47 +87,58 @@ class ProcessTrackerUrl extends Command {
 				}
 			});
 		}
+
 		Log::info('ProcessTrackerUrl, end process');
 	}
 
 	public function parseDomain($url){
         $url        = str_replace('sei.mcom', 'super.mcom', $url);
-		$parse      = parse_url($url);
-		$domain     = $parse['host'];
 		$dom        = new \DOMDocument('1.0', 'UTF-8');
 		$dom->recover = true;
 		$dom->strictErrorChecking = false;
-        $proxy = 'https://scraper.sulradio.com.br?url='.$url;
 		@$dom->loadHTMLFile($url);
-		switch ($domain){
-			case 'sei.anatel.gov.br':
-			case 'sei.mctic.gov.br':
-			case 'sei.mcom.gov.br':
-			case 'super.mcom.gov.br':
-				$html = null;
-				$tblDocumentos = $dom->saveXML($dom->getElementById('tblDocumentos'));
-				if (str_contains($tblDocumentos, 'table id="tblDocumentos"')) {
-					$tblDocumentos =preg_replace("/<\/?a( [^>]*)?>/i", "", $tblDocumentos);
-					$tblDocumentos = preg_replace("/<img src=.*?>(.*?)/","", $tblDocumentos);
-					$tblDocumentos = preg_replace("/<input type=.*?>(.*?)/","", $tblDocumentos);
-					$html=$tblDocumentos;
-				}
-
-				$tblHistorico= $dom->saveXML($dom->getElementById('tblHistorico'));
-				if (str_contains($tblHistorico, 'table id="tblHistorico"')) {
-					$tblHistorico = preg_replace("/<a href=.*?>(.*?)<\/a>/","", $tblHistorico);
-					$tblHistorico = preg_replace("/<img src=.*?>(.*?)/","", $tblHistorico);
-					$tblHistorico = preg_replace("/<input type=.*?>(.*?)/","", $tblHistorico);
-					$html.=$tblHistorico;
-				}
-				Log::info('ProcessTrackerUrl parseDomain', ['url'=>$url, '']);
-				return $html;
-			default;
-				return $dom->saveXML($dom->getElementsByTagName('body'));
-		}
-
+        return $this->getMaxRelevantDateFromDom($dom);
 	}
-	
+
+    function getMaxRelevantDateFromDom(\DOMDocument $dom) {
+        $xpath = new \DOMXPath($dom);
+        $maxDate = null;
+
+        // 1. Pega datas dos <tr class="andamentoConcluido">
+        foreach ($xpath->query('//tr[contains(@class, "andamentoConcluido")]') as $tr) {
+            $tds = $tr->getElementsByTagName('td');
+            if ($tds->length > 0) {
+                $dateText = trim($tds->item(0)->nodeValue);
+                $date = DateTime::createFromFormat('d/m/Y H:i', $dateText);
+                if ($date && ($maxDate === null || $date > $maxDate)) {
+                    $maxDate = $date;
+                }
+            }
+        }
+
+        // 2. Pega datas dos <tr class="infraTrClara"> (colunas 3 e 4)
+        foreach ($xpath->query('//tr[contains(@class, "infraTrClara")]') as $tr) {
+            $tds = $tr->getElementsByTagName('td');
+            // Coluna 3 (índice 3)
+            if ($tds->length > 3) {
+                $dateText = trim($tds->item(3)->nodeValue);
+                $date = DateTime::createFromFormat('d/m/Y', $dateText);
+                if ($date && ($maxDate === null || $date > $maxDate)) {
+                    $maxDate = $date;
+                }
+            }
+            // Coluna 4 (índice 4)
+            if ($tds->length > 4) {
+                $dateText = trim($tds->item(4)->nodeValue);
+                $date = DateTime::createFromFormat('d/m/Y', $dateText);
+                if ($date && ($maxDate === null || $date > $maxDate)) {
+                    $maxDate = $date;
+                }
+            }
+        }
+
+        return $maxDate;
+    }
 	
 }
 
