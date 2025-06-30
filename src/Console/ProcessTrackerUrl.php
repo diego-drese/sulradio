@@ -55,7 +55,7 @@ class ProcessTrackerUrl extends Command {
                 $diffInSeconds      = $maxDate->getTimestamp() - $lastModify->getTimestamp();
                 $diffInHours        = $diffInSeconds / 3600;
                 Log::info('ProcessTrackerUrl, debug', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'lastModify'=>$lastModify, 'max_date'=>$maxDate, 'id'=>$url->id, 'diffInHours'=>$diffInHours]);
-                if ($diffInHours > 3) {
+                if ($diffInHours > 4) {
                     Log::info('ProcessTrackerUrl, process changed', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'lastModify'=>$lastModify, 'max_date'=>$maxDate, 'id'=>$url->id, 'diff'=>$diffInHours]);
                     $user   = User::getByIdStatic(-1);
                     $commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>';
