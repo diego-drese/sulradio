@@ -2,6 +2,9 @@
 
 namespace Oka6\SulRadio\Console;
 
+use Carbon\Carbon;
+use DateInterval;
+use DateTimeZone;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -40,30 +43,35 @@ class ProcessTrackerUrl extends Command {
 	public function processUrls($urls, $notify=true){
 		foreach ($urls as $url){
 			$url->last_tracker = date('Y-m-d H:i:s');
+            $lastModify = new DateTime($url->last_modify, new DateTimeZone('UTC'));
             $maxDate = $this->parseDomain($url->url);
 			if(!$maxDate){
 				$url->save();
 				continue;
 			}
-            if($maxDate && $url->last_modify < $maxDate){
-                Log::info('ProcessTrackerUrl, process changed', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'last_modify'=>$url->last_modify, 'max_date'=>$maxDate, 'id'=>$url->id]);
-                $url->hash = md5($url->url);
-                $url->last_modify = $maxDate;
-
-                $user   = User::getByIdStatic(-1);
-                $commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>';
-                $comment = TicketComment::create([
-                    'html'=>$commentText,
-                    'user_id'=>$user->id,
-                    'ticket_id'=>$url->ticket_id
-                ]);
-                if($notify){
-                    /** Notifica todos os participantes */
-                    $ticket = Ticket::getById($url->ticket_id);
-                    TicketParticipant::notifyParticipants($ticket, $user,TicketNotification::TYPE_TRACKER_URL, $comment->id);
+            if($maxDate && $lastModify->getTimestamp() < $maxDate->getTimestamp()){
+                $url->hash          = md5($url->url);
+                $url->last_modify   = $maxDate;
+                $diffInSeconds      = $maxDate->getTimestamp() - $lastModify->getTimestamp();
+                $diffInHours        = $diffInSeconds / 3600;
+                Log::info('ProcessTrackerUrl, debug', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'lastModify'=>$lastModify, 'max_date'=>$maxDate, 'id'=>$url->id, 'diffInHours'=>$diffInHours]);
+                if ($diffInHours > 3) {
+                    Log::info('ProcessTrackerUrl, process changed', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'lastModify'=>$lastModify, 'max_date'=>$maxDate, 'id'=>$url->id, 'diff'=>$diffInHours]);
+                    $user   = User::getByIdStatic(-1);
+                    $commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>';
+                    $comment = TicketComment::create([
+                        'html'=>$commentText,
+                        'user_id'=>$user->id,
+                        'ticket_id'=>$url->ticket_id
+                    ]);
+                    if($notify){
+                        /** Notifica todos os participantes */
+                        $ticket = Ticket::getById($url->ticket_id);
+                        TicketParticipant::notifyParticipants($ticket, $user,TicketNotification::TYPE_TRACKER_URL, $comment->id);
+                    }
                 }
-            }elseif($maxDate && $url->last_modify > $maxDate){
-                Log::info('ProcessTrackerUrl, adjust database', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'last_modify'=>$url->last_modify, 'max_date'=>$maxDate, 'id'=>$url->id]);
+            }elseif($maxDate && $lastModify->getTimestamp() > $maxDate->getTimestamp()){
+                Log::info('ProcessTrackerUrl, adjust database', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'lastModify'=>$lastModify, 'max_date'=>$maxDate, 'id'=>$url->id]);
                 $url->last_modify = $maxDate;
             }
 
@@ -104,37 +112,43 @@ class ProcessTrackerUrl extends Command {
         $xpath = new \DOMXPath($dom);
         $maxDate = null;
 
+
         // 1. Pega datas dos <tr class="andamentoConcluido">
-        foreach ($xpath->query('//tr[contains(@class, "andamentoConcluido")]') as $tr) {
+        foreach ($xpath->query('//tr[contains(@class, "andamentoAberto")]') as $tr) {
             $tds = $tr->getElementsByTagName('td');
             if ($tds->length > 0) {
                 $dateText = trim($tds->item(0)->nodeValue);
-                $date = DateTime::createFromFormat('d/m/Y H:i', $dateText);
+                $date = DateTime::createFromFormat('d/m/Y H:i', $dateText, new DateTimeZone('America/Sao_Paulo'))->setTimezone(new DateTimeZone('UTC'));
                 if ($date && ($maxDate === null || $date > $maxDate)) {
                     $maxDate = $date;
                 }
             }
         }
 
-        // 2. Pega datas dos <tr class="infraTrClara"> (colunas 3 e 4)
-        foreach ($xpath->query('//tr[contains(@class, "infraTrClara")]') as $tr) {
+        foreach ($xpath->query('//tr[contains(@class, "andamentoConcluido")]') as $tr) {
             $tds = $tr->getElementsByTagName('td');
-            // Coluna 3 (índice 3)
-            if ($tds->length > 3) {
-                $dateText = trim($tds->item(3)->nodeValue);
-                $date = DateTime::createFromFormat('d/m/Y', $dateText);
+            if ($tds->length > 0) {
+                $dateText = trim($tds->item(0)->nodeValue);
+                $date = DateTime::createFromFormat('d/m/Y H:i', $dateText, new DateTimeZone('America/Sao_Paulo'))->setTimezone(new DateTimeZone('UTC'));
                 if ($date && ($maxDate === null || $date > $maxDate)) {
                     $maxDate = $date;
                 }
             }
-            // Coluna 4 (índice 4)
-            if ($tds->length > 4) {
-                $dateText = trim($tds->item(4)->nodeValue);
-                $date = DateTime::createFromFormat('d/m/Y', $dateText);
-                if ($date && ($maxDate === null || $date > $maxDate)) {
-                    $maxDate = $date;
+        }
+        if($maxDate === null ){
+            // 2. Pega datas dos <tr class="infraTrClara"> (colunas 3 e 4)
+            foreach ($xpath->query('//tr[contains(@class, "infraTrClara")]') as $tr) {
+                $tds = $tr->getElementsByTagName('td');
+                // Coluna 4 (índice 4)
+                if ($tds->length > 4) {
+                    $dateText = trim($tds->item(4)->nodeValue);
+                    $date = DateTime::createFromFormat('d/m/Y', $dateText, new DateTimeZone('America/Sao_Paulo'))->setTimezone(new DateTimeZone('UTC'));
+                    if ($date && ($maxDate === null || $date > $maxDate)) {
+                        $maxDate = $date;
+                    }
                 }
             }
+
         }
 
         return $maxDate;
