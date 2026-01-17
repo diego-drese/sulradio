@@ -175,6 +175,9 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth', 'Oka6\Admin
     Route::post('/ticket-change-show-client', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeShowClient')->name('ticket.management.show.client')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change ShowClient']);
     Route::post('/ticket-change--hide-client', 'Oka6\SulRadio\Http\Controllers\TicketManagementController@changeHideClient')->name('ticket.management.hide.client')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.management.index', 'nameAdmin' => 'Tickets Gerência Change HideClient']);
 
+    Route::get('/whatsapp', 'Oka6\SulRadio\Http\Controllers\WhatsappController@index')->name('ticket.config.whatsapp')->where(['iconAdmin' => 'mdi mdi-whatsapp', 'parentRouteNameAdmin' => 'ticket.config.menu', 'menuAdmin' => "Whatsapp", 'nameAdmin' => 'Whatsapp', 'isDefaultAdmin' => '1']);
+    Route::get('/whatsapp/qr', 'Oka6\SulRadio\Http\Controllers\WhatsappController@qr')->name('ticket.config.whatsapp.qr')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.config.menu', 'nameAdmin' => 'Qrcode Whatsapp']);
+    Route::get('/whatsapp/logout', 'Oka6\SulRadio\Http\Controllers\WhatsappController@logout')->name('ticket.config.whatsapp.logout')->where(['iconAdmin' => 'fas fa-edit', 'parentRouteNameAdmin' => 'ticket.config.menu', 'nameAdmin' => 'Deslogar Whatsapp']);
 
 });
 
@@ -194,6 +197,8 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function 
 	Route::any('/document-ticket/download/{file}', 'Oka6\SulRadio\Http\Controllers\PublicController@downloadDocumentTicket')->name('document.download.ticket');
 	Route::any('/document-ticket/delete/', 'Oka6\SulRadio\Http\Controllers\PublicController@deleteDocumentTicket')->name('document.delete.ticket');
 	Route::any('/document-ticket/archived', 'Oka6\SulRadio\Http\Controllers\PublicController@archivedDocumentTicket')->name('document.archived.ticket');
+	Route::any('/document-ticket/archived', 'Oka6\SulRadio\Http\Controllers\PublicController@archivedDocumentTicket')->name('document.archived.ticket');
+
 });
 
 

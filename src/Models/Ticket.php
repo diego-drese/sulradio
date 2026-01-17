@@ -4,6 +4,7 @@ namespace Oka6\SulRadio\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Cache;
 use Oka6\Admin\Http\Library\ResourceAdmin;
 use Oka6\Admin\Models\Resource;
@@ -49,6 +50,9 @@ class Ticket extends Model {
 			'uf.desc_uf as desc_uf',
 			'emissora.razao_social as emissora');
 	}
+    public function emissora():BelongsTo {
+        return $this->belongsTo(Emissora::class, 'emissora_id');
+    }
 	public function scopeWithStatus($query) {
 		return $query->join('ticket_status', 'ticket_status.id', 'ticket.status_id');
 	}

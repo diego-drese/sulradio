@@ -8,59 +8,61 @@ use Illuminate\Support\Facades\Log;
 use Oka6\Admin\Library\MongoUtils;
 use Oka6\SulRadio\Models\EstacaoRd;
 use Yajra\DataTables\DataTables;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class AnatelController extends SulradioController {
 	use ValidatesRequests;
 	
 	public function emissoras(Request $request) {
-        if ($request->has('export') && $request->get('export') == 'true') {
+        if ($request->has('export') && $request->get('export') === 'true') {
             try {
                 $request->request->add([
-                    'start'=>0,
-                    'length'=>5000,
-                    'search'=>['value'=>'', 'regex'=>false]
-
+                    'start'  => 0,
+                    'length' => 5000,
+                    'search' => ['value' => '', 'regex' => false]
                 ]);
+
                 $dataTable      = $this->dataTable($request);
                 $registersCount = 0;
                 $registersTotal = $dataTable->original['recordsTotal'];
                 $list           = [];
 
-                while ($registersCount<$registersTotal){
-                    $registersCount+= count($dataTable->original['data']);
-                    foreach ($dataTable->original['data'] as $data){
-                        $list[]=[
-                            'fistel'        => $data['fistel'],
-                            'uf'            => $data['uf'],
-                            'municipio'     => $data['municipio'],
-                            'servico'       => isset($data['servico']) ? $data['servico'] : '',
-                            'canal'         => isset($data['canal']) ? $data['canal'] : '',
-                            'frequencia'    => isset($data['frequencia']) ? $data['frequencia'] : null,
-                            'finalidade'    => $data['entidade']['finalidade'],
-                            'classe'        => isset($data['classe']) ? $data['classe'] : null,
-                            'status'        => isset($data['state']) ? $data['state'] : null,
-                            'Entidade'      => $data['entidade']['entidade_nome_entidade'],
-                            'data'          => $data['updated_at'],
-                            'vencimento'    => $data['entidade']['habilitacao_datavalfreq'],
+                while ($registersCount < $registersTotal) {
+                    $registersCount += count($dataTable->original['data']);
+
+                    foreach ($dataTable->original['data'] as $data) {
+                        $list[] = [
+                            'Fistel'       => $data['fistel'] ?? '',
+                            'UF'           => $data['uf'] ?? '',
+                            'Município'    => $data['municipio'] ?? '',
+                            'Serviço'      => $data['servico'] ?? '',
+                            'Canal'        => $data['canal'] ?? '',
+                            'Frequência'   => $data['frequencia'] ?? '',
+                            'Finalidade'   => $data['entidade']['finalidade'] ?? '',
+                            'Classe'       => $data['classe'] ?? '',
+                            'Status'       => $data['state'] ?? '',
+                            'Entidade'     => $data['entidade']['entidade_nome_entidade'] ?? '',
+                            'Atualizado'   => $data['updated_at'] ?? '',
+                            'Vencimento'   => $data['entidade']['habilitacao_datavalfreq'] ?? '',
                         ];
                     }
-                    $request->request->add([
-                        'start'=>$registersCount,
-                    ]);
-                    Log::info('SubscriptionController make csv', ['lines_append'=>$registersCount]);
-                    $dataTable      = $this->dataTable($request);
-                }
-                $fastExcel = new FastExcel();
-                $fastExcel->configureCsv(';');
-                return ($fastExcel->data($list))->download("file.csv");
-            }catch (\Exception $e){
-                return response('Erro ao processar seu arquivo. Filtre os resultados para gerar um arquivo menor', 500);
-            }
 
+                    $request->request->add(['start' => $registersCount]);
+                    $dataTable = $this->dataTable($request);
+                }
+
+                return $this->downloadCsv($list, 'emissoras.csv');
+
+            } catch (\Throwable $e) {
+                Log::error('Erro export CSV', ['exception' => $e]);
+                return response(
+                    'Erro ao processar seu arquivo. Filtre os resultados para gerar um arquivo menor',
+                    500
+                );
+            }
         }
 
-		if ($request->ajax()) {
+
+        if ($request->ajax()) {
             return $this->dataTable($request);
 		}
 		return $this->renderView('SulRadio::backend.estacao-rd.index', []);
@@ -139,4 +141,32 @@ class AnatelController extends SulradioController {
 		];
 		$this->parameters = $parameters;
 	}
+    protected function downloadCsv(array $data, string $filename)
+    {
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Cache-Control'       => 'no-store, no-cache',
+        ];
+
+        return response()->stream(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+
+            // BOM UTF-8 (Excel PT-BR)
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Cabeçalho
+            if (!empty($data)) {
+                fputcsv($handle, array_keys($data[0]), ';');
+            }
+
+            // Linhas
+            foreach ($data as $row) {
+                fputcsv($handle, $row, ';');
+            }
+
+            fclose($handle);
+        }, 200, $headers);
+    }
+
 }

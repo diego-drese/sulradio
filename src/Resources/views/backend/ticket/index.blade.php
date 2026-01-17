@@ -22,74 +22,74 @@
                         <table id="table_ticket" class="table table-striped table-bordered" role="grid"
                                aria-describedby="file_export_info">
                             <thead>
-                            <tr>
-                                <th style="width: 75px">Ações</th>
-                                <th>Assunto</th>
-                                <th>Categoria</th>
-                                <th>Status</th>
-                                <th>Emissora</th>
-                                <th>Atualizado</th>
-                                <th>Prazo Vencimento</th>
-                                <th>Prazo&nbsp;Protocolo</th>
-                                <th>Responsáveis</th>
-                                <th>Solicitante</th>
-                            </tr>
-                            <tr>
-                                <th style="width: 60px">
-                                    <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
-                                        <span class="fas fa-sync-alt"></span> <b>Limpar</b>
-                                    </spa>
-                                </th>
-                                <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Assunto">
-                                </th>
+                                <tr>
+                                    <th style="width: 75px">Ações</th>
+                                    <th>Assunto</th>
+                                    <th>Categoria</th>
+                                    <th>Status</th>
+                                    <th>Emissora</th>
+                                    <th>Atualizado</th>
+                                    <th>Prazo Vencimento</th>
+                                    <th>Prazo&nbsp;Protocolo</th>
+                                    <th>Responsáveis</th>
+                                    <th>Solicitante</th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 60px">
+                                        <spa class="btn btn-primary btn-xs m-r-5" id="clearFilter">
+                                            <span class="fas fa-sync-alt"></span> <b>Limpar</b>
+                                        </spa>
+                                    </th>
+                                    <th role="row">
+                                        <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Assunto">
+                                    </th>
 
-                                <th role="row">
-                                    <select class="form-control fieldSearch">
-                                        <option value="">Todos</option>
-                                        @foreach($category as $value)
-                                            <option value="{{$value->id}}" style="color: {{$value->color}}">{{$value->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </th>
-                                <th role="row">
-                                    <select class="form-control fieldSearch">
-                                        <option value="">Todos</option>
-                                        @foreach($status as $value)
-                                            <option value="{{$value->id}}" style="color: {{$value->color}}">{{$value->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </th>
-                                <th role="row">
-                                    <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
-                                </th>
-                                <th role="row">
-                                    ---
-                                </th>
-                                <th role="row">
-                                    ---
-                                </th>
-                                <th role="row">
-                                    ---
-                                </th>
-                                <th role="row">
-                                    <select class="form-control fieldSearch">
-                                        <option value="">Todos</option>
-                                        @foreach($users as $value)
-                                            <option value="{{$value->id}}" >{{$value->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </th>
-                                <th role="row">
-                                    <select class="form-control fieldSearch">
-                                        <option value="">Todos</option>
-                                        @foreach($users as $value)
-                                            <option value="{{$value->id}}" >{{$value->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </th>
+                                    <th role="row">
+                                        <select class="form-control fieldSearch">
+                                            <option value="">Todos</option>
+                                            @foreach($category as $value)
+                                                <option value="{{$value->id}}" style="color: {{$value->color}}">{{$value->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
+                                    <th role="row">
+                                        <select class="form-control fieldSearch">
+                                            <option value="">Todos</option>
+                                            @foreach($status as $value)
+                                                <option value="{{$value->id}}" style="color: {{$value->color}}">{{$value->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
+                                    <th role="row">
+                                        <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar nome">
+                                    </th>
+                                    <th role="row">
+                                        ---
+                                    </th>
+                                    <th role="row">
+                                        ---
+                                    </th>
+                                    <th role="row">
+                                        ---
+                                    </th>
+                                    <th role="row">
+                                        <select class="form-control fieldSearch">
+                                            <option value="">Todos</option>
+                                            @foreach($users as $value)
+                                                <option value="{{$value->id}}" >{{$value->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
+                                    <th role="row">
+                                        <select class="form-control fieldSearch">
+                                            <option value="">Todos</option>
+                                            @foreach($users as $value)
+                                                <option value="{{$value->id}}" >{{$value->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
 
-                            </tr>
+                                </tr>
                             </thead>
                             <tbody>
                             </tbody>
