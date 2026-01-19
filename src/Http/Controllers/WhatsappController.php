@@ -7,7 +7,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Oka6\Admin\Http\Library\ResourceAdmin;
-use Oka6\SulRadio\Models\TicketNotification;
 use Oka6\SulRadio\Models\WhatsappNotification;
 use Oka6\SulRadio\Service\WhatsAppService;
 use Yajra\DataTables\DataTables;
@@ -33,7 +32,7 @@ class WhatsappController extends SulradioController {
 					return route('ticket.ticket', [$row->ticket_id]);
 				})->addColumn('status', function ($row) {
 					return WhatsappNotification::STATUS_NOTIFICATION_TRANSLATE[$row->status];
-				})->addColumn('sent_at', function ($row) {
+				})->addColumn('sent_at_formated', function ($row) {
 					return $row->sent_at ? $row->sent_at->timeZone('America/Sao_paulo')->format('d/m/Y H:i') : '---';
 				})->setRowClass(function () {
 					return 'center';

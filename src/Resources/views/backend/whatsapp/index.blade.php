@@ -50,7 +50,8 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table id="table" class="table table-striped table-bordered">
+                        <table id="table" class="table table-striped table-bordered" role="grid"
+                               aria-describedby="file_export_info">
                             <thead>
                             <tr>
                                 <th style="width:80px">Ações</th>
@@ -79,6 +80,19 @@
         </div>
 
     </div>
+@endsection
+@section('style_head')
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/select2.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/bootstrap-switch.css')}}">
+    <style>
+        .table td, .table th {
+            padding: 0.5em;
+        }
+        #table_ticket_filter{
+            display: none;
+        }
+    </style>
 @endsection
 @section('script_footer_end')
     <script src="{{ mix('/vendor/oka6/admin/js/datatables.js') }}"></script>
@@ -163,6 +177,7 @@
                 autoWidth: false,
                 orderCellsTop: true,
                 stateSave: true,
+                searching: true,
                 ajax: '{{ route('ticket.config.whatsapp') }}',
                 columns: [
                     {
@@ -174,14 +189,16 @@
                             return '<a href="' + data.ticket_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Ticket #'+data.ticket_id+'</b></a>';
                         }
                     },
-                    { data: "type" },
-                    { data: "destination" },
-                    { data: "code" },
-                    { data: "body" },
-                    { data: "status" },
-                    { data: "sent_at" },
+                    { data: "type" , orderable: true },
+                    { data: "destination" , orderable: false },
+                    { data: "code", orderable: false },
+                    { data: "body", orderable: false },
+                    { data: "status", orderable: false },
+                    { data: "sent_at_formated", orderable: true, name:'sent_at'},
+
                 ],
-                order: [[1, 'desc']]
+                order: [[6, 'desc']]
+
             });
 
             $('#table thead tr:eq(1) th').each(function (i) {
