@@ -17,6 +17,7 @@ class WhatsappNotification extends Model {
         'code',
         'status',
         'description',
+        'sent_at',
         'body',
 	];
     protected $casts = [
