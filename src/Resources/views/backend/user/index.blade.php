@@ -38,7 +38,11 @@
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Email">
                                 </th>
                                 <th>
-                                    ---
+                                    <select name="active" class="form-control statusActive">
+                                        <option value="">Todos</option>
+                                        <option value="1">Sim</option>
+                                        <option value="0">Não</option>
+                                    </select>
                                 </th>
                                 <th>
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Perfil">
