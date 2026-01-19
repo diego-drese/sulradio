@@ -201,5 +201,8 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function 
 
 });
 
+Route::post('/whatsapp/webhook', 'Oka6\SulRadio\Http\Controllers\WhatsappController@webhook')->name('ticket.config.whatsapp.webhook');
+
+
 
 

@@ -22,6 +22,7 @@
                             <tr>
                                 <th>Nome</th>
                                 <th>Email</th>
+                                <th>Recebe Whats</th>
                                 <th>Perfil</th>
                                 <th>Crido por</th>
                                 <th>Status</th>
@@ -35,6 +36,9 @@
                                 </th>
                                 <th>
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Email">
+                                </th>
+                                <th>
+                                    ---
                                 </th>
                                 <th>
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Perfil">
@@ -145,6 +149,16 @@
                 columns: [
                     {data: "name", 'name': 'name'},
                     {data: "email", 'name': 'email'},
+                    {data: "receive_whatsapp", 'name': 'receive_whatsapp', orderable: false,
+                        render: function (data, display, row) {
+                            if (data == "1") {
+                                return '<span class="badge badge-success mr-1 ">SIM</span>';
+                            } else if (data == '0') {
+                                return '<span class="badge badge-danger mr-1 ">NÃO</span>';
+                            }
+                            return '---';
+                        }
+                    },
                     {data: "profile_name", 'name': 'profile_name'},
                     {data: "created", 'name': 'created'},
                     {data: "active", 'name': 'active', orderable: false,

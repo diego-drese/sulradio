@@ -36,6 +36,8 @@ class UsersController extends SulradioController {
 					return route('sulradio.user.edit', [$row->id]);
 				})->addColumn('last_login_at', function ($row) {
 					return $row->last_login_at??'---';
+				})->addColumn('profile_name', function ($row) {
+					return $row->profile_name??'---';
 				})->addColumn('created', function ($row) {
 					return $row->user_created_id ? UserSulRadio::getByIdStatic($row->user_created_id)->name : '---';
 				})->addColumn('clients', function ($row) {

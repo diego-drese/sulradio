@@ -30,6 +30,7 @@ class UserSulRadio extends User {
 		'user_updated_at',
 		'remember_token',
 		'description',
+		'receive_whatsapp',
 	];
 	public function scopeClient($query, $clientId){
 		return $query->where('client_id',  (int)$clientId);

@@ -5,8 +5,6 @@ namespace Oka6\SulRadio\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Oka6\Admin\Models\User;
-use Oka6\SulRadio\Helpers\Helper;
 use Oka6\SulRadio\Mail\TicketComment;
 use Oka6\SulRadio\Mail\TicketCreate;
 use Oka6\SulRadio\Mail\TicketDeadline;
@@ -18,6 +16,9 @@ use Oka6\SulRadio\Mail\TicketCommentFromClient;
 use Oka6\SulRadio\Models\SystemLog;
 use Oka6\SulRadio\Models\Ticket;
 use Oka6\SulRadio\Models\TicketNotification;
+use Oka6\SulRadio\Models\UserSulRadio;
+use Oka6\SulRadio\Models\WhatsappNotification;
+use Oka6\SulRadio\Service\WhatsAppService;
 
 
 class ProcessTicketNotification extends Command {
@@ -53,6 +54,8 @@ class ProcessTicketNotification extends Command {
         $tries=[];
         foreach ($notifications as $notification){
             $try=count($tries);
+            $urlButton = route('ticket.ticket', [$notification->ticket_id]);
+            $messageWhats = null;
             try {
                 $keyMap = $notification->ticket_id.'-'.$notification->type.'-'.$notification->agent_current_id;
                 if(!isset($userSendNotification[$keyMap])){
@@ -61,22 +64,90 @@ class ProcessTicketNotification extends Command {
                         $notification->status = TicketNotification::STATUS_IGNORED;
                     }else if ($notification->type == TicketNotification::TYPE_COMMENT) {
                         $this->sendEmailTypeComment($notification, TicketNotification::TYPE_COMMENT);
+                        $messageWhats = '💬 *Novo comentário no ticket*
+
+Um novo comentário foi adicionado ao ticket.';
+
                     }else if ($notification->type == TicketNotification::TYPE_TRACKER_URL) {
                         $this->sendEmailTypeComment($notification, TicketNotification::TYPE_TRACKER_URL);
+                        $messageWhats = '📍 *Atualização de andamento*
+
+Houve uma atualização no andamento do processo do ticket.';
+
+
                     } else if ($notification->type == TicketNotification::TYPE_DEADLINE) {
                         $this->sendEmailTypeDeadline($notification);
+                        $messageWhats = '⏰ *Prazo de execução*
+
+Este ticket possui um prazo de execução definido ou próximo do vencimento.';
+
                     } else if ($notification->type == TicketNotification::TYPE_PROTOCOL_DEADLINE) {
                         $this->sendEmailTypeProtocolDeadline($notification);
+                        $messageWhats = '📄 *Protocolo de entrega*
+
+O ticket possui um protocolo de entrega com prazo associado.';
+
+
                     }else if ($notification->type == TicketNotification::TYPE_RENEWAL_ALERT) {
                         $this->sendEmailTypeRenewalAlert($notification);
+                        $messageWhats = '⚠️ *Alerta de vencimento*
+
+Este ticket está próximo do vencimento.';
+
+
                     } else if ($notification->type == TicketNotification::TYPE_NEW) {
                         $this->sendEmailTypeNew($notification);
+                        $messageWhats = '🆕 *Novo ticket atribuído*
+
+Um novo ticket foi atribuído a você.';
+
+
                     } else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
                         $this->sendEmailTypeCommentClient($notification);
+                        $urlButton= route('ticket.client.answer', [$notification->ticket_id]);
+                        $messageWhats = '🙋 *Resposta do cliente*
+
+O cliente respondeu um comentário no ticket.';
+
                     } else if ($notification->type == TicketNotification::TYPE_TRANSFER_AGENT) {
                         $this->sendEmailTypeTransfer($notification);
+
                     }
-                    Log::info('ProcessTicketNotification, email sent', ['notification'=>$notification->id, 'type'=>$notification->type]);
+                    Log::info('ProcessTicketNotification, email sent', ['notification'=>$notification->id, 'type'=>$notification->type, 'messageWhats'=>$messageWhats]);
+                    if($messageWhats!=null){
+                        $currentAgent = UserSulRadio::getByIdStatic($notification->agent_current_id);
+                        if (!$currentAgent) {
+                            Log::warning('ProcessTicketNotification: agent not found', [
+                                'notification_id' => $notification->id,
+                                'ticket_id'       => $notification->ticket_id,
+                                'agent_id'        => $notification->agent_current_id,
+                                'type'            => $notification->type,
+                            ]);
+                        }else if (!$currentAgent->receive_whatsapp) {
+                            Log::info('ProcessTicketNotification: agent disabled notifications', [
+                                'notification_id' => $notification->id,
+                                'ticket_id'       => $notification->ticket_id,
+                                'agent_id'        => $currentAgent->id,
+                                'destination'     => $currentAgent->cell_phone,
+                                'type'            => $notification->type,
+                            ]);
+                        }else{
+                            $messageWhatsFinal = "🔔 *Sead – Ticket #{$notification->ticket_id}*\n\n";
+                            $messageWhatsFinal .= $messageWhats . "\n\n";
+                            $messageWhatsFinal .= "👉 Acesse: {$urlButton}";
+                            $whatsappNotification = WhatsappNotification::create([
+                                'ticket_id'             => $notification->ticket_id,
+                                'ticket_comment_id'     => $notification->comment_id,
+                                'type'                  => TicketNotification::TYPE_TRANSLATED[$notification->type],
+                                'destination'           => $currentAgent->cell_phone,
+                                'transaction_id'        => uniqid(),
+                                'status'                => WhatsappNotification::STATUS_NOTIFICATION_PENDING,
+                                'body'                  => $messageWhatsFinal,
+                            ]);
+                            $wp = new WhatsAppService();
+                            $wp->sendMessage($whatsappNotification, $currentAgent->cell_phone);
+                        }
+                    }
                 }else{
                     $notification->status = TicketNotification::STATUS_IGNORED;
                     Log::info('ProcessTicketNotification, ignoring send email', ['keyMap'=>$keyMap, 'notification'=>$notification]);
@@ -125,8 +196,8 @@ class ProcessTicketNotification extends Command {
     }
 
     public function sendEmailTypeNew($notification){
-        $currentAgent   = User::getByIdStatic($notification->agent_current_id);
-        $owner          = User::getByIdStatic($notification->user_logged);
+        $currentAgent   = UserSulRadio::getByIdStatic($notification->agent_current_id);
+        $owner          = UserSulRadio::getByIdStatic($notification->user_logged);
         $ticket         = $this->getTicket($notification->ticket_id);
         $ticket->owner  = $owner;
         $ticket->agent  = $currentAgent;
@@ -139,8 +210,8 @@ class ProcessTicketNotification extends Command {
     }
 
     public function sendEmailTypeDeadline($notification){
-        $currentAgent   = User::getByIdStatic($notification->agent_current_id);
-        $owner          = User::getByIdStatic($notification->user_logged);
+        $currentAgent   = UserSulRadio::getByIdStatic($notification->agent_current_id);
+        $owner          = UserSulRadio::getByIdStatic($notification->user_logged);
         $ticket         = $this->getTicket($notification->ticket_id);
         $ticket->owner  = $owner;
         $ticket->agent  = $currentAgent;
@@ -153,8 +224,8 @@ class ProcessTicketNotification extends Command {
     }
 
     public function sendEmailTypeProtocolDeadline($notification){
-        $currentAgent   = User::getByIdStatic($notification->agent_current_id);
-        $owner          = User::getByIdStatic($notification->user_logged);
+        $currentAgent   = UserSulRadio::getByIdStatic($notification->agent_current_id);
+        $owner          = UserSulRadio::getByIdStatic($notification->user_logged);
         $ticket         = $this->getTicket($notification->ticket_id);
         $ticket->owner  = $owner;
         $ticket->agent  = $currentAgent;
@@ -167,8 +238,8 @@ class ProcessTicketNotification extends Command {
     }
 
     public function sendEmailTypeRenewalAlert($notification){
-        $currentAgent   = User::getByIdStatic($notification->agent_current_id);
-        $owner          = User::getByIdStatic($notification->user_logged);
+        $currentAgent   = UserSulRadio::getByIdStatic($notification->agent_current_id);
+        $owner          = UserSulRadio::getByIdStatic($notification->user_logged);
         $ticket         = $this->getTicket($notification->ticket_id);
         $ticket->owner  = $owner;
         $ticket->agent  = $currentAgent;
@@ -179,8 +250,8 @@ class ProcessTicketNotification extends Command {
     }
 
     public function sendEmailTypeComment($notification, $type){
-        $currentAgent       = User::getByIdStatic($notification->agent_current_id);
-        $userLogged         = User::getByIdStatic($notification->user_logged);
+        $currentAgent       = UserSulRadio::getByIdStatic($notification->agent_current_id);
+        $userLogged         = UserSulRadio::getByIdStatic($notification->user_logged);
         $comment            = \Oka6\SulRadio\Models\TicketComment::getById($notification->comment_id);
         $ticket             = $this->getTicket($notification->ticket_id);
         if($comment){
@@ -200,9 +271,9 @@ class ProcessTicketNotification extends Command {
         }
     }
     public function sendEmailTypeCommentClient($notification){
-        $userLogged         = User::getByIdStatic($notification->user_logged);
-        $currentAgent       = User::getByIdStatic($notification->agent_current_id);
-        $comment            = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
+        $userLogged         = UserSulRadio::getByIdStatic($notification->user_logged);
+        $currentAgent       = UserSulRadio::getByIdStatic($notification->agent_current_id);
+        $comment            = \Oka6\SulRadio\Models\TicketNotificationClientUserSulRadio::getById($notification->comment_id);
         $clientUser         = \Oka6\SulRadio\Models\TicketNotificationClient::getById($comment->ticket_notification_client_id);
         $ticket             = $this->getTicket($clientUser->ticket_id);
         $comment->agent     = $currentAgent;
@@ -219,9 +290,9 @@ class ProcessTicketNotification extends Command {
     }
 
     public function sendEmailTypeUpdate($notification){
-        $userLogged         = User::getByIdStatic($notification->user_logged);
-        $currentAgent       = User::getByIdStatic($notification->agent_current_id);
-        $owner              = User::getByIdStatic($notification->owner_id);
+        $userLogged         = UserSulRadio::getByIdStatic($notification->user_logged);
+        $currentAgent       = UserSulRadio::getByIdStatic($notification->agent_current_id);
+        $owner              = UserSulRadio::getByIdStatic($notification->owner_id);
         $ticket             = $this->getTicket($notification->ticket_id);
         $ticket->owner      = $owner;
         $ticket->agent      = $currentAgent;
@@ -235,10 +306,10 @@ class ProcessTicketNotification extends Command {
     }
 
     public function sendEmailTypeTransfer($notification){
-        $userLogged         = User::getByIdStatic($notification->user_logged);
-        $currentAgent       = User::getByIdStatic($notification->agent_current_id);
-        $oldAgent           = User::getByIdStatic($notification->agent_old_id);
-        $owner              = User::getByIdStatic($notification->owner_id);
+        $userLogged         = UserSulRadio::getByIdStatic($notification->user_logged);
+        $currentAgent       = UserSulRadio::getByIdStatic($notification->agent_current_id);
+        $oldAgent           = UserSulRadio::getByIdStatic($notification->agent_old_id);
+        $owner              = UserSulRadio::getByIdStatic($notification->owner_id);
 
         $ticket             = $this->getTicket($notification->ticket_id);
         $ticket->owner      = $owner;

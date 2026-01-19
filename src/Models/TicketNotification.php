@@ -35,6 +35,19 @@ class TicketNotification extends Model {
 	const TYPE_RENEWAL_ALERT = 9;
 	const TYPE_UNDEFINED = 99;
 
+    const TYPE_TRANSLATED = [
+        self::TYPE_NEW=>'novo',
+        self::TYPE_UPDATE=>'update',
+        self::TYPE_COMMENT=>'comentário',
+        self::TYPE_TRANSFER_AGENT=>'transferência',
+        self::TYPE_COMMENT_CLIENT=>'cliente',
+        self::TYPE_TRACKER_URL=>'processo',
+        self::TYPE_DEADLINE=>'prazo ticket',
+        self::TYPE_PROTOCOL_DEADLINE=>'prazo protocolo',
+        self::TYPE_RENEWAL_ALERT=>'vencimento ticket',
+        self::TYPE_UNDEFINED=>'sem tipo',
+    ];
+
 	protected $table = 'ticket_notification';
 	protected $connection = 'sulradio';
 	

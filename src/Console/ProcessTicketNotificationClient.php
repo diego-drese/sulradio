@@ -95,6 +95,7 @@ class ProcessTicketNotificationClient extends Command {
 
     public function callSMTP(&$notification, $userToNotify, $subject, &$try){
         $try++;
+
         try {
             Mail::to($userToNotify->user_email)
                 ->bcc('sulradio@sulradio.com.br')
@@ -106,7 +107,6 @@ class ProcessTicketNotificationClient extends Command {
             Log::error('ProcessTicketNotificationClient sendEmail', ['e'=>$e->getMessage(), 'file'=>$e->getFile(), 'line'=>$e->getLine()]);
             $userToNotify->status = TicketNotificationClientUser::STATUS_ERROR;
         }
-
     }
 
 }
