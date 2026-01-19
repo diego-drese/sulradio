@@ -185,7 +185,6 @@
                         orderable: false,
                         searchable: false,
                         render: function (data) {
-
                             return '<a href="' + data.ticket_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Ticket #'+data.ticket_id+'</b></a>';
                         }
                     },
