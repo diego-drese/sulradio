@@ -59,7 +59,7 @@ class WhatsappController extends SulradioController {
                 'authenticated' => false,
                 'message' => 'QR não disponível, verifique o container',
             ]);
-        }elseif(isset($response['authenticated'])){
+        }elseif(isset($response['authenticated']) && $response['authenticated'] === true){
             return response()->json([
                 'authenticated' => true,
                 'message' => 'Sessão já autenticada',
