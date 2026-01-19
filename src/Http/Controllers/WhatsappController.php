@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Oka6\Admin\Http\Library\ResourceAdmin;
+use Oka6\SulRadio\Models\TicketNotification;
 use Oka6\SulRadio\Models\WhatsappNotification;
 use Oka6\SulRadio\Service\WhatsAppService;
 use Yajra\DataTables\DataTables;

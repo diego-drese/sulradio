@@ -36,16 +36,16 @@ class TicketNotification extends Model {
 	const TYPE_UNDEFINED = 99;
 
     const TYPE_TRANSLATED = [
-        self::TYPE_NEW=>'novo',
-        self::TYPE_UPDATE=>'update',
-        self::TYPE_COMMENT=>'comentário',
-        self::TYPE_TRANSFER_AGENT=>'transferência',
-        self::TYPE_COMMENT_CLIENT=>'cliente',
-        self::TYPE_TRACKER_URL=>'processo',
-        self::TYPE_DEADLINE=>'prazo ticket',
-        self::TYPE_PROTOCOL_DEADLINE=>'prazo protocolo',
-        self::TYPE_RENEWAL_ALERT=>'vencimento ticket',
-        self::TYPE_UNDEFINED=>'sem tipo',
+        self::TYPE_NEW=>'Novo',
+        self::TYPE_UPDATE=>'Atualizado',
+        self::TYPE_COMMENT=>'Comentário',
+        self::TYPE_TRANSFER_AGENT=>'Transferência',
+        self::TYPE_COMMENT_CLIENT=>'Cliente',
+        self::TYPE_TRACKER_URL=>'Processo',
+        self::TYPE_DEADLINE=>'Prazo ticket',
+        self::TYPE_PROTOCOL_DEADLINE=>'Prazo protocolo',
+        self::TYPE_RENEWAL_ALERT=>'Vencimento ticket',
+        self::TYPE_UNDEFINED=>'Sem tipo',
     ];
 
 	protected $table = 'ticket_notification';
