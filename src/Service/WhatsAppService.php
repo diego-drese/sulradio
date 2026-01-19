@@ -53,6 +53,7 @@ final class WhatsAppService {
 
     public function sendMessage(WhatsappNotification $whatsappNotification, $cellphone){
         try {
+            $whatsappNotification->sent_at = Carbon::now();
             $parserCellphone = $this->parserCellphone($cellphone);
             if(!$parserCellphone){
                 $whatsappNotification->status       = WhatsappNotification::STATUS_NOTIFICATION_INVALID_PHONE;
@@ -93,7 +94,6 @@ final class WhatsAppService {
                 $whatsappNotification->status       = WhatsappNotification::STATUS_NOTIFICATION_ERROR;
                 $whatsappNotification->code         = $data['id'] ?? null;
                 $whatsappNotification->destination  = $data['to'] ?? $cellphone;
-                $whatsappNotification->sent_at      = Carbon::now();
                 $whatsappNotification->save();
 
             }
