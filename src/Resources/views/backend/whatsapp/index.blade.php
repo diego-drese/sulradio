@@ -55,6 +55,7 @@
                             <thead>
                             <tr>
                                 <th style="width:80px">Ações</th>
+                                <th>Usuário</th>
                                 <th>Tipo</th>
                                 <th>Destino</th>
                                 <th>Código</th>
@@ -64,6 +65,7 @@
                             </tr>
                             <tr>
                                 <th><span class="btn btn-primary btn-xs" id="clearFilter"><span class="fas fa-sync-alt"></span> <b>Limpar</b></span></th>
+                                <th>---</th>
                                 <th><input class="fieldSearch form-control" placeholder="Buscar Tipo"></th>
                                 <th><input class="fieldSearch form-control" placeholder="Buscar Destinatário"></th>
                                 <th><input class="fieldSearch form-control" placeholder="Buscar Código"></th>
@@ -188,6 +190,11 @@
                             return '<a href="' + data.ticket_url + '" class="badge badge-secondary mr-1 " role="button" aria-pressed="true"><b>Ticket #'+data.ticket_id+'</b></a>';
                         }
                     },
+                    { data: "link_user",
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return data;
+                        } },
                     { data: "type" , orderable: true },
                     { data: "destination" , orderable: false },
                     { data: "code", orderable: false },

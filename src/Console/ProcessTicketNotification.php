@@ -136,6 +136,7 @@ O cliente respondeu um comentário no ticket.';
                             $messageWhatsFinal .= $messageWhats . "\n\n";
                             $messageWhatsFinal .= "👉 Acesse: {$urlButton}";
                             $whatsappNotification = WhatsappNotification::create([
+                                'user_id'               => $currentAgent->id,
                                 'ticket_id'             => $notification->ticket_id,
                                 'ticket_comment_id'     => $notification->comment_id,
                                 'type'                  => TicketNotification::TYPE_TRANSLATED[$notification->type],

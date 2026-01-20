@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Oka6\Admin\Http\Library\ResourceAdmin;
+use Oka6\SulRadio\Models\UserSulRadio;
 use Oka6\SulRadio\Models\WhatsappNotification;
 use Oka6\SulRadio\Service\WhatsAppService;
 use Yajra\DataTables\DataTables;
@@ -34,9 +35,21 @@ class WhatsappController extends SulradioController {
 					return WhatsappNotification::STATUS_NOTIFICATION_TRANSLATE[$row->status];
 				})->addColumn('sent_at_formated', function ($row) {
 					return $row->sent_at ? $row->sent_at->timeZone('America/Sao_paulo')->format('d/m/Y H:i') : '---';
+				})->addColumn('link_user', function ($row) {
+                    $user = UserSulRadio::getByIdStatic($row->user_id);
+                    $class = 'badge-secondary';
+                    if($user->client_id){
+                        $class = 'badge-primary';
+                        $route = route('client.user.edit', [$user->client_id, $user->_id]);
+                    }else{
+                        $route = route('sulradio.user.edit', [$row->user_id]);
+                    }
+                    $name = $user->name.' '.$user->lastname;
+                    return '<a href="'.$route.'" class="badge '.$class.' mr-1 " role="button" aria-pressed="true"><b>'.$name. ' '.'</b></a>';
 				})->setRowClass(function () {
 					return 'center';
 				})
+                ->rawColumns(['link_user'])
 				->toJson(true);
 		}
 		return $this->renderView('SulRadio::backend.whatsapp.index', []);

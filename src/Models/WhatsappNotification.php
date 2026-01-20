@@ -9,6 +9,7 @@ use Oka6\Admin\Models\User;
 
 class WhatsappNotification extends Model {
 	protected $fillable = [
+        'user_id',
         'ticket_id',
         'ticket_comment_id',
         'type',

@@ -24,7 +24,7 @@ class UsersController extends SulradioController {
 	
 	public function index(Request $request) {
 		if ($request->ajax()) {
-			$model = UserSulRadio::where('id','!=', -1);
+			$model = UserSulRadio::where('id','!=', -1)->whereNull('client_id');
 			return DataTables::of($model)
 				->filter(function ($query) use($request) {
 					$active = $request->get('active');
