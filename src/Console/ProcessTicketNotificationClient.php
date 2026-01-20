@@ -92,35 +92,37 @@ class ProcessTicketNotificationClient extends Command {
 			$userToNotify->save();
 
             $user = UserSulRadio::getByIdStatic($userToNotify->user_id);
-            $messageWhatsFinal  = "🎫 *SULRADIO – Atualização de Processo*\n\n";
-            $messageWhatsFinal .= "📻 *Emissora:*\n";
-            if ($ticket->emissora) {
-                $messageWhatsFinal .= $ticket->desc_servico
-                    . ' - '
-                    . $ticket->emissora
-                    . ' (' . $ticket->desc_municipio . ' / ' . $ticket->desc_uf . ')'
-                    . "\n\n";
-            } else {
-                $messageWhatsFinal .= "—\n\n";
-            }
-            $messageWhatsFinal .= "📝 *Assunto:*\n";
-            $messageWhatsFinal .= "{$ticket->subject}\n\n";
-            $messageWhatsFinal .= "ℹ️ Uma nova atualização está disponível no sistema SEAD.\n\n";
-            $messageWhatsFinal .= "👉 *Acessar o processo:*\n";
-            $messageWhatsFinal .= route('ticket.client.answer', [$userToNotify->identify]);
+            if($user->receive_whatsapp){
+                $messageWhatsFinal  = "🎫 *SULRADIO – Atualização de Processo*\n\n";
+                $messageWhatsFinal .= "📻 *Emissora:*\n";
+                if ($ticket->emissora) {
+                    $messageWhatsFinal .= $ticket->desc_servico
+                        . ' - '
+                        . $ticket->emissora
+                        . ' (' . $ticket->desc_municipio . ' / ' . $ticket->desc_uf . ')'
+                        . "\n\n";
+                } else {
+                    $messageWhatsFinal .= "—\n\n";
+                }
+                $messageWhatsFinal .= "📝 *Assunto:*\n";
+                $messageWhatsFinal .= "{$ticket->subject}\n\n";
+                $messageWhatsFinal .= "ℹ️ Uma nova atualização está disponível no sistema SEAD.\n\n";
+                $messageWhatsFinal .= "👉 *Acessar o processo:*\n";
+                $messageWhatsFinal .= route('ticket.client.answer', [$userToNotify->identify]);
 
-            $whatsappNotification = WhatsappNotification::create([
-                'user_id'               => $user->id,
-                'ticket_id'             => $notification->ticket_id,
-                'ticket_comment_id'     => $notification->comment_id,
-                'type'                  => TicketNotification::TYPE_TRANSLATED[$notification->type],
-                'destination'           => $user->cell_phone,
-                'transaction_id'        => uniqid(),
-                'status'                => WhatsappNotification::STATUS_NOTIFICATION_PENDING,
-                'body'                  => $messageWhatsFinal,
-            ]);
-            $wp = new WhatsAppService();
-            $wp->sendMessage($whatsappNotification, $user->cell_phone);
+                $whatsappNotification = WhatsappNotification::create([
+                    'user_id'               => $user->id,
+                    'ticket_id'             => $notification->ticket_id,
+                    'ticket_comment_id'     => $notification->comment_id,
+                    'type'                  => TicketNotification::TYPE_TRANSLATED[$notification->type],
+                    'destination'           => $user->cell_phone,
+                    'transaction_id'        => uniqid(),
+                    'status'                => WhatsappNotification::STATUS_NOTIFICATION_PENDING,
+                    'body'                  => $messageWhatsFinal,
+                ]);
+                $wp = new WhatsAppService();
+                $wp->sendMessage($whatsappNotification, $user->cell_phone);
+            }
 		}
 
 		unset($notification->attach);
