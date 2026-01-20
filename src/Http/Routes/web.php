@@ -200,7 +200,10 @@ Route::group(['prefix' => 'console', 'middleware' => ['web', 'auth']], function 
 	Route::any('/document-ticket/archived', 'Oka6\SulRadio\Http\Controllers\PublicController@archivedDocumentTicket')->name('document.archived.ticket');
 });
 
-Route::any('/ticket-client-answer/{id}', 'Oka6\SulRadio\Http\Controllers\PublicController@ticketClientAnswer')->name('ticket.client.answer');
+Route::group(['middleware' => ['web']], function () {
+    Route::any('/ticket-client-answer/{id}', 'Oka6\SulRadio\Http\Controllers\PublicController@ticketClientAnswer')->name('ticket.client.answer');
+});
+
 Route::post('/whatsapp/webhook', 'Oka6\SulRadio\Http\Controllers\WhatsappController@webhook')->name('ticket.config.whatsapp.webhook');
 
 

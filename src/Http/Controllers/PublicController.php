@@ -239,7 +239,9 @@ class PublicController extends SulradioController {
             return redirect('/');
         }
         /** 🔥 LOGIN AUTOMÁTICO */
-        Auth::guard('web')->login($user, true);
+        // Usa o MESMO guard do sistema
+        $this->guard()->login($user, true);
+        $request->session()->regenerate();
         /** 🧠 Usuário autenticado */
         $user = Auth::user();
         /** 🔎 Busca notificação e ticket */
@@ -403,5 +405,8 @@ class PublicController extends SulradioController {
 		return $this->renderView('SulRadio::backend.system_log.index',
 			['hasAdmin'=>$hasAdmin, 'status'=>$status, 'types'=>$types,'zones'=>$zones, 'users'=>$users, 'user'=>$user]);
 	}
+    protected function guard(){
+        return Auth::guard();
+    }
 	
 }
