@@ -652,11 +652,7 @@
             var tableWidth = table.offsetWidth;
             console.log('Antes de carregar', tableWidth);
             // Seleciona todos os <td> que contêm comentários
-            const comments = document.querySelectorAll('.comment');
-            comments.forEach(function (el) {
-                el.style.maxWidth = tableWidth-74 + 'px';
-                el.style.overflowX = 'auto';
-            });
+
             var table_ticket = $('#tableComment').DataTable({
                 language: {
                     "sEmptyTable": "Nenhum registro encontrado",
