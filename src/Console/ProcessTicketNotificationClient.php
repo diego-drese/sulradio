@@ -92,7 +92,6 @@ class ProcessTicketNotificationClient extends Command {
 			$userToNotify->save();
 
             $user = UserSulRadio::getByIdStatic($userToNotify->user_id);
-
             $messageWhatsFinal  = "🎫 *SULRADIO – Atualização de Processo*\n\n";
             $messageWhatsFinal .= "📻 *Emissora:*\n";
             if ($ticket->emissora) {
@@ -108,7 +107,7 @@ class ProcessTicketNotificationClient extends Command {
             $messageWhatsFinal .= "{$ticket->subject}\n\n";
             $messageWhatsFinal .= "ℹ️ Uma nova atualização está disponível no sistema SEAD.\n\n";
             $messageWhatsFinal .= "👉 *Acessar o processo:*\n";
-            $messageWhatsFinal .= route('ticket.client.answer', [$notification->identify]);
+            $messageWhatsFinal .= route('ticket.client.answer', [$usersToNotify->identify]);
 
             $whatsappNotification = WhatsappNotification::create([
                 'user_id'               => $user->id,
