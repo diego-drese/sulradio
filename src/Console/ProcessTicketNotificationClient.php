@@ -92,18 +92,21 @@ class ProcessTicketNotificationClient extends Command {
 			$userToNotify->save();
 
             $user = UserSulRadio::getByIdStatic($userToNotify->user_id);
-            /** Send Whats */
-            $emissora = $ticket->emissora_nome ?: '—';
+
             $messageWhatsFinal  = "🎫 *SULRADIO – Atualização de Processo*\n\n";
-
             $messageWhatsFinal .= "📻 *Emissora:*\n";
-            $messageWhatsFinal .= "{$emissora}\n\n";
-
+            if ($ticket->emissora) {
+                $messageWhatsFinal .= $ticket->desc_servico
+                    . ' - '
+                    . $ticket->emissora
+                    . ' (' . $ticket->desc_municipio . ' / ' . $ticket->desc_uf . ')'
+                    . "\n\n";
+            } else {
+                $messageWhatsFinal .= "—\n\n";
+            }
             $messageWhatsFinal .= "📝 *Assunto:*\n";
             $messageWhatsFinal .= "{$ticket->subject}\n\n";
-
-            $messageWhatsFinal .= "ℹ️ Nova atualização disponível no SEAD.\n\n .\n\n";
-
+            $messageWhatsFinal .= "ℹ️ Uma nova atualização está disponível no sistema SEAD.\n\n";
             $messageWhatsFinal .= "👉 *Acessar o processo:*\n";
             $messageWhatsFinal .= route('ticket.client.answer', [$notification->identify]);
 

@@ -136,10 +136,15 @@ O cliente respondeu um comentário no ticket.';
                             $messageWhatsFinal  = "🎫 *SEAD – Ticket #{$notification->ticket_id}*\n\n";
                             $messageWhatsFinal .= "📝 *Assunto:*\n";
                             $messageWhatsFinal .= "{$ticket->subject}\n\n";
-                            if ($ticket->emissora_nome) {
+                            if ($ticket->emissora) {
                                 $messageWhatsFinal .= "📻 *Emissora:*\n";
-                                $messageWhatsFinal .= "{$ticket->emissora_nome}\n\n";
+                                $messageWhatsFinal .= $ticket->desc_servico
+                                    . ' - '
+                                    . $ticket->emissora
+                                    . ' (' . $ticket->desc_municipio . ' / ' . $ticket->desc_uf . ')'
+                                    . "\n\n";
                             }
+
                             $messageWhatsFinal .= "{$messageWhats}\n\n";
                             $messageWhatsFinal .= "👉 *Acessar o ticket:*\n{$urlButton}";
                             $whatsappNotification = WhatsappNotification::create([
