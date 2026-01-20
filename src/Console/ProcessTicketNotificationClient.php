@@ -107,7 +107,7 @@ class ProcessTicketNotificationClient extends Command {
             $messageWhatsFinal .= "{$ticket->subject}\n\n";
             $messageWhatsFinal .= "ℹ️ Uma nova atualização está disponível no sistema SEAD.\n\n";
             $messageWhatsFinal .= "👉 *Acessar o processo:*\n";
-            $messageWhatsFinal .= route('ticket.client.answer', [$usersToNotify->identify]);
+            $messageWhatsFinal .= route('ticket.client.answer', [$userToNotify->identify]);
 
             $whatsappNotification = WhatsappNotification::create([
                 'user_id'               => $user->id,
