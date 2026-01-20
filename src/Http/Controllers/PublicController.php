@@ -246,25 +246,23 @@ class PublicController extends SulradioController {
         $ticketNotificationClient = TicketNotificationClient::getById(
             $ticketNotificationClientUser->ticket_notification_client_id
         );
+        $resource = Resource::where('id', (int)$user->resource_default_id)->first();
         if (!$ticketNotificationClient) {
             toastr()->error('Ticket não encontrado', 'Erro');
-            return redirect('/');
+            return redirect(route($resource->route_name));
         }
+        /** 📋 Recurso padrão do usuário */
+
         /** 🛑 Evita responder mais de uma vez */
         if (
             $ticketNotificationClientUser->status ==
             TicketNotificationClientUser::getStatusText(TicketNotificationClientUser::STATUS_ANSWERED)
         ) {
             toastr()->info('Este link já foi utilizado', 'Info');
-            return redirect('/');
+            return redirect(route($resource->route_name));
         }
-
-        /** 📋 Recurso padrão do usuário */
-        $resource = Resource::where('id', (int)$user->resource_default_id)->first();
-
         /** 📝 POST — envio da resposta */
         if ($request->isMethod('post')) {
-
             if (!$request->get('content')) {
                 toastr()->info('Preencha o texto para enviar', 'Info');
                 return redirect()->back();
