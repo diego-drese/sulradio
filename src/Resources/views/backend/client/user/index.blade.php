@@ -25,6 +25,7 @@
                             <tr>
                                 <th>Nome</th>
                                 <th>Email</th>
+                                <th>Recebe Whats</th>
                                 <th>Perfil</th>
                                 <th>Status</th>
                                 <th>Função</th>
@@ -41,11 +42,18 @@
                                     <input type="text" autocomplete="off" class="fieldSearch form-control text-primary" placeholder="Buscar Email">
                                 </th>
                                 <th>
+                                    <select name="receive_whatsapp" class="fieldSearch form-control statusActive">
+                                        <option value="">Todos</option>
+                                        <option value="1">Sim</option>
+                                        <option value="0">Não</option>
+                                    </select>
+                                </th>
+                                <th>
                                     ---
                                 </th>
 
                                 <th>
-                                    <select class="form-control fieldSearch">
+                                    <select name="active" class="form-control statusActive">
                                         <option value="">Todos</option>
                                         <option value="1">Sim</option>
                                         <option value="0">Não</option>
@@ -82,7 +90,15 @@
 
 @section('style_head')
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/select2.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/bootstrap-switch.css')}}">
     <style>
+        .table td, .table th {
+            padding: 0.5em;
+        }
+        #table_ticket_filter{
+            display: none;
+        }
         .select2-container--default .select2-selection--single {
             border: 1px solid #e9ecef;
         }
@@ -144,6 +160,7 @@
                     url: '{{ route('client.user', [$client->id]) }}',
                     type: 'GET',
                     data: function (d) {
+                        d.active = $("select[name='active']").val();
                         d._token = $("input[name='_token']").val();
                         return d;
                     }
@@ -151,6 +168,16 @@
                 columns: [
                     {data: "name", 'name': 'name'},
                     {data: "email", 'name': 'email'},
+                    {data: "receive_whatsapp", 'name': 'receive_whatsapp', orderable: false,
+                        render: function (data, display, row) {
+                            if (data == "1") {
+                                return '<span class="badge badge-success mr-1 ">SIM</span>';
+                            } else if (data == '0') {
+                                return '<span class="badge badge-danger mr-1 ">NÃO</span>';
+                            }
+                            return '---';
+                        }
+                    },
                     {data: "profile_name", 'name': 'profile_name', searchable: false, orderable: false,},
                     {data: "active", 'name': 'active', orderable: false,
                         render: function (data, display, row) {
@@ -197,6 +224,9 @@
                 });
             });
 
+            $('.statusActive').change(function () {
+                table_user.draw();
+            });
 
             $('#clearFilter').click(function () {
                 table_user.state.clear();

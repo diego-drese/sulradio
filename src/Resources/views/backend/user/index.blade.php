@@ -81,9 +81,18 @@
     </div>
 @endsection
 
+
 @section('style_head')
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/select2.css')}}">
+    <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/bootstrap-switch.css')}}">
     <style>
+        .table td, .table th {
+            padding: 0.5em;
+        }
+        #table_ticket_filter{
+            display: none;
+        }
         .select2-container--default .select2-selection--single {
             border: 1px solid #e9ecef;
         }
@@ -95,6 +104,7 @@
         }
     </style>
 @endsection
+
 @section('script_footer_end')
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
     <script>

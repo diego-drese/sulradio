@@ -95,8 +95,16 @@ class ClientController extends SulradioController {
 		if ($request->ajax()) {
 			$query = UserSulRadio::query()->client($clientId);
 			return DataTables::of($query)
+                ->filter(function ($query) use($request) {
+                    $active = $request->get('active');
+                    if($active || $active=='0'){
+                        $query->where('active', (int)$request->get('active'));
+                    }
+                })
 				->addColumn('edit_url', function ($row) use($clientId) {
 					return route('client.user.edit', [$clientId, $row->_id]);
+				})->addColumn('active', function ($row){
+					return $row->active ? 1 : 0;
 				})->addColumn('notify_url', function ($row) use($clientId) {
 					return route('client.user.notify', [$clientId, $row->id]);
 				})->addColumn('profile_name', function ($row) {

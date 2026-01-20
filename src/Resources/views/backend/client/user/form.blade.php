@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-4 form-group {{$errors->has('name') ? 'text-danger' : ''}} ">
+    <div class="col-md-3 form-group {{$errors->has('name') ? 'text-danger' : ''}} ">
         <label for="name">Nome *</label>
         <div class="input-group mb-3">
             <input type="text" name="name" id="name" class="form-control" placeholder="Nome" required
@@ -16,7 +16,7 @@
             <input type="hidden" name="emissora_id" value="{{$emissoraId}}">
         @endif
     </div>
-    <div class="col-md-4 form-group {{$errors->has('lastname') ? 'text-danger' : ''}} ">
+    <div class="col-md-3 form-group {{$errors->has('lastname') ? 'text-danger' : ''}} ">
         <label for="lastname">Sobrenome *</label>
         <div class="input-group mb-3">
             <input type="text" name="lastname" id="lastname" class="form-control" placeholder="Nome" required
@@ -29,7 +29,7 @@
             <span class="help-block">{{$errors->first('lastname')}}</span>
         @endif
     </div>
-    <div class="col-md-4 form-group {{$errors->has('cell_phone') ? 'text-danger' : ''}} ">
+    <div class="col-md-3 form-group {{$errors->has('cell_phone') ? 'text-danger' : ''}} ">
         <label for="cell_phone">Celular *</label>
         <div class="input-group mb-3">
             <input type="text" name="cell_phone" id="cell_phone" class="form-control" placeholder="Nome" required
@@ -42,6 +42,24 @@
             <span class="help-block">{{$errors->first('cell_phone')}}</span>
         @endif
     </div>
+    <div class="col-md-3 form-group {{$errors->has('receive_whatsapp') ? 'text-danger' : ''}} ">
+        <label for="cell_phone">Recebe noticações whatsapp</label>
+        <div class="input-group mb-3">
+            <select name="receive_whatsapp" id="receive_whatsapp" class="form-control" required>
+                <option value="">Selecione</option>
+                <option value="1" {{old('receive_whatsapp', $data->exists() ? $data->receive_whatsapp : '')==1? 'selected': ''}}>Sim</option>
+                <option value="0" {{old('receive_whatsapp', $data->exists() ? $data->receive_whatsapp : '')==0? 'selected': ''}}>Não</option>
+
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text "><i class="fas fa-address-card"></i></span>
+            </div>
+        </div>
+        @if($errors->has('receive_whatsapp'))
+            <span class="help-block">{{$errors->first('receive_whatsapp')}}</span>
+        @endif
+    </div>
+
 
     <div class="col-md-8 form-group {{$errors->has('email') ? 'text-danger' : ''}} ">
         <label for="email">Email *</label>
