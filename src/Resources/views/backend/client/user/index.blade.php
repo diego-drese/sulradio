@@ -108,6 +108,7 @@
         .select2-container .select2-selection--single {
             height: 32px;
         }
+
     </style>
 @endsection
 @section('script_footer_end')

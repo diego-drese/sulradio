@@ -203,7 +203,7 @@
                     { data: "sent_at_formated", orderable: true, name:'sent_at'},
 
                 ],
-                order: [[6, 'desc']]
+                order: [[7, 'desc']]
 
             });
 

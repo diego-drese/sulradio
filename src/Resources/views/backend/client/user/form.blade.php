@@ -207,6 +207,9 @@
         .select2-container .select2-selection--single {
             height: 32px;
         }
+        .select2-selection.select2-selection--multiple{
+            height: auto;
+        }
 
     </style>
 @endsection
