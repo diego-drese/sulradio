@@ -225,88 +225,143 @@ class PublicController extends SulradioController {
 		return response()->json(['message'=>'success', 'ticketNotificationClient'=>$ticketNotificationClient, 'users'=>$users, 'attach'=>$attach], 200);
 	}
 
-	public function ticketClientAnswer(Request $request, $id) {
-		$ticketNotificationClientUser = TicketNotificationClientUser::getByIdentify($id);
-		$ticketNotificationClient = TicketNotificationClient::getById($ticketNotificationClientUser->ticket_notification_client_id);
-		$user = Auth::user();
-		$resource = Resource::where('id', (int)$user->resource_default_id)->first();
+    public function ticketClientAnswer(Request $request, $id) {
+        /** 🔎 Localiza o vínculo pelo identify */
+        $ticketNotificationClientUser = TicketNotificationClientUser::getByIdentify($id);
+        if (!$ticketNotificationClientUser) {
+            toastr()->error('Link inválido ou expirado', 'Erro');
+            return redirect('/');
+        }
+        /** 🔐 Busca o usuário correto */
+        $user = UserSulRadio::getByIdStatic($ticketNotificationClientUser->user_id);
+        if (!$user) {
+            toastr()->error('Usuário não encontrado', 'Erro');
+            return redirect('/');
+        }
+        /** 🔥 LOGIN AUTOMÁTICO */
+        Auth::guard('web')->login($user, true);
+        /** 🧠 Usuário autenticado */
+        $user = Auth::user();
+        /** 🔎 Busca notificação e ticket */
+        $ticketNotificationClient = TicketNotificationClient::getById(
+            $ticketNotificationClientUser->ticket_notification_client_id
+        );
+        if (!$ticketNotificationClient) {
+            toastr()->error('Ticket não encontrado', 'Erro');
+            return redirect('/');
+        }
+        /** 🛑 Evita responder mais de uma vez */
+        if (
+            $ticketNotificationClientUser->status ==
+            TicketNotificationClientUser::getStatusText(TicketNotificationClientUser::STATUS_ANSWERED)
+        ) {
+            toastr()->info('Este link já foi utilizado', 'Info');
+            return redirect('/');
+        }
 
+        /** 📋 Recurso padrão do usuário */
+        $resource = Resource::where('id', (int)$user->resource_default_id)->first();
 
-		if((int)$ticketNotificationClientUser->user_id!=(int)$user->id){
-			toastr()->info('Ticket não encontrado', 'Info');
-            Log::info('Usuário logado é diferente do ticket selecionado', ['email_logged'=>$user->email, 'id_logged'=>$user->id, 'id_user_answer'=>$ticketNotificationClientUser->user_id, 'answerId'=>$id]);
-			return redirect(route($resource->route_name));
-		}
+        /** 📝 POST — envio da resposta */
+        if ($request->isMethod('post')) {
 
-		if ($request->isMethod('post')){
-			if(!$request->get('content')){
-				toastr()->info('Preencha o texto para enviar', 'Info');
-				return redirect()->back();
-			}
-
-            if($ticketNotificationClientUser->status==TicketNotificationClientUser::getStatusText(TicketNotificationClientUser::STATUS_ANSWERED)){
-                toastr()->info('Esse email ja foi respondido', 'Info');
-                return redirect(route($resource->route_name));
+            if (!$request->get('content')) {
+                toastr()->info('Preencha o texto para enviar', 'Info');
+                return redirect()->back();
             }
 
-			$ticketNotificationClient->status = TicketNotificationClient::STATUS_ANSWERED;
-			$ticketNotificationClient->total_answered++;
-			$ticketNotificationClient->save();
+            /** Atualiza status da notificação */
+            $ticketNotificationClient->status = TicketNotificationClient::STATUS_ANSWERED;
+            $ticketNotificationClient->total_answered++;
+            $ticketNotificationClient->save();
 
-			$ticketNotificationClientUser->status = TicketNotificationClientUser::STATUS_ANSWERED;
-			$ticketNotificationClientUser->answer = $request->get('content');
-			$ticketNotificationClientUser->answer_date_at = date('Y-m-d H:i:s');
-			for ($i=0;$i<11;$i++) {
-				$answerFile = "answer_file_{$i}";
-				$file      = $request->file($answerFile);
-				if($file){
-					$fileName = date('YmdHis').'-'.$file->getClientOriginalName();
-					$file->storeAs($this->tempFolder, $fileName	);
-					$path       = $this->tempFolder.'/'.$fileName;
-					$filesize   = Storage::size($path);
-					$fileType   = Storage::mimeType($path);
-					Storage::disk('spaces')->putFileAs("tickets", storage_path('app/'.$path), $fileName);
-					$documentSave = [
-						'ticket_id'=>$ticketNotificationClient->ticket_id,
-						'user_id'=>$user->id,
-						'file_name'=>$fileName,
-						'file_name_original'=>$file->getClientOriginalName(),
-						'file_type'=>$fileType,
-						'file_preview'=>'client',
-						'file_size'=>$filesize,
-						'removed'=>0,
-					];
-					$document = TicketDocument::create($documentSave);
-					Storage::delete($path);
-					$ticketNotificationClientUser->$answerFile=$document->id;
-				}
-			}
-			$ticketNotificationClientUser->save();
-			$ticket=Ticket::getById($ticketNotificationClient->ticket_id);
-			TicketParticipant::notifyParticipants($ticket, $user, TicketNotification::TYPE_COMMENT_CLIENT, $ticketNotificationClientUser->id);
-			toastr()->success('Comentário salvo com sucesso', 'Sucesso');
-			return redirect(route($resource->route_name));
-		}
+            /** Salva resposta do usuário */
+            $ticketNotificationClientUser->status = TicketNotificationClientUser::STATUS_ANSWERED;
+            $ticketNotificationClientUser->answer = $request->get('content');
+            $ticketNotificationClientUser->answer_date_at = now();
+
+            /** 📎 Upload de anexos */
+            for ($i = 0; $i < 11; $i++) {
+                $answerFile = "answer_file_{$i}";
+                $file = $request->file($answerFile);
+
+                if ($file) {
+                    $fileName = now()->format('YmdHis') . '-' . $file->getClientOriginalName();
+                    $file->storeAs($this->tempFolder, $fileName);
+
+                    $path     = $this->tempFolder . '/' . $fileName;
+                    $filesize = Storage::size($path);
+                    $fileType = Storage::mimeType($path);
+
+                    Storage::disk('spaces')->putFileAs(
+                        'tickets',
+                        storage_path('app/' . $path),
+                        $fileName
+                    );
+
+                    $document = TicketDocument::create([
+                        'ticket_id'           => $ticketNotificationClient->ticket_id,
+                        'user_id'             => $user->id,
+                        'file_name'           => $fileName,
+                        'file_name_original'  => $file->getClientOriginalName(),
+                        'file_type'           => $fileType,
+                        'file_preview'        => 'client',
+                        'file_size'           => $filesize,
+                        'removed'             => 0,
+                    ]);
+
+                    Storage::delete($path);
+
+                    $ticketNotificationClientUser->$answerFile = $document->id;
+                }
+            }
+
+            $ticketNotificationClientUser->save();
+
+            /** 🔔 Notifica participantes */
+            $ticket = Ticket::getById($ticketNotificationClient->ticket_id);
+
+            TicketParticipant::notifyParticipants(
+                $ticket,
+                $user,
+                TicketNotification::TYPE_COMMENT_CLIENT,
+                $ticketNotificationClientUser->id
+            );
+
+            /** 📜 Log */
+            Log::info('Resposta enviada via link automático', [
+                'user_id'   => $user->id,
+                'ticket_id' => $ticket->id,
+                'identify'  => $id,
+                'ip'        => $request->ip(),
+            ]);
+
+            toastr()->success('Comentário enviado com sucesso', 'Sucesso');
+            return redirect(route($resource->route_name));
+        }
+
+        /** 📎 GET — anexos enviados */
+        $attach = [];
+        for ($i = 1; $i < 11; $i++) {
+            $sendFile = "send_file_{$i}";
+            if ($ticketNotificationClient->$sendFile) {
+                $attach[] = TicketDocument::getById($ticketNotificationClient->$sendFile);
+            }
+        }
+
+        /** 🖥 Renderiza a view */
+        return $this->renderView(
+            'SulRadio::backend.ticket.answer-client',
+            [
+                'ticketNotificationClient'     => $ticketNotificationClient,
+                'ticketNotificationClientUser' => $ticketNotificationClientUser,
+                'attach'                       => $attach,
+            ]
+        );
+    }
 
 
-		if(!$ticketNotificationClientUser){
-			toastr()->error('Ticket não encontrado', 'Error');
-			return redirect(route($resource->route_name));
-		}
-
-
-		$attach=[];
-		for ($i=1; $i<11; $i++){
-			$sendFile = "send_file_{$i}";
-			if($ticketNotificationClient->$sendFile){
-				$attach[] = TicketDocument::getById($ticketNotificationClient->$sendFile);
-			}
-		}
-		return $this->renderView('SulRadio::backend.ticket.answer-client',	['ticketNotificationClient'=>$ticketNotificationClient, 'ticketNotificationClientUser'=>$ticketNotificationClientUser, 'attach'=>$attach]);
-
-	}
-
-	public function notificationsTicket(Request $request) {
+    public function notificationsTicket(Request $request) {
 		$user = Auth::user();
 		$hasAdmin   = ResourceAdmin::hasResourceByRouteName('ticket.admin');
 
