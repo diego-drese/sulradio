@@ -3,7 +3,7 @@
 <hr />
 <h1>Prezado cliente SEAD - Sulradio.</h1>
 <div>
-Acesse o sistema SEAD - Sulradio para ler e intergir com um processo de seu interesse através do botão abaixo.
+Acesse o sistema SEAD - Sulradio para ler e interagir com um processo de seu interesse através do botão abaixo.
 </div>
 <hr />
 Para interagir com essa solicitação acesse:

@@ -3,6 +3,7 @@
 namespace Oka6\SulRadio\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Oka6\SulRadio\Mail\TicketComment;
@@ -72,7 +73,7 @@ Um novo comentário foi adicionado ao ticket.';
                         $this->sendEmailTypeComment($notification, TicketNotification::TYPE_TRACKER_URL);
                         $messageWhats = '📍 *Atualização de andamento*
 
-Houve uma atualização no andamento do processo do ticket.';
+Houve uma atualização no andamento do processo MCOM ou ANATEL.';
 
 
                     } else if ($notification->type == TicketNotification::TYPE_DEADLINE) {
@@ -104,7 +105,6 @@ Um novo ticket foi atribuído a você.';
 
                     } else if ($notification->type == TicketNotification::TYPE_COMMENT_CLIENT) {
                         $this->sendEmailTypeCommentClient($notification);
-                        $urlButton= route('ticket.client.answer', [$notification->ticket_id]);
                         $messageWhats = '🙋 *Resposta do cliente*
 
 O cliente respondeu um comentário no ticket.';
@@ -132,9 +132,16 @@ O cliente respondeu um comentário no ticket.';
                                 'type'            => $notification->type,
                             ]);
                         }else{
-                            $messageWhatsFinal = "🔔 *Sead – Ticket #{$notification->ticket_id}*\n\n";
-                            $messageWhatsFinal .= $messageWhats . "\n\n";
-                            $messageWhatsFinal .= "👉 Acesse: {$urlButton}";
+                            $ticket = $this->getTicket($notification->ticket_id);
+                            $messageWhatsFinal  = "🎫 *SEAD – Ticket #{$notification->ticket_id}*\n\n";
+                            $messageWhatsFinal .= "📝 *Assunto:*\n";
+                            $messageWhatsFinal .= "{$ticket->subject}\n\n";
+                            if ($ticket->emissora_nome) {
+                                $messageWhatsFinal .= "📻 *Emissora:*\n";
+                                $messageWhatsFinal .= "{$ticket->emissora_nome}\n\n";
+                            }
+                            $messageWhatsFinal .= "{$messageWhats}\n\n";
+                            $messageWhatsFinal .= "👉 *Acessar o ticket:*\n{$urlButton}";
                             $whatsappNotification = WhatsappNotification::create([
                                 'user_id'               => $currentAgent->id,
                                 'ticket_id'             => $notification->ticket_id,
@@ -184,16 +191,22 @@ O cliente respondeu um comentário no ticket.';
     }
 
     public function getTicket($id){
-        return Ticket::withSelectDataTable()
-            ->withStatus()
-            ->WithPriority()
-            ->withCategory()
-            ->withEmissora()
-            ->withServico()
-            ->withLocalidade()
-            ->withUf()
-            ->where('ticket.id', $id)
-            ->first();
+        return Cache::remember(
+            "ticket:datatable:{$id}",
+            60,
+            function () use ($id) {
+                return Ticket::withSelectDataTable()
+                    ->withStatus()
+                    ->withPriority()
+                    ->withCategory()
+                    ->withEmissora()
+                    ->withServico()
+                    ->withLocalidade()
+                    ->withUf()
+                    ->where('ticket.id', $id)
+                    ->first();
+            }
+        );
     }
 
     public function sendEmailTypeNew($notification){
@@ -274,7 +287,7 @@ O cliente respondeu um comentário no ticket.';
     public function sendEmailTypeCommentClient($notification){
         $userLogged         = UserSulRadio::getByIdStatic($notification->user_logged);
         $currentAgent       = UserSulRadio::getByIdStatic($notification->agent_current_id);
-        $comment            = \Oka6\SulRadio\Models\TicketNotificationClientUserSulRadio::getById($notification->comment_id);
+        $comment            = \Oka6\SulRadio\Models\TicketNotificationClientUser::getById($notification->comment_id);
         $clientUser         = \Oka6\SulRadio\Models\TicketNotificationClient::getById($comment->ticket_notification_client_id);
         $ticket             = $this->getTicket($clientUser->ticket_id);
         $comment->agent     = $currentAgent;
