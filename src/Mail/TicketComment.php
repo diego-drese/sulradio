@@ -5,7 +5,6 @@ namespace Oka6\SulRadio\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Oka6\SulRadio\Models\TicketNotification;
 
 class TicketComment extends Mailable {

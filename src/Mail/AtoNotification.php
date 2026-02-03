@@ -5,7 +5,6 @@ namespace Oka6\SulRadio\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class AtoNotification extends Mailable {
 	use Queueable, SerializesModels;

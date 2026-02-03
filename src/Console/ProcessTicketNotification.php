@@ -2,18 +2,19 @@
 
 namespace Oka6\SulRadio\Console;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Oka6\SulRadio\Mail\TicketComment;
+use Oka6\SulRadio\Mail\TicketCommentFromClient;
 use Oka6\SulRadio\Mail\TicketCreate;
 use Oka6\SulRadio\Mail\TicketDeadline;
 use Oka6\SulRadio\Mail\TicketProtocolDeadline;
 use Oka6\SulRadio\Mail\TicketRenewalAlert;
 use Oka6\SulRadio\Mail\TicketTransfer;
 use Oka6\SulRadio\Mail\TicketUpdate;
-use Oka6\SulRadio\Mail\TicketCommentFromClient;
 use Oka6\SulRadio\Models\SystemLog;
 use Oka6\SulRadio\Models\Ticket;
 use Oka6\SulRadio\Models\TicketNotification;
@@ -53,6 +54,7 @@ class ProcessTicketNotification extends Command {
         $notifications = TicketNotification::getToNotify();
         $userSendNotification = [];
         $tries=[];
+        $now = Carbon::now()->setTime(0,0,0,);
         foreach ($notifications as $notification){
             $try=count($tries);
             $urlButton = route('ticket.ticket', [$notification->ticket_id]);
@@ -78,22 +80,42 @@ Houve uma atualização no andamento do processo MCOM ou ANATEL.';
 
                     } else if ($notification->type == TicketNotification::TYPE_DEADLINE) {
                         $this->sendEmailTypeDeadline($notification);
-                        $messageWhats = '⏰ *Prazo de execução*
+                        $startDeadline = Carbon::createFromFormat('d/m/Y', $notification->start_forecast);
+                        $days =  $startDeadline->diffInDays($now);
+                        $messageWhats = '⏰ *Prazo de execução é '.$days.' dias*
+Este ticket possui um prazo de execução definido ou próximo do vencimento.
 
-Este ticket possui um prazo de execução definido ou próximo do vencimento.';
+Prazo Execução: '.$notification->start_forecast.'
+
+Prazo Protocolo: '.$notification->end_forecast.'
+';
 
                     } else if ($notification->type == TicketNotification::TYPE_PROTOCOL_DEADLINE) {
                         $this->sendEmailTypeProtocolDeadline($notification);
-                        $messageWhats = '📄 *Protocolo de entrega*
+                        $startDeadline = Carbon::createFromFormat('d/m/Y', $notification->end_forecast);
+                        $days =  $startDeadline->diffInDays($now);
+                        $messageWhats = '📄 *Prazo de protocolo é '.$days.' dias*
+O ticket possui um protocolo de entrega com prazo associado.
 
-O ticket possui um protocolo de entrega com prazo associado.';
+Prazo Execução: '.$notification->start_forecast.'
 
+Prazo Protocolo: '.$notification->end_forecast.'
+';
 
                     }else if ($notification->type == TicketNotification::TYPE_RENEWAL_ALERT) {
                         $this->sendEmailTypeRenewalAlert($notification);
-                        $messageWhats = '⚠️ *Alerta de vencimento*
+                        $renewalAlert   = Carbon::createFromFormat('d/m/Y', $this->data->renewal_alert);
+                        $days           =  $renewalAlert->diffInDays($now);
+                        $messageWhats = '⚠️ *Lembrete de prazo vencimento*
 
-Este ticket está próximo do vencimento.';
+Este ticket está próximo do vencimento.
+
+Vence em '.$days.' dias
+
+Prazo Execução: '.$notification->start_forecast.'
+
+Prazo Protocolo: '.$notification->end_forecast.'
+';
 
 
                     } else if ($notification->type == TicketNotification::TYPE_NEW) {
