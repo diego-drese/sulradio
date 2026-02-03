@@ -237,8 +237,10 @@ class TicketController extends SulradioController {
 		$participants   = TicketParticipant::getUserByTicketId($id, true, $user);
 		$usersEmissora  = Client::getUsersByEmissora($data->emissora_id);
 		$contentLog     = 'Usuário '.$user->name. ' visualizou o ticket '. $id;
+        $editUserClient =  ResourceAdmin::hasResourceByRouteName('client.user.edit', [':clientId', ':userId']);
+
 		SystemLog::insertLogTicket(SystemLog::TYPE_VIEW, $contentLog, $id, $user->id);
-		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents, 'trackerUrl'=>$trackerUrl, 'usersEmissora'=>$usersEmissora]);
+		return $this->renderView('SulRadio::backend.ticket.ticket', ['data' => $data, 'emissora'=>$emissora, 'comments'=>$comments, 'owner'=>$owner, 'participants'=>$participants, 'user'=>$user, 'hasAdmin'=>$hasAdmin, 'documents'=>$documents, 'trackerUrl'=>$trackerUrl, 'usersEmissora'=>$usersEmissora, 'editUserClient'=>$editUserClient]);
 	}
 	public function comment(Request $request, $id) {
 		$userLogged = Auth::user();

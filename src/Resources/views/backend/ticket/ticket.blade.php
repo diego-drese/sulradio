@@ -401,7 +401,23 @@
                                             <input type="checkbox" name="users" value="{{$userEmissora->id}}">
                                         </td>
                                         <td>
-                                            {{$userEmissora->name.' '.$userEmissora->lastname}}
+                                            @php
+                                                $url = null;
+                                                if ($editUserClient && is_string($editUserClient)) {
+                                                    $url = str_replace(
+                                                        [':clientId', ':userId'],
+                                                        [$userEmissora->client_id, $userEmissora->_id],
+                                                        $editUserClient
+                                                    );
+                                                }
+                                            @endphp
+                                            @if($url)
+                                                <a href="{{ $url }}" target="_blank">
+                                                    {{ $userEmissora->name.' '.$userEmissora->lastname }}
+                                                </a>
+                                            @else
+                                                {{ $userEmissora->name.' '.$userEmissora->lastname }}
+                                            @endif
                                         </td>
                                         <td>
                                             {{$userEmissora->email}}
