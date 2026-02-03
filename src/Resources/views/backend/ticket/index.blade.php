@@ -105,6 +105,8 @@
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/datatables.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/select2.css')}}">
     <link rel="stylesheet" href="{{mix('/vendor/oka6/admin/css/bootstrap-switch.css')}}">
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" type="text/css" />
+
     <style>
         .table td, .table th {
             padding: 0.5em;
@@ -116,6 +118,10 @@
 @endsection
 @section('script_footer_end')
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/datatables.js')}}></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/select2.js')}}></script>
     <script type="text/javascript" src={{mix('/vendor/oka6/admin/js/bootstrap-switch.js')}}></script>
     <script>
@@ -157,6 +163,11 @@
                     "oAria": {
                         "sSortAscending": ": Ordenar colunas de forma ascendente",
                         "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                layout: {
+                    topStart: {
+                        buttons: [ 'excel']
                     }
                 },
                 serverSide: true,
@@ -251,8 +262,25 @@
                     }},
                     {data: "participants", 'name': 'ticket_participant.user_id'},
                     {data: "user_name", 'name': 'ticket.owner_id'},
-                ]
+                ],
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<span class="fa fa-file-excel"></span> Excel',
+                        className: 'btn btn-success btn-sm',
+                        title: 'Tickets',
+                        exportOptions: {
+                            columns: ':not(:first-child)' // ignora coluna Ações
+                        }
+                    }
+                ],
+                dom: "<'row'<'col-md-12'B>>" +
+                    "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'table-scrollable't>" +
+                    "<'row'<'col-md-5'i><'col-md-7'p>>",
+
             });
+            table_ticket.buttons('dt-buttons').container().addClass('btn-group-sm');
 
             $('#table_ticket thead tr:eq(1) th').each(function (i) {
                 $('.fieldSearch', this).on('keyup change', function () {
