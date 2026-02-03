@@ -388,6 +388,9 @@
                                     <th class="p-2">
                                         Email
                                     </th>
+                                    <th class="p-2">
+                                        Whats
+                                    </th>
                                 </tr>
 
                             </thead>
@@ -402,6 +405,9 @@
                                         </td>
                                         <td>
                                             {{$userEmissora->email}}
+                                        </td>
+                                        <td>
+                                            {!! $userEmissora->receive_whatsapp? '<b class="text-success">Sim</b>' : '<b class="text-danger">Não</b>' !!}
                                         </td>
                                     </tr>
                                 @endforeach
