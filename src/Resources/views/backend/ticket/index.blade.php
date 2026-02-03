@@ -114,6 +114,45 @@
         #table_ticket_filter{
             display: none;
         }
+        .dt-button {
+            all: unset;
+        }
+
+        /* Reaplica Bootstrap */
+        .dt-button.btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.375rem 0.75rem;
+            font-weight: 500;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            color: #fff;
+            background-image: none;
+            font-size: 12px;
+        }
+        button.dt-button:hover:not(.disabled), div.dt-button:hover:not(.disabled), a.dt-button:hover:not(.disabled) {
+            border: 1px solid #666;
+            background-color: initial;
+            background-image: initial;
+            filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#f9f9f9', EndColorStr='#e0e0e0');
+            text-decoration: underline;
+        }
+        .dt-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dataTables_length,
+        .dataTables_paginate {
+            margin: 0;
+        }
+
+        .dataTables_length select {
+            height: 32px;
+        }
+
     </style>
 @endsection
 @section('script_footer_end')
@@ -266,18 +305,27 @@
                 buttons: [
                     {
                         extend: 'excelHtml5',
-                        text: '<span class="fa fa-file-excel"></span> Excel',
-                        className: 'btn btn-success btn-sm',
+                        text: '<span class="fa fa-file-excel"></span> <b>Excel</b>',
+                        className: 'btn btn-primary form-control-sm',
                         title: 'Tickets',
                         exportOptions: {
                             columns: ':not(:first-child)' // ignora coluna Ações
                         }
                     }
                 ],
-                dom: "<'row'<'col-md-12'B>>" +
-                    "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'table-scrollable't>" +
-                    "<'row'<'col-md-5'i><'col-md-7'p>>",
+                dom: `
+    <'row mb-2'
+        <'col-md-12 d-flex justify-content-end align-items-center gap-2'Bl>
+    >
+    <'table-scrollable't>
+    <'row'
+        <'col-md-6'i>
+        <'col-md-6 d-flex justify-content-end'p>
+    >
+`,
+
+
+
 
             });
             table_ticket.buttons('dt-buttons').container().addClass('btn-group-sm');
