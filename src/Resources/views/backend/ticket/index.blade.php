@@ -215,6 +215,11 @@
                 orderCellsTop: true,
                 stateSave: true,
                 searching: true,
+                pageLength: 10, // valor inicial
+                lengthMenu: [
+                    [10, 25, 50, 100, 200, 400, 800],
+                    [10, 25, 50, 100, 200, 400, 800]
+                ],
                 stateLoaded: function (settings, data) {
                     setTimeout(function () {
                         var dataExtra = settings.ajax.data({});
