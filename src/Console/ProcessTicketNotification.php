@@ -80,31 +80,34 @@ Houve uma atualização no andamento do processo MCOM ou ANATEL.';
 
                     } else if ($notification->type == TicketNotification::TYPE_DEADLINE) {
                         $this->sendEmailTypeDeadline($notification);
-                        $startDeadline = Carbon::createFromFormat('d/m/Y', $notification->start_forecast);
+                        $ticket = $this->getTicket($notification->ticket_id);
+                        $startDeadline = Carbon::createFromFormat('d/m/Y', $ticket->start_forecast);
                         $days =  $startDeadline->diffInDays($now);
                         $messageWhats = '⏰ *Prazo de execução é '.$days.' dias*
 Este ticket possui um prazo de execução definido ou próximo do vencimento.
 
-Prazo Execução: '.$notification->start_forecast.'
+Prazo Execução: '.$ticket->start_forecast.'
 
-Prazo Protocolo: '.$notification->end_forecast.'
+Prazo Protocolo: '.$ticket->end_forecast.'
 ';
 
                     } else if ($notification->type == TicketNotification::TYPE_PROTOCOL_DEADLINE) {
                         $this->sendEmailTypeProtocolDeadline($notification);
-                        $startDeadline = Carbon::createFromFormat('d/m/Y', $notification->end_forecast);
+                        $ticket = $this->getTicket($notification->ticket_id);
+                        $startDeadline = Carbon::createFromFormat('d/m/Y', $ticket->end_forecast);
                         $days =  $startDeadline->diffInDays($now);
                         $messageWhats = '📄 *Prazo de protocolo é '.$days.' dias*
 O ticket possui um protocolo de entrega com prazo associado.
 
-Prazo Execução: '.$notification->start_forecast.'
+Prazo Execução: '.$ticket->start_forecast.'
 
-Prazo Protocolo: '.$notification->end_forecast.'
+Prazo Protocolo: '.$ticket->end_forecast.'
 ';
 
                     }else if ($notification->type == TicketNotification::TYPE_RENEWAL_ALERT) {
                         $this->sendEmailTypeRenewalAlert($notification);
-                        $renewalAlert   = Carbon::createFromFormat('d/m/Y', $notification->renewal_alert);
+                        $ticket = $this->getTicket($notification->ticket_id);
+                        $renewalAlert   = Carbon::createFromFormat('d/m/Y', $ticket->renewal_alert);
                         $days           =  $renewalAlert->diffInDays($now);
                         $messageWhats = '⚠️ *Lembrete de prazo vencimento*
 
@@ -112,11 +115,10 @@ Este ticket está próximo do vencimento.
 
 Vence em '.$days.' dias
 
-Prazo Execução: '.$notification->start_forecast.'
+Prazo Execução: '.$ticket->start_forecast.'
 
-Prazo Protocolo: '.$notification->end_forecast.'
+Prazo Protocolo: '.$ticket->end_forecast.'
 ';
-
 
                     } else if ($notification->type == TicketNotification::TYPE_NEW) {
                         $this->sendEmailTypeNew($notification);
