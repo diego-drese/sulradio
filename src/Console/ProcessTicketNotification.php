@@ -104,7 +104,7 @@ Prazo Protocolo: '.$notification->end_forecast.'
 
                     }else if ($notification->type == TicketNotification::TYPE_RENEWAL_ALERT) {
                         $this->sendEmailTypeRenewalAlert($notification);
-                        $renewalAlert   = Carbon::createFromFormat('d/m/Y', $this->data->renewal_alert);
+                        $renewalAlert   = Carbon::createFromFormat('d/m/Y', $notification->renewal_alert);
                         $days           =  $renewalAlert->diffInDays($now);
                         $messageWhats = '⚠️ *Lembrete de prazo vencimento*
 
