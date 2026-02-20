@@ -111,13 +111,14 @@ Prazo Protocolo: '.$ticket->end_forecast.'
                         $days           =  $renewalAlert->diffInDays($now);
                         $messageWhats = '⚠️ *Lembrete de prazo vencimento*
 
-Este ticket está próximo do vencimento.
+Este ticket vence em '.$days.' dias
 
-Vence em '.$days.' dias
+Vencimento: '.$ticket->renewal_alert.'
 
 Prazo Execução: '.$ticket->start_forecast.'
 
 Prazo Protocolo: '.$ticket->end_forecast.'
+
 ';
 
                     } else if ($notification->type == TicketNotification::TYPE_NEW) {
