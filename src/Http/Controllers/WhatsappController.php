@@ -101,8 +101,8 @@ class WhatsappController extends SulradioController {
                 'pending'   => WhatsappNotification::STATUS_NOTIFICATION_PENDING,  // 'pendente'
                 'server'    => WhatsappNotification::STATUS_NOTIFICATION_PENDING,  // 'pendente'
                 'retry'     => WhatsappNotification::STATUS_NOTIFICATION_PENDING,  // 'pendente'
-                'delivered' => WhatsappNotification::STATUS_NOTIFICATION_PENDING,  // 'recebido'
-                'read'      => WhatsappNotification::STATUS_NOTIFICATION_PENDING,     // 'lido'
+                'delivered' => WhatsappNotification::STATUS_NOTIFICATION_RECEIVED, // 'recebido'
+                'read'      => WhatsappNotification::STATUS_NOTIFICATION_READ,     // 'lido'
             ];
 
             $phpStatus = $statusMap[$status] ?? WhatsappNotification::STATUS_NOTIFICATION_PENDING;

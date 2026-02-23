@@ -42,6 +42,7 @@ class WhatsappNotification extends Model {
         self::STATUS_NOTIFICATION_READ          => 'Lido',
         self::STATUS_NOTIFICATION_IGNORED       => 'Ignorado',
         self::STATUS_NOTIFICATION_SENT          => 'Disparado',
+        self::STATUS_NOTIFICATION_RECEIVED      => 'Recebido',
         self::STATUS_NOTIFICATION_CLICK         => 'Clicado',
         self::STATUS_NOTIFICATION_ERROR         => 'Erro',
         self::STATUS_NOTIFICATION_INVALID_PHONE => 'Telefone invalido',
