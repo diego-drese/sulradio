@@ -124,7 +124,7 @@ class ProcessTrackerUrl extends Command {
                 }
             }
         }
-
+        // 2. Pega datas dos <tr class="andamentoAberto">
         foreach ($xpath->query('//tr[contains(@class, "andamentoConcluido")]') as $tr) {
             $tds = $tr->getElementsByTagName('td');
             if ($tds->length > 0) {
@@ -135,20 +135,18 @@ class ProcessTrackerUrl extends Command {
                 }
             }
         }
-        if($maxDate === null ){
-            // 2. Pega datas dos <tr class="infraTrClara"> (colunas 3 e 4)
-            foreach ($xpath->query('//tr[contains(@class, "infraTrClara")]') as $tr) {
-                $tds = $tr->getElementsByTagName('td');
-                // Coluna 4 (índice 4)
-                if ($tds->length > 4) {
-                    $dateText = trim($tds->item(4)->nodeValue);
-                    $date = DateTime::createFromFormat('d/m/Y', $dateText, new DateTimeZone('America/Sao_Paulo'))->setTimezone(new DateTimeZone('UTC'));
-                    if ($date && ($maxDate === null || $date > $maxDate)) {
-                        $maxDate = $date;
-                    }
+
+        // 3. Pega datas dos <tr class="infraTrClara"> (colunas 3 e 4)
+        foreach ($xpath->query('//tr[contains(@class, "infraTrClara")]') as $tr) {
+            $tds = $tr->getElementsByTagName('td');
+            // Coluna 4 (índice 4)
+            if ($tds->length > 4) {
+                $dateText = trim($tds->item(4)->nodeValue);
+                $date = DateTime::createFromFormat('d/m/Y', $dateText, new DateTimeZone('America/Sao_Paulo'))->setTimezone(new DateTimeZone('UTC'));
+                if ($date && ($maxDate === null || $date > $maxDate)) {
+                    $maxDate = $date;
                 }
             }
-
         }
 
         return $maxDate;

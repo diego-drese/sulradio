@@ -109,7 +109,6 @@ class WhatsappController extends SulradioController {
             if($notification && $notification->status != WhatsappNotification::STATUS_NOTIFICATION_CLICK && ($phpStatus==WhatsappNotification::STATUS_NOTIFICATION_RECEIVED || $phpStatus==WhatsappNotification::STATUS_NOTIFICATION_READ)){
                 $notification->status = $phpStatus;
                 $notification->save();
-                $notification->invoice->update(['status_notification' => $phpStatus]);
             }
         }catch (\Exception $e){
             Log::error('WhatsAppService::webhook, update invoice error', ['error' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'request' => $request->all()]);
