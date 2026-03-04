@@ -40,44 +40,61 @@ class ProcessTrackerUrl extends Command {
 	public function __construct() {
 		parent::__construct();
 	}
-	public function processUrls($urls, $notify=true){
-		foreach ($urls as $url){
-			$url->last_tracker = date('Y-m-d H:i:s');
-            $lastModify = new DateTime($url->last_modify, new DateTimeZone('UTC'));
-            $maxDate = $this->parseDomain($url->url);
-			if(!$maxDate){
-				$url->save();
-				continue;
-			}
-            if($maxDate && $lastModify->getTimestamp() < $maxDate->getTimestamp()){
-                $url->hash          = md5($url->url);
-                $url->last_modify   = $maxDate;
-                $diffInSeconds      = $maxDate->getTimestamp() - $lastModify->getTimestamp();
-                $diffInHours        = $diffInSeconds / 3600;
-                Log::info('ProcessTrackerUrl, debug', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'lastModify'=>$lastModify, 'max_date'=>$maxDate, 'id'=>$url->id, 'diffInHours'=>$diffInHours]);
-                if ($diffInHours > 4) {
-                    Log::info('ProcessTrackerUrl, process changed', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'lastModify'=>$lastModify, 'max_date'=>$maxDate, 'id'=>$url->id, 'diff'=>$diffInHours]);
-                    $user   = User::getByIdStatic(-1);
+    public function processUrls($urls, $notify = true)
+    {
+        $startOfDay = Carbon::now()->startOfDay();
+
+        foreach ($urls as $url) {
+            $url->last_tracker = now();
+            $lastModify = Carbon::parse($url->last_modify);
+            $maxDateRaw = $this->parseDomain($url->url);
+            if (!$maxDateRaw) {
+                $url->save();
+                continue;
+            }
+            $maxDate = Carbon::parse($maxDateRaw);
+            if ($lastModify->lt($maxDate)) {
+                $url->hash = md5($url->url);
+                $url->last_modify = $maxDate;
+                $diffInHours = $lastModify->diffInHours($maxDate);
+                if ($diffInHours > 4 && $maxDate->gt($startOfDay)) {
+                    Log::info('ProcessTrackerUrl process changed', [
+                        'url' => $url->url,
+                        'lastModify' => $lastModify,
+                        'maxDate' => $maxDate,
+                        'diffInHours' => $diffInHours,
+                        'id' => $url->id
+                    ]);
+                    $user = User::getByIdStatic(-1);
                     $commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>';
                     $comment = TicketComment::create([
-                        'html'=>$commentText,
-                        'user_id'=>$user->id,
-                        'ticket_id'=>$url->ticket_id
+                        'html' => $commentText,
+                        'user_id' => $user->id,
+                        'ticket_id' => $url->ticket_id
                     ]);
-                    if($notify){
-                        /** Notifica todos os participantes */
+                    if ($notify) {
                         $ticket = Ticket::getById($url->ticket_id);
-                        TicketParticipant::notifyParticipants($ticket, $user,TicketNotification::TYPE_TRACKER_URL, $comment->id);
+                        TicketParticipant::notifyParticipants(
+                            $ticket,
+                            $user,
+                            TicketNotification::TYPE_TRACKER_URL,
+                            $comment->id
+                        );
                     }
                 }
-            }elseif($maxDate && $lastModify->getTimestamp() > $maxDate->getTimestamp()){
-                Log::info('ProcessTrackerUrl, adjust database', ['url'=>$url->url, 'last_tracker'=>$url->last_tracker, 'lastModify'=>$lastModify, 'max_date'=>$maxDate, 'id'=>$url->id]);
+            } elseif ($lastModify->gt($maxDate)) {
+                Log::info('ProcessTrackerUrl adjust database', [
+                    'url' => $url->url,
+                    'lastModify' => $lastModify,
+                    'maxDate' => $maxDate,
+                    'id' => $url->id
+                ]);
                 $url->last_modify = $maxDate;
             }
 
-			$url->save();
-		}
-	}
+            $url->save();
+        }
+    }
 	public function handle() {
 		Log::info('ProcessTrackerUrl, start process');
 		try {
