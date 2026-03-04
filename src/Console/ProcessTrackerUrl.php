@@ -44,29 +44,32 @@ class ProcessTrackerUrl extends Command {
         $limitDate = Carbon::now()->subDays(2)->startOfDay();
         foreach ($urls as $url) {
             $url->last_tracker = now();
-            $lastModify = Carbon::parse($url->last_modify);
+            $lastModify = Carbon::parse($url->last_modify ?? '1970-01-01');
             $maxDateRaw = $this->parseDomain($url->url);
             if (!$maxDateRaw) {
                 $url->save();
                 continue;
             }
+
             $maxDate = Carbon::parse($maxDateRaw);
             if ($lastModify->lt($maxDate)) {
+                $diffInHours = $lastModify->diffInHours($maxDate);
+                Log::info('ProcessTrackerUrl modified', [
+                    'url' => $url->url,
+                    'lastModify' => $lastModify,
+                    'maxDate' => $maxDate,
+                    'diffInHours' => $diffInHours,
+                    'id' => $url->id
+                ]);
+                // SEMPRE atualiza
                 $url->hash = md5($url->url);
                 $url->last_modify = $maxDate;
-                $diffInHours = $lastModify->diffInHours($maxDate);
+
+                // Só notifica se for recente
                 if ($diffInHours > 4 && $maxDate->gt($limitDate)) {
-                    Log::info('ProcessTrackerUrl process changed', [
-                        'url' => $url->url,
-                        'lastModify' => $lastModify,
-                        'maxDate' => $maxDate,
-                        'diffInHours' => $diffInHours,
-                        'id' => $url->id
-                    ]);
                     $user = User::getByIdStatic(-1);
-                    $commentText = 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>';
                     $comment = TicketComment::create([
-                        'html' => $commentText,
+                        'html' => 'Acompanhamento da URL <a href="'.$url->url.'">'.$url->url.'</a><br/>',
                         'user_id' => $user->id,
                         'ticket_id' => $url->ticket_id
                     ]);
@@ -87,6 +90,7 @@ class ProcessTrackerUrl extends Command {
                     'maxDate' => $maxDate,
                     'id' => $url->id
                 ]);
+
                 $url->last_modify = $maxDate;
             }
 
