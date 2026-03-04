@@ -41,7 +41,7 @@ class ProcessTrackerUrl extends Command {
 		parent::__construct();
 	}
     public function processUrls($urls, $notify = true){
-        $startOfDay = Carbon::now()->subDays(2)->startOfDay();
+        $limitDate = Carbon::now()->subDays(2)->startOfDay();
         foreach ($urls as $url) {
             $url->last_tracker = now();
             $lastModify = Carbon::parse($url->last_modify);
@@ -55,7 +55,7 @@ class ProcessTrackerUrl extends Command {
                 $url->hash = md5($url->url);
                 $url->last_modify = $maxDate;
                 $diffInHours = $lastModify->diffInHours($maxDate);
-                if ($diffInHours > 4 && $maxDate->gt($startOfDay)) {
+                if ($diffInHours > 4 && $maxDate->gt($limitDate)) {
                     Log::info('ProcessTrackerUrl process changed', [
                         'url' => $url->url,
                         'lastModify' => $lastModify,
