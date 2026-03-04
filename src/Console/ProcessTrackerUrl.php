@@ -40,10 +40,8 @@ class ProcessTrackerUrl extends Command {
 	public function __construct() {
 		parent::__construct();
 	}
-    public function processUrls($urls, $notify = true)
-    {
-        $startOfDay = Carbon::now()->startOfDay();
-
+    public function processUrls($urls, $notify = true){
+        $startOfDay = Carbon::now()->subDays(2)->startOfDay();
         foreach ($urls as $url) {
             $url->last_tracker = now();
             $lastModify = Carbon::parse($url->last_modify);
